@@ -1,0 +1,17 @@
+{
+    "couch":{
+        "host":"localhost",
+        "user":"root",
+	    "port": "my_port",
+        "passwd":"my secret password",
+        "database":"mydatabase"
+    },
+    "iblis": {
+        "host": "localhost",
+        "user":"username",
+        "password":"pasword",
+        "database":"blis_database"
+    },
+    "facility":"My Test Facility",
+    "using_rpi": False
+}

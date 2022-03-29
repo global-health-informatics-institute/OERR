@@ -1,0 +1,6 @@
+idea/*
+*.config
+*.log
+*.pyc
+*~
+records_archive.json

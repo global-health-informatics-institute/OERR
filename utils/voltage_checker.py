@@ -1,7 +1,7 @@
 from __future__ import division
 import time
 import spidev
-import misc
+from utils import misc
 
 
 class CheckVoltage:

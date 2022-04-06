@@ -22,6 +22,8 @@ server = "http://%s:%s@%s:%s/_replicator" % (settings["couch"]["user"], settings
 
 with open(replications_file, "r") as replications:
     sub_directories = ["", "_lab_test_panels", "_lab_test_type", "_patients", "_users"]
+    os.system('curl -X DELETE %s' % server)
+    os.system('curl -X PUT %s' % server)
     for destination in replications:
         for sub_dir in sub_directories:
 

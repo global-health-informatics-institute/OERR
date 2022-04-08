@@ -58,6 +58,7 @@ class Patient:
             patient['dob'] = self.dob
             patient['name'] = self.name
             patient['gender'] = self.gender
+            patient['archived'] = self.archived
 
         self.database.save(patient)
 

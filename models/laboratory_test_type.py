@@ -30,7 +30,7 @@ class LaboratoryTestType:
     def find_by_test_type(test_type_id):
         test_type = DataAccess("lab_test_type").db.find({"selector": {"test_type_id": test_type_id}, "limit": 1})
         if test_type is not None:
-            test_type = test_type[0]
+            test_type = list(test_type)[0]
             availability = test_type.get("availability") if test_type.get("availability") is not None else True
             test_type = LaboratoryTestType(test_type["_id"], test_type["requirements"],
                                            test_type["short_name"], test_type["test_type_id"], test_type["measures"],

@@ -14,7 +14,7 @@ from models.patient import Patient
 from models.laboratory_test_type import LaboratoryTestType
 from models.laboratory_test_panel import LaboratoryTestPanel
 from werkzeug.security import check_password_hash, generate_password_hash
-from flask import Flask, render_template, redirect, session, flash, request, url_for,Response
+from flask import Flask, render_template, redirect, session, flash, request, url_for, Response
 
 app = Flask(__name__, template_folder="views", static_folder="assets")
 app.secret_key = os.urandom(25)
@@ -122,6 +122,11 @@ def barcode():
         var_patient = Patient.get(npid)
         print(var_patient)
         if var_patient is None:
+
+            # Checking different date Formats
+            if barcode_segments[2].find('-') != -1:
+                barcode_segments[2] = datetime.strptime(barcode_segments[2], '%Y-%m-%d').strftime('%d/%b/%Y')
+
             dob_format = "%d/%b/%Y"
             if "??" == barcode_segments[2].split("/")[0] and "???" == barcode_segments[2].split("/")[1]:
                 dob_format = "??/???/%Y"
@@ -417,7 +422,7 @@ def collect_specimens(test_id):
 # update lab test orders to specimen collected
 @app.route("/test/<test_id>/reprint")
 def reprint_barcode(test_id):
-    tests = db.find({"selector": {"collection_id": test_id}})
+    tests = list(db.find({"selector": {"collection_id": test_id}}))
     if tests is None or tests == []:
         tests = db.find({"selector": {"_id": test_id}})
     test_ids = []
@@ -490,7 +495,7 @@ def review_test(test_id):
 
 @app.route("/get_charge_state")
 def get_charge_state():
-    return Response(json.dumps(inject_power()),  mimetype='application/json')
+    return Response(json.dumps(inject_power()), mimetype='application/json')
 
 
 @app.route("/low_voltage")
@@ -500,7 +505,6 @@ def low_voltage():
 
 # MISC Functions
 def get_test_measures(test, test_details):
-
     results = {}
     for measure in test.get("measures", []):
         if test_details.measures.get(measure) is None:
@@ -566,6 +570,7 @@ def get_pending_test_details(test, detail):
             "test_name": detail.test_name, "container": detail.specimen_requirements[test["sample_type"]]["container"],
             "volume": detail.specimen_requirements[test["sample_type"]]["volume"],
             "units": detail.specimen_requirements[test["sample_type"]]["units"]}
+
 
 # DB CALLS
 def prescribers():
@@ -676,8 +681,8 @@ def inject_power():
         raw_voltage = (voltage / 40.0) + 14
 
         # if raw_voltage < 12:
-            # shutdown
-            # os.system('sudo shutdown now')
+        # shutdown
+        # os.system('sudo shutdown now')
 
         if voltage > 70:
             rating = "high"

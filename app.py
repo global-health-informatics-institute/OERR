@@ -123,7 +123,7 @@ def barcode():
         print(var_patient)
         if var_patient is None:
 
-            # Checking different date Formats
+            # Checking different date Format
             if barcode_segments[2].find('-') != -1:
                 barcode_segments[2] = datetime.strptime(barcode_segments[2], '%Y-%m-%d').strftime('%d/%b/%Y')
 

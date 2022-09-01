@@ -361,7 +361,7 @@ def create_lab_order():
 # update lab test orders to specimen collected
 @app.route("/test/<test_id>/collect_specimen")
 def collect_specimens(test_id):
-    tests = db.find({"selector": {"type": {"$in": ["test", "test panel"]}, "_id": {"$in": test_id.split("^")}}})
+    tests = list(db.find({"selector": {"type": {"$in": ["test", "test panel"]}, "_id": {"$in": test_id.split("^")}}}))
     test_ids = []
     test_names = []
     if tests is None or tests == []:

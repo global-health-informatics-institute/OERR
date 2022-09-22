@@ -424,7 +424,7 @@ def collect_specimens(test_id):
 def reprint_barcode(test_id):
     tests = list(db.find({"selector": {"collection_id": test_id}}))
     if tests is None or tests == []:
-        tests = db.find({"selector": {"_id": test_id}})
+        tests = list(db.find({"selector": {"_id": test_id}}))
     test_ids = []
     test_names = []
     if tests is None or tests == []:

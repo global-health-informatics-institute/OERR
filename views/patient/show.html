@@ -193,7 +193,7 @@
                     <img style="vertical-align: middle;height:12vh;max-width:15vw;" src="/assets/images/{{containers[test['container']]}}">
                 </div>
                 <div class="Cell">
-                    <button class="modalNVButton" onmousedown="Spinner.show();window.location='/test/{{test['test_id']}}/collect_specimen'">
+                    <button class="modalNVButton" onmousedown="Spinner.show();window.location='/test/{{test['test_id']}}/collect_specimen';disable_button(this)">
                         Draw Sample
                     </button>
                 </div>
@@ -428,5 +428,9 @@
             }
         }
         waitForKeyboard()
+        function disable_button(x){
+            x.disabled =  true;
+            x.innerHTML= "Processing...";
+        }
     </script>
 {% endblock %}

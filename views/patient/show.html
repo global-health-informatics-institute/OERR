@@ -99,9 +99,9 @@
                         <b>Clinical History: </b>{{row.get("history", "")}}<br><br>
                         <b>Order Status:</b>{{row.get("status")}}<br><br>
                         {% if row.get("collection_id") == "" %}
-                            <button onmousedown="window.location='/test/{{row.get('id')}}/reprint'">Re-print Barcode</button>
+                            <button onmousedown="window.location='/test/{{row.get('id')}}/reprint';disable_button(this)">Re-print Barcode</button>
                         {% else %}
-                            <button onmousedown="window.location='/test/{{row.get('collection_id')}}/reprint'">Re-print Barcode</button>
+                            <button onmousedown="window.location='/test/{{row.get('collection_id')}}/reprint';disable_button(this)">Re-print Barcode</button>
                         {% endif %}
                      {% elif row['status'] == "Specimen Received" %}
                         <b>Test Priority: </b>{{row.get("priority")}}<br><br>
@@ -144,7 +144,7 @@
                         <br/>
                     {% endfor %}
                     {% if row.get("status") == "Specimen Collected"%}
-                        <button onmousedown="window.location='/test/{{row.get('id')}}/reprint'">Re-print Barcode</button>
+                        <button onmousedown="window.location='/test/{{row.get('id')}}/reprint';disable_button(this)">Re-print Barcode</button>
                     {% endif %}
                  {% endif %}
              </div>
@@ -430,7 +430,7 @@
         waitForKeyboard()
         function disable_button(x){
             x.disabled =  true;
-            x.innerHTML= "Printing";
+            x.innerHTML= "Printing..";
         }
     </script>
 {% endblock %}

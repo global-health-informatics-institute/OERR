@@ -14,7 +14,8 @@ from models.patient import Patient
 from models.laboratory_test_type import LaboratoryTestType
 from models.laboratory_test_panel import LaboratoryTestPanel
 from werkzeug.security import check_password_hash, generate_password_hash
-from flask import Flask, render_template, redirect, session, flash, request, url_for, Response
+from flask import Flask, render_template, redirect, session, flash, request, url_for, Response,send_file
+
 
 app = Flask(__name__, template_folder="views", static_folder="assets")
 app.secret_key = os.urandom(25)
@@ -193,7 +194,6 @@ def patient(patient_id):
                            test_options=inject_tests(), specimen_types=inject_specimen_types(),
                            panel_options=inject_panels())
 
-
 # USER ROUTES
 
 # route to login page
@@ -274,7 +274,6 @@ def change_password(user_id=None):
     else:
         return render_template("user/update_password.html", requires_keyboard=True, username=user_id)
 
-
 @app.route("/user/<user_id>/reset_password")
 def reset_password(user_id=None):
     user = User.get(user_id)
@@ -325,7 +324,6 @@ def select_location():
     session["location"] = None
     return render_template('user/select_location.html', error=error, options=locations_options())
 
-
 ###### LAB ORDER ROUTES ###########
 # create a new lab test order
 @app.route("/test/create", methods=['POST'])
@@ -356,7 +354,6 @@ def create_lab_order():
         flash("New test ordered.", 'success')
     return redirect(url_for('patient', patient_id=request.form['patient_id'],
                             sample_draw=(request.form["sampleCollection"] == "Collect Now")))
-
 
 # update lab test orders to specimen collected
 @app.route("/test/<test_id>/collect_specimen")
@@ -414,17 +411,25 @@ def collect_specimens(test_id):
     label_file.write('A260,170,0,1,1,2,N,"%s" \n' % datetime.now().strftime("%d-%b %H:%M"))
     label_file.write("P1\n")
     label_file.close()
-    os.system('sudo sh ~/print.sh /tmp/test_order.lbl')
-    flash("Specimen collected.", 'success')
-    return redirect(url_for('patient', patient_id=var_patient.get("_id")))
+    #os.system('sudo sh ~/print.sh /tmp/test_order.lbl')
+    #redirect(url_for('patient', patient_id=var_patient.get("_id")))
 
+    flash("Specimen collected.", 'success')
+    return render_template("download.html", patient_id=var_patient["_id"])
+
+    #return redirect(url_for("download_file"))
+
+
+@app.route("/download")
+def download_file():
+    return send_file("/tmp/test_order.lbl",as_attachment = True)
 
 # update lab test orders to specimen collected
 @app.route("/test/<test_id>/reprint")
 def reprint_barcode(test_id):
     tests = list(db.find({"selector": {"collection_id": test_id}}))
     if tests is None or tests == []:
-        tests = list(db.find({"selector": {"_id": test_id}}))
+        tests = db.find({"selector": {"_id": test_id}})
     test_ids = []
     test_names = []
     if tests is None or tests == []:
@@ -470,10 +475,9 @@ def reprint_barcode(test_id):
     label_file.write('A260,170,0,1,1,2,N,"%s" \n' % datetime.now().strftime("%d-%b %H:%M"))
     label_file.write("P1\n")
     label_file.close()
-    os.system('sudo sh ~/print.sh /tmp/test_order.lbl')
+    #os.system('sudo sh ~/print.sh /tmp/test_order.lbl')
 
-    return redirect(url_for('patient', patient_id=var_patient.get("_id")))
-
+    return render_template("download.html", patient_id=var_patient["_id"])
 
 @app.route("/test/<test_id>/review_ajax")
 @app.route("/test/<test_id>/review")
@@ -686,32 +690,24 @@ def inject_power():
 
         if voltage > 70:
             rating = "high"
-	    if voltage == 100 and check_charging:
-		led_control().charger_led_green()
-<<<<<<< HEAD
+            if voltage == 100 and check_charging:
+                led_control().charger_led_green()
             elif voltage < 100 and check_charging:
-		led_control().charger_led_red()
-	    else:
-		led_control().charger_led_off()
+                led_control().charger_led_red()
+            else:
+                led_control().charger_led_off()
         elif 30 < voltage < 70:
-=======
-	    elif voltage < 100 and check_charging:
-		led_control().charger_led_red()
-	    else:
-		led_control().charger_led_off()
-	elif 30 < voltage < 70:
->>>>>>> 4478c579c50e1efffacaf980b5402c38fd5668c3
             rating = "medium"
-	    if check_charging:
-		led_control().charger_led_red()
-	    else:
-		led_control().charger_led_off()
+            if check_charging:
+                led_control().charger_led_red()
+            else:
+                led_control().charger_led_off()
         else:
             rating = "low"
-	    if check_charging:
-		led_control().charger_led_red()
-	    else:
-		led_control().charger_led_off()
+            if check_charging:
+                led_control().charger_led_red()
+            else:
+                led_control().charger_led_off()
     else:
         check_charging = True
         voltage = 100

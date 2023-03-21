@@ -690,10 +690,24 @@ def inject_power():
 
         if voltage > 70:
             rating = "high"
+	    if voltage == 100 and check_charging:
+		led_control().charger_led_green()
+            elif voltage < 100 and check_charging:
+		led_control().charger_led_red()
+	    else:
+		led_control().charger_led_off()
         elif 30 < voltage < 70:
             rating = "medium"
+	    if check_charging:
+		led_control().charger_led_red()
+	    else:
+		led_control().charger_led_off()
         else:
             rating = "low"
+	    if check_charging:
+		led_control().charger_led_red()
+	    else:
+		led_control().charger_led_off()
     else:
         check_charging = True
         voltage = 100

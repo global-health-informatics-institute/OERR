@@ -36,6 +36,8 @@ class User:
             users.append(provider["_id"])
         return users
 
+    
+    
     @staticmethod
     def all():
         return DataAccess("users").db.find({"selector": {"_id": {"$gt": None}}, "limit": 2000})

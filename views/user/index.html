@@ -57,9 +57,18 @@
                         <h3>Username</h3>
                               <input type="text" placeholder="Username" minlength="6" name="username" id="input3" class="input" value="{{
           request.form.username }}" required style="width: 90%; font-size : 18pt;border-radius:5px;height: 7vh;">
-                      <h3>Password</h3>
-                     <input type="password" placeholder="Password" name="password" minlength="6"  id="input4" class="input" value="{{
-                      request.form.password }}" required style="width: 90%; font-size : 18pt;border-radius:5px;height: 7vh;">
+          <h3>Password</h3>
+          <div style="position: relative;">
+              <input type="password" placeholder="Password" name="password" minlength="6" id="input4" class="input" value="{{ request.form.password }}" required style="width: 90%; font-size: 18pt; border-radius: 5px; height: 7vh;">
+              <span class="password-toggle" onclick="togglePasswordVisibility(this)">&#x1f441;</span>
+          </div>
+          <h3></h3>
+          <input type="password" placeholder="Confirm Password" name="confirm_password" minlength="6" id="input5" class="input" value="{{ request.form.confirm_password }}" required style="width: 90%; font-size: 18pt; border-radius: 5px; height: 7vh;" oninput="checkPasswordMatch()">
+          <span class="password-match-error" style="color: red;"></span>
+          
+
+
+          
                             <div class="simple-keyboard" style="width: 99%; border: 1px solid silver;margin-top: 2vh;"></div>
                     </div>
                     <div class="tab">
@@ -204,7 +213,7 @@
                     </div>
                 </form>
             </div>
-            <div style="height: 12%; margin-top: 1vh;border: 1px solid silver; padding:10px; border-radius: 0px 0px 5px 5px">
+            <!-- <div style="height: 12%; margin-top: 1vh;border: 1px solid silver; padding:10px; border-radius: 0px 0px 5px 5px"> -->
                 <table style="width:100%;">
                     <tr>
                         <td>
@@ -261,5 +270,28 @@
                 }
             }
         }
+        function togglePasswordVisibility(eyeIcon) {
+        const passwordInput = eyeIcon.previousElementSibling; 
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+        } else {
+            passwordInput.type = 'password';
+        }
+    }
+
+    function checkPasswordMatch() {
+        const passwordInput = document.querySelector('input[name="password"]');
+        const confirmPasswordInput = document.querySelector('input[name="confirm_password"]');
+        const passwordMatchError = document.querySelector('.password-match-error');
+
+        const password = passwordInput.value;
+        const confirmPassword = confirmPasswordInput.value;
+
+        if (password === confirmPassword) {
+            passwordMatchError.textContent = ''; 
+        } else {
+            passwordMatchError.textContent = 'Passwords do not match.';
+        }
+    }
      </script>
 {% endblock %}

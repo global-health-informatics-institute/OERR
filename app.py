@@ -260,6 +260,57 @@ def create_user():
     return redirect(url_for("users"))
 
 
+# @ute('/user/<user_id>/edit', methods=['GET', 'POST'])
+# def edit_user(user_id):
+#     # Retrieveapp.ro user data from the database based on user_id
+#     user = get_user_by_id(user_id)
+
+#     if request.method == 'POST':
+#         # Handle the form submission here, update user data in the database
+#         updated_data = {
+#             'name': request.form.get('name'),
+#             'username': request.form.get('username'),
+#             # Update other user attributes as needed
+#         }
+#         update_user(user_id, updated_data)  # Implement this function to update the user
+
+#         # Provide feedback to the admin that the update was successful
+#         flash('User updated successfully', 'success')
+#         return redirect('/user-management')  # Redirect back to the user management page
+
+#     return render_template('edit_user.html', user=user)  # Render the edit user form template
+
+
+# @app.route("/user/create", methods=["POST"])
+# def create_user():
+#     username = request.form['username']
+#     name = request.form["name"]
+#     role = request.form['role']
+#     designation = request.form['designation']
+#     password = request.form["password"]
+#     confirm_password = request.form["confirm_password"]
+
+#     # Check if passwords match
+#     if password != confirm_password:
+#         flash("Passwords do not match", 'error')
+#         return render_template("user/index.html", requires_keyboard=True, users=User.all())
+#     user = User.get(request.form['username'])
+#     if user is None:
+#         provider = User(request.form['username'], request.form["name"], request.form['role'],
+#                         request.form['designation'], request.form["password"], "Active")
+#         if request.form['designation'] in ['Consultant', 'Intern', 'Registrar', 'Medical Student',
+#                                            'Student Clinical Officer', "Clinical Officer", "Visiting Doctor"]:
+#             provider.team = request.form["team"]
+#         else:
+#             provider.ward = request.form["wardAllocation"]
+#         provider.save()
+#     else:
+#         current_users = User.all()
+#         flash("Username already exists", 'error')
+#         return render_template("user/index.html", requires_keyboard=True, users=current_users)
+#     flash("New user created", "success")
+#     return redirect(url_for("users"))
+
 @app.route("/user/<user_id>/update_password", methods=["GET", "POST"])
 def change_password(user_id=None):
     if request.method == "POST":
@@ -324,6 +375,13 @@ def select_location():
     session["location"] = None
     return render_template('user/select_location.html', error=error, options=locations_options())
 
+
+
+
+
+
+
+    
 ###### LAB ORDER ROUTES ###########
 # create a new lab test order
 @app.route("/test/create", methods=['POST'])

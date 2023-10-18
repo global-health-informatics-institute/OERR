@@ -42,6 +42,11 @@ class User:
     def all():
         return DataAccess("users").db.find({"selector": {"_id": {"$gt": None}}, "limit": 2000})
         
+
+    @staticmethod
+    def get_spesific_user(username):
+        return DataAccess("users").db.find({"selector":{"_id":{"$gt": username}}, "limit":1})
+    
     @staticmethod
     def get_active_prescribers():
         return DataAccess("users").db.find({"selector": {"role": "Doctor", "status": "Active"}, "limit": 5000})
@@ -66,3 +71,23 @@ class User:
         return {"_id": self.username, "name": self.name, "role": self.role, 'designation': self.designation,
                 'status': self.status, 'department': self.department, 'team': self.team, 'ward': self.ward,
                 'type': "user", "_rev": self.rev}
+
+ # Define get_user_by_id 
+    @staticmethod
+    def get_user_by_id(username):
+        user_data = DataAccess("users").db.get(username)
+        if user_data is not None:
+            user = User(
+                user_data.get('_id'),
+                user_data.get('name', "Unknown"),
+                user_data.get('role'),
+                user_data.get('designation', 'Unassigned'),
+                user_data.get('status', "Active"),
+                user_data.get('department', "Medical"),
+                user_data.get('ward', ""),
+                user_data.get('team', "Unassigned"),
+                user_data.get("password_hash"),
+                user_data.get("_rev")
+            )
+            return user
+        return None

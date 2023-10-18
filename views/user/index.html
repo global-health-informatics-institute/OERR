@@ -2,6 +2,7 @@
 {% block content %}
     <script type="text/javascript">
         navButtons = [
+            
             "<button class=\"nvButton Green\" onmousedown=\"window.location='/'\" style=\"float: right;\">Finish</button>",
             "<button class=\"nvButton\" onmousedown='showNewUserDialog()' style=\"float: right;\">New User</button>"]
     </script>
@@ -31,8 +32,16 @@
                         <td>{{user.get("role")}}</td>
                         <td>{{user.get("designation")}}</td>
                         <td>{{user.get("ward", user.get("team"))}}</td>
-                        <td>
-                            <button class='displayButton lightGreen' onmousedown="window.location='/user/{{user.get('_id')}}/reset_password'">Reset Password</button>
+                        
+                            <td>
+                              <button class="displayButton edit-button blue" onmousedown="window.location='/user/{{user.get('_id')}}/edit'">Edit</button>
+                             
+                            <!-- <button class="displayButton edit-button blue" onclick="showEditUserDialog()">Edit User</button> -->
+
+
+
+                                <!-- <a href="/user/{{ user.get('_id') }}/edit" class="btn btn-primary">Edit</a>
+         -->
                             {% if user.get("status") == "Active" %}
                                 <button class="displayButton red" onmousedown="window.location='/user/{{user.get('_id')}}/deactivate'">Deactivate</button>
                             {% else %}

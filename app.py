@@ -263,7 +263,6 @@ def create_user():
     return redirect(url_for("users"))
 
 
-
 # edit route
 @app.route('/user/<username>/edit', methods=['GET', 'POST'])
 def edit_user(username=None):
@@ -275,14 +274,15 @@ def edit_user(username=None):
     else:    
         if request.method == 'POST':
                 user.name = request.form['name']
-                user.username = request.form['sername']
+                user.username = request.form['username']
                 user.role = request.form['role']
                 user.designation = request.form['designation']
                 user.save()
-                return redirect(url_for("index"))
+                flash("user created", "success")
+                return redirect(url_for("users"))
         else:
-                return render_template('user/edit_user.html', user=user)
-
+               
+                return render_template("user/edit_user.html", requires_keyboard=True, user=user)
 
      
 

@@ -264,18 +264,29 @@ def create_user():
 
 
 
-
-@app.route('/user/<user_id>/edit', methods=['GET'])
-def edit_user(user_id):
-    user_data = User. get_user_by_id(user_id)
-    return render_template('user/edit_user.html', user=user_data)
+# edit route
+@app.route('/user/<username>/edit', methods=['GET', 'POST'])
+def edit_user(username=None):
+    user = User.get(username)
     
+    if user is None:
+            flash('User not found', 'error')
+            return redirect(url_for('index'))
+    else:    
+        if request.method == 'POST':
+                user.name = request.form['name']
+                user.username = request.form['sername']
+                user.role = request.form['role']
+                user.designation = request.form['designation']
+                user.save()
+                return redirect(url_for("index"))
+        else:
+                return render_template('user/edit_user.html', user=user)
 
 
+     
 
-
-
-
+#update password query
 @app.route("/user/<user_id>/update_password", methods=["GET", "POST"])
 def change_password(user_id=None):
     if request.method == "POST":
@@ -289,6 +300,8 @@ def change_password(user_id=None):
             return redirect(url_for("index"))
     else:
         return render_template("user/update_password.html", requires_keyboard=True, username=user_id)
+
+#reset password
 
 @app.route("/user/<user_id>/reset_password")
 def reset_password(user_id=None):

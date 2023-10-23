@@ -278,7 +278,7 @@ def edit_user(username=None):
                 user.role = request.form['role']
                 user.designation = request.form['designation']
                 user.save()
-                flash("user created", "success")
+                flash("user updated successfully")
                 return redirect(url_for("users"))
         else:
                

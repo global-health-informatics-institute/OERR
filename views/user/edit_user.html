@@ -6,8 +6,8 @@
         "<button class=\"nvButton\" onmousedown='showEditUserDialog()' style=\"float: right;\">Edit User</button>"]
 </script> -->
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/keyboard.css') }}">
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/toastify.css') }}">
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/table.css') }}">
+<!-- <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/toastify.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/table.css') }}"> -->
 <script src="{{url_for('static', filename='javascript/paginate.min.js')}}"></script>
 <script src="{{url_for('static', filename='javascript/keyboard.js')}}" defer></script>
 <script src="{{url_for('static', filename='javascript/keyboard_init.js')}}" defer></script>
@@ -180,7 +180,7 @@
             <table style="width:100%;">
                 <tr>
                     <td>
-                        <a href="/user/{{ user_id }}" title="Cancel"><button type="button" class="modalNVButton red">Cancel</button></a>
+                        <a href="/users/{{ user.username }}" title="Cancel"><button type="button" class="modalNVButton red">Cancel</button></a>
                     </td>
                     <td style="text-align: center;">
                         <span class="step"></span>

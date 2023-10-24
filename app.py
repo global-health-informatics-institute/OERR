@@ -14,9 +14,8 @@ from models.patient import Patient
 from models.laboratory_test_type import LaboratoryTestType
 from models.laboratory_test_panel import LaboratoryTestPanel
 from werkzeug.security import check_password_hash, generate_password_hash
-from flask import Flask, render_template, redirect, session, flash, request, url_for, Response,send_file
+from flask import Flask, request, flash,render_template, redirect, session, flash, request, url_for, Response,send_file
 from couchdb.http import ResourceNotFound
-
 
 app = Flask(__name__, template_folder="views", static_folder="assets")
 app.secret_key = os.urandom(25)
@@ -263,7 +262,7 @@ def create_user():
     return redirect(url_for("users"))
 
 
-# edit route
+#edit route
 @app.route('/user/<username>/edit', methods=['GET', 'POST'])
 def edit_user(username=None):
     user = User.get(username)
@@ -271,7 +270,8 @@ def edit_user(username=None):
     if user is None:
             flash('User not found', 'error')
             return redirect(url_for('index'))
-    else:    
+    else:  
+          
         if request.method == 'POST':
                 user.name = request.form['name']
                 user.username = request.form['username']
@@ -283,6 +283,7 @@ def edit_user(username=None):
         else:
                
                 return render_template("user/edit_user.html", requires_keyboard=True, user=user)
+
 
      
 

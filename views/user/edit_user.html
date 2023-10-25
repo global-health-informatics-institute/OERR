@@ -56,57 +56,57 @@
             <h2>User Designation</h2>
             <ul>
                 <li data-id="doc" name="designationOptions">
-                    <input type="radio" id="clinicalOfficer" value="Clinical Officer" name="designation" {% if user.designation == 'Clinical Officer' %}checked{% endif %}>
+                    <input type="radio" id="clinicalOfficer" value="Clinical Officer" name="designation" onchange="filterAllocation('medical')" {% if user.designation == 'Clinical Officer' %}checked{% endif %}>
                     <label for="clinicalOfficer">Clinical Officer</label>
                     <div class="check"></div>
                 </li>
                 <li data-id="doc" name="designationOptions">
-                    <input type="radio" id="consultant" value="Consultant" name="designation" {% if user.designation == 'Consultant' %}checked{% endif %}>
+                    <input type="radio" id="consultant" value="Consultant" name="designation" onchange="filterAllocation('medical')" {% if user.designation == 'Consultant' %}checked{% endif %}>
                     <label for="consultant">Consultant</label>
                     <div class="check"></div>
                 </li>
                 <li data-id="student" name="designationOptions">
-                    <input type="radio" id="clinicalStudent" value="Clinical Officer student" name="designation" {% if user.designation == 'Clinical Officer student' %}checked{% endif %}>
+                    <input type="radio" id="clinicalStudent" value="Clinical Officer student" name="designation" onchange="filterAllocation('medical')" {% if user.designation == 'Clinical Officer student' %}checked{% endif %}>
                     <label for="clinicalStudent">Clinical Officer student </label>
                     <div class="check"></div>
                 </li>
                 <li data-id="doc" name="designationOptions">
-                    <input type="radio" id="intern" value="Intern" name="designation" {% if user.designation == 'Intern' %}checked{% endif %}>
+                    <input type="radio" id="intern" value="Intern" name="designation" onchange="filterAllocation('medical')" {% if user.designation == 'Intern' %}checked{% endif %}>
                     <label for="intern">Intern</label>
                     <div class="check"></div>
                 </li>
                 <li data-id="nurse" name="designationOptions">
-                    <input type="radio" id="matron" value="Matron" name="designation" {% if user.designation == 'Matron' %}checked{% endif %}>
+                    <input type="radio" id="matron" value="Matron" name="designation" onchange="filterAllocation('nursing')" {% if user.designation == 'Matron' %}checked{% endif %}>
                     <label for="matron">Matron</label>
                     <div class="check"></div>
                 </li>
                 <li data-id="nurse" name="designationOptions">
-                    <input type="radio" id="nurse" value="Nurse" name="designation" {% if user.designation == 'Nurse' %}checked{% endif %}>
-                    <label for="nurse">Nurse</label>
+                    <input type="radio" id="nurseRole" value="Nurse" name="designation" onchange="filterAllocation('nursing')" {% if user.designation == 'Nurse' %}checked{% endif %}>
+                    <label for="nurseRole">Nurse</label>
                     <div class="check"></div>
                 </li>
                 <li data-id="doc" name="designationOptions">
-                    <input type="radio" id="registrar" value="Registrar" name="designation" {% if user.designation == 'Registrar' %}checked{% endif %}>
+                    <input type="radio" id="registrar" value="Registrar" name="designation" onchange="filterAllocation('medical')" {% if user.designation == 'Registrar' %}checked{% endif %}>
                     <label for="registrar">Registrar</label>
                     <div class="check"></div>
                 </li>
                 <li data-id="nurse" name="designationOptions">
-                    <input type="radio" id="nurse-ic" value="Nurse in-charge" name="designation" {% if user.designation == 'Nurse in-charge' %}checked{% endif %}>
+                    <input type="radio" id="nurse-ic" value="Nurse in-charge" name="designation" onchange="filterAllocation('nursing')"{% if user.designation == 'Nurse in-charge' %}checked{% endif %}>
                     <label for="nurse-ic">Nurse in-charge</label>
                     <div class="check"></div>
                 </li>
                 <li data-id="student" name="designationOptions">
-                    <input type="radio" id="nurse-student" value="Nursing Student" name="designation" {% if user.designation == 'Nursing Student' %}checked{% endif %}>
+                    <input type="radio" id="nurse-student" value="Nursing Student" name="designation" onchange="filterAllocation('nursing')"{% if user.designation == 'Nursing Student' %}checked{% endif %}>
                     <label for="Nursing Student">Nursing Student</label>
                     <div class="check"></div>
                 </li>
                 <li data-id="student" name="designationOptions">
-                    <input type="radio" id="mbbs-student" value="Medical Student" name="designation" {% if user.designation == 'Medical Student' %}checked{% endif %}>
+                    <input type="radio" id="mbbs-student" value="Medical Student" name="designation" onchange="filterAllocation('medical')" {% if user.designation == 'Medical Student' %}checked{% endif %}>
                     <label for="mbbs-student">Medical Student</label>
                     <div class="check"></div>
                 </li>
-                <li data-id="doc" name="designationOptions">
-                    <input type="radio" id="visitingDoc" value="Visiting Doctor" name="designation" {% if user.designation == 'Visiting Doctor' %}checked{% endif %}>
+                <li data-id="doc" name="designationOptions">          
+                    <input type="radio" id="visitingDoc" value="Visiting Doctor" name="designation" onchange="filterAllocation('medical')" {% if user.designation == 'Visiting Doctor' %}checked{% endif %}>
                     <label for="visitingDoc">Visiting Doctor</label>
                     <div class="check"></div>
                 </li>
@@ -118,52 +118,52 @@
         <div class="tab">
             <h2>Allocation</h2>
             <ul>
-                <li>
+                <li data-id="medical" name="allocationOptions">
                     <input type="radio" id="shortStay" value="Short Stay" name="allocation" {% if user.allocation == 'Short Stay' %}checked{% endif %}>
                     <label for="shortStay">Short Stay</label>
                     <div class="check"></div>
                 </li>
-                <li>
+                <li data-id="medical" name="allocationOptions">
                     <input type="radio" id="opd" value="OPD" name="allocation" {% if user.allocation == 'OPD' %}checked{% endif %}>
                     <label for="opd">OPD</label>
                     <div class="check"></div>
                 </li>
-                <li>
+                <li data-id="medical" name="allocationOptions">
                     <input type="radio" id="team_a" value="A" name="allocation" {% if user.allocation == 'A' %}checked{% endif %}>
                     <label for="team_a">Team A</label>
                     <div class="check"></div>
                 </li>
-                <li>
+                <li data-id="medical" name="allocationOptions">
                     <input type="radio" id="team_b" value="B" name="allocation" {% if user.allocation == 'B' %}checked{% endif %}>
                     <label for="team_b">Team B</label>
                     <div class="check"></div>
                 </li>
-                <li>
+                <li data-id="medical" name="allocationOptions">
                     <input type="radio" id="team_c" value="B" name="allocation" {% if user.allocation == 'C' %}checked{% endif %}>
                     <label for="team_c">Team C</label>
                     <div class="check"></div>
                 </li>
-                <li>
+                <li data-id="medical" name="allocationOptions">
                     <input type="radio" id="team_d" value="D" name="allocation" {% if user.allocation == 'D' %}checked{% endif %}>
                     <label for="team_d">Team D</label>
                     <div class="check"></div>
                 </li>
-                <li>
+                <li data-id="nursing" name="allocationOptions">
                     <input type="radio" id="4a" value="4A"  name="allocation" {% if user.allocation == '4A' %}checked{% endif %}>
                     <label for="4a">Medical Female Ward</label>
                     <div class="check"></div>
                 </li>
-                <li>
+                <li data-id="nursing" name="allocationOptions">
                     <input type="radio" id="mhdu" value="MHDU"  name="allocation" {% if user.allocation == 'MHDU' %}checked{% endif %}>
                     <label for="mhdu">Medical HDU</label>
                     <div class="check"></div>
                 </li>
-                <li>
+                <li data-id="nursing" name="allocationOptions">
                     <input type="radio" id="4b" value="4B"  name="allocation" {% if user.allocation == '4B' %}checked{% endif %}>
                     <label for="4b">Medical male Ward</label>
                     <div class="check"></div>
                 </li>
-                <li>
+                <li data-id="nursing" name="allocationOptions">
                     <input type="radio" id="mss" value="MSS"  name="allocation" {% if user.allocation == 'MSS' %}checked{% endif %}>
                     <label for="mss">Medical Short Stay</label>
                     <div class="check"></div>
@@ -248,7 +248,17 @@
         } else if (selectedRole.id == "student"){
             filterDesignations("student")
         }
-        console.log(selectedRole.id)        
+        console.log(selectedRole.id)  
+        
+        const selectedDesignation = document.querySelector('input[type="radio"][name="designation"]:checked');
+
+        if (selectedDesignation.id == "medical"){
+            filterAllocation("medical")
+        } else if (selectedDesignation.id == "nursing") {
+            filterAllocation("nursing")
+        
+       }
+       console.log(selectedDesignation.id)  
 
     }
 
@@ -263,6 +273,17 @@
             var options = document.getElementsByName("designationOptions");
             for (var i = 0, length = options.length; i < length; i++) {
                 if (options[i].dataset.id != id) {
+                    options[i].style.display = "none";
+                } else {
+                    options[i].style.display = "block";
+                }
+            }
+        }
+
+        function filterAllocation(classification){
+            var options = document.getElementsByName("allocationOptions");
+            for (var i = 0, length = options.length; i < length; i++) {
+                if (options[i].dataset.id != classification) {
                     options[i].style.display = "none";
                 } else {
                     options[i].style.display = "block";

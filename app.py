@@ -40,7 +40,7 @@ def index():
     my_team_recs = []
 
     # Based on role, pull the required information from the database
-    if session["user"]["role"] in ['Nurse', 'Student']:
+    if session["user"]["role"] in ['Nurse','Doctor','Student']:
         main_index_query = {
             "selector": {
                 "ward": session.get('location'),

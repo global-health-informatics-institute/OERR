@@ -35,7 +35,7 @@ names = ['Harry','Jeremiah','Alfonso','Marion','Douglas','Johnnie','Darlene','Ma
            "Abigail","Alexandra","Alison","Amanda","Amelia","Amy","Andrea","Angela","Anna","Anne","Audrey","Ava",
            "Bella","Bernadette","Carol","Caroline","Carolyn","Chloe","Claire","Deirdre","Diana","Diane","Donna",
            "Dorothy","Elizabeth","Ella","Emily","Emma","Faith","Felicity","","Megan","Melanie","Michelle","Molly",
-           "Natalie","Nicola","Olivia","Penelope","Pippa","Rachel","Rebecca","Rose","Ruth","Sally","Samantha","Sarah",
+            "Natalie","Nicola","Olivia","Penelope","Pippa","Rachel","Rebecca","Rose","Ruth","Sally","Samantha","Sarah",
            "Sonia","Sophie","Stephanie","Sue","Theresa","Tracey","Una","Vanessa","Victoria","Virginia","Wanda","Adam",
            "Adrian","Alan","Alexander","Andrew","Anthony","Austin","Benjamin","Blake","Boris","Brandon","Brian",
            "Cameron","Carl","Charles","Christian","Christopher","Colin","Connor","Dan","David","Dominic","Dylan",
@@ -71,10 +71,10 @@ def simulateProviders():
                 'gender': random.choice('FM'), 'password_hash': generate_password_hash('letmein')
         }
 
-        if (role == 'N'):
+        if (role == 'N' or 'D'):
             provider['role']  = 'Nurse'
             provider['designation'] =  designations[random.choice('NNNNNSSM')]
-        else:
+        
             provider['role']  = 'Doctor'
             provider['designation'] = designations[random.choice('IIIIRRRC')]
             provider['team'] = random.choice("ABCD")

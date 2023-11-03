@@ -3,6 +3,7 @@
     <script type="text/javascript">
         navButtons = [
             
+            
             "<button class=\"nvButton Green\" onmousedown=\"window.location='/'\" style=\"float: right;\">Finish</button>",
             "<button class=\"nvButton\" onmousedown='showNewUserDialog()' style=\"float: right;\">New User</button>"]
     </script>
@@ -13,9 +14,16 @@
     <script src="{{url_for('static', filename='javascript/keyboard.js')}}" defer></script>
     <script src="{{url_for('static', filename='javascript/keyboard_init.js')}}" defer></script>
 
+
+    
+    <div style="display: flex; justify-content: flex-end; align-items: center;">
+        <input type="text" id="searchInput" style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; width: 200px;" placeholder="Search by Username">
+        <button id="searchButton" style="background-color: #0550a0; color: #fff; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">Search</button>
+    </div>
+    
     <h1 >User Management</h1>
     <div style="width: 95%; margin-left:auto;margin-right:auto;height:85%; overflow: auto;text-align:left;">
-        <table class="myTable table hover">
+        <table class="myTable table hover">EW
             <tbody>
                 <tr>
                     <th>User</th>
@@ -300,5 +308,35 @@
             passwordMatchError.textContent = 'Passwords do not match.';
         }
     }
+    document.addEventListener("DOMContentLoaded", function () {
+        const searchInput = document.getElementById("searchInput");
+        const tableRows = document.querySelectorAll(".myTable tbody tr");
+
+        searchInput.addEventListener("input", function () {
+            const searchTerm = searchInput.value.trim().toLowerCase();
+
+            tableRows.forEach(function (row) {
+                const usernameCell = row.querySelector("td:first-child");
+                if (usernameCell) {
+                    const username = usernameCell.textContent.toLowerCase();
+                    if (username.includes(searchTerm)) {
+                        row.style.display = "";
+                    } else {
+                        row.style.display = "none";
+                    }
+                }
+            });
+        });
+
+        // Clear the search input and show all rows when the input is empty
+        searchInput.addEventListener("input", function () {
+            const searchTerm = searchInput.value.trim().toLowerCase();
+            if (searchTerm === "") {
+                tableRows.forEach(function (row) {
+                    row.style.display = "";
+                });
+            }
+        });
+    });
      </script>
 {% endblock %}

@@ -1,3 +1,4 @@
+
 {% extends 'layout/application.html' %}
 {% block content %}
     <script type="text/javascript">
@@ -250,25 +251,25 @@
                         {% endfor %}
                     </ul>
                 </div>
-                <div class="tab">
-                    <h2>Select test(s) to be performed:</h2>
-                    <ul>
-                        {% for test_panel in panel_options %}
-                           <li data-id="{{(',').join(test_panel[1]['specimen_types'])}}" id="test-panel-{{test_panel[1]['name']}}-container" name="testOptions">
-                                    <input type="checkbox" required id="test-{{test_panel[1]['name']}}" value="|{{test_panel[1]['name']}}|" name="test_type[]">
-                                    <label for="test-{{test_panel[1]['name']}}">{{ test_panel[1]['name'] }}</label>
-                                    <div class="select"></div>
-                           </li>
-                        {% endfor %}
-                        {% for test in test_options%}
-                           <li data-id="{{(',').join(test[1]['specimen_types']) }}" id="test-{{test[0]}}-container" name="testOptions">
-                                    <input type="checkbox" required id="test-{{test[0]}}" value="{{test[0]}}" name="test_type[]">
-                                    <label for="test-{{test[0]}}">{{ test[1]['name']}}</label>
-                                    <div class="select"></div>
-                                </li>
-                        {% endfor %}
-                    </ul>
-                </div>
+              <div class="tab">
+    <h2>Select test(s) to be performed:</h2>
+    <ul>
+        {% for test_panel in panel_options %}
+        <li data-id="{{(',').join(test_panel[1]['specimen_types'])}}" id="test-panel-{{test_panel[1]['name']}}-container" name="testOptions">
+            <input type="checkbox" required id="test-{{test_panel[1]['name']}}" value="|{{test_panel[1]['name']}}|" name="test_type[]" onchange="handleCheckboxChange()">
+            <label for="test-{{test_panel[1]['name']}}">{{ test_panel[1]['name'] }}</label>
+            <div class="select"></div>
+        </li>
+        {% endfor %}
+        {% for test in test_options%}
+        <li data-id="{{(',').join(test[1]['specimen_types']) }}" id="test-{{test[0]}}-container" name="testOptions">
+            <input type="checkbox" required id="test-{{test[0]}}" value="{{test[0]}}" name="test_type[]" onchange="handleCheckboxChange()">
+            <label for="test-{{test[0]}}">{{ test[1]['name']}}</label>
+            <div class="select"></div>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
                 {% if session.get('user').get('role') in ['Nurse', 'Student']  %}
                     <div class="tab">
                     <h2>Select person who ordered test(s)</h2>
@@ -281,7 +282,10 @@
                                 </li>
                         {% endfor %}
                     </ul>
-                </div>
+
+
+
+                    </div>
                 {% else %}
                     <input type="hidden" name='ordered_by' value={{session["user"]['username']}} >
                 {% endif %}
@@ -292,6 +296,11 @@
                       request.form.clinical_history }}" maxlength="{{ch_length}}" required style="width: 90%; font-size : 18pt;border-radius:5px;height: 7vh;">
                         <span style="font-weight:500;font-size:14pt;">Max Char : {{ch_length}}</span>
                     </div>
+                    <div id="antibiotics" style="margin-top: 10px;">
+                    <label  style="font-size: 18pt;">Antibiotics:</label>
+                    <input type="text"  value="" name="antibiotics" style="width: 45%; font-size: 18pt; border-radius: 5px;
+                     height: 7vh; display: inline-block; margin-left: 10px;"/>
+                     </div>
 
                     <div class="simple-keyboard" style="width: 99%; border: 1px solid silver;margin-top: 2vh;"></div>
                 </div>
@@ -432,5 +441,29 @@
             x.disabled =  true;
             x.innerHTML= "Printing..";
         }
+
+
+function handleCheckboxChange() {
+    var checkboxes = document.querySelectorAll('input[name="test_type[]"]:checked');
+    var displayAntibiotics = false;
+
+    checkboxes.forEach(function (checkbox) {
+        var selectedTest = checkbox.value;
+
+        // Customize the condition based on your requirements
+        if (selectedTest == '4') {
+            displayAntibiotics = true;
+        }
+            console.log(selectedTest);
+    });
+
+    if (displayAntibiotics) {
+        document.getElementById('antibiotics').style.display = 'block';
+    } else {
+        document.getElementById('antibiotics').style.display = 'none';
+    }
+
+}
+
     </script>
 {% endblock %}

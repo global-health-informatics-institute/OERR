@@ -35,7 +35,7 @@ def archive_records(records):
 
 def check_recent_test(patient_id):
     test_records = DataAccess().db.find({"selector": {"patient_id": "%s" % patient_id}, "limit": 2000})
-    current_time = (datetime.datetime.now() - datetime.timedelta(days=8)).strftime('%s')
+    current_time = (datetime.datetime.now() - datetime.timedelta(days=1460)).strftime('%s')
 
     archive_record = []
     for record in test_records:

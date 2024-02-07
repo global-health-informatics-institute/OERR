@@ -35,7 +35,7 @@ def archive_records(records):
 
 
 def check_recent_test(records):
-    current_time = (datetime.datetime.now() - datetime.timedelta(days=8)).strftime('%s')
+    current_time = (datetime.datetime.now() - datetime.timedelta(days=90)).strftime('%s')
 
     for i in records:
         if float(i["date_ordered"]) >= float(current_time):

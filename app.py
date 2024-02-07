@@ -501,7 +501,6 @@ def reprint_barcode(test_id):
                                datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%s"),
                                wards[tests[0]["ward"]], dr, tests[0]["clinical_history"], tests[0]["sample_type"],
                                datetime.now().strftime("%s"), "^".join(test_ids), tests[0]["Priority"][0]]
-
     label_file = open("/tmp/test_order.lbl", "w+")
     label_file.write("N\nq406\nQ203,027\nZT\n")
     label_file.write('A5,10,0,1,1,2,N,"%s"\n' % var_patient["name"])
@@ -767,6 +766,9 @@ def not_found_error(error):
 def internal_error(error):
     return render_template('main/500.html'), 500
 
+@app.errorhandler(502)
+def internal_error(error):
+    return render_template('main/502.html'), 502
 
 if __name__ == '__main__':
     app.run(port="7500", debug=True, host='0.0.0.0')

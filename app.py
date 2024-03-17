@@ -266,12 +266,12 @@ def create_user():
 @app.route('/user/<username>/edit', methods=['GET', 'POST'])
 def edit_user(username=None):
     user = User.get(username)
-    
+
     if user is None:
             flash('User not found', 'error')
             return redirect(url_for('index'))
-    else:  
-          
+    else:
+
         if request.method == 'POST':
                 user.name = request.form['name']
                 user.username = request.form['username']
@@ -281,11 +281,11 @@ def edit_user(username=None):
                 flash("user updated successfully")
                 return redirect(url_for("users"))
         else:
-               
+
                 return render_template("user/edit_user.html", requires_keyboard=True, user=user)
 
 
-     
+
 
 #update password query
 @app.route("/user/<user_id>/update_password", methods=["GET", "POST"])
@@ -340,6 +340,7 @@ def activate_user(user_id=None):
         return redirect(url_for("users"))
 
 
+
 @app.route("/select_location", methods=["GET", "POST"])
 def select_location():
     error = None
@@ -356,11 +357,33 @@ def select_location():
 
 
 
+#
+# @app.route("/select_location", methods=["GET", "POST"])
+# def select_location():
+#     error = None
+#     departments = []
+#
+#     # Load departments data from department.config
+#     with open('/home/hazel/Documents/OERR/config/department.config') as json_file:
+#         config_data = json.load(json_file)
+#         departments = config_data.get('departments', [])
+#
+#     if request.method == "POST":
+#         selected_department = request.form.get('department')
+#         selected_ward = request.form.get('ward')
+#
+#         if selected_department == '' or selected_ward == '':
+#             flash("Please select both department and ward.", 'error')
+#             error = "Please select both department and ward."
+#         else:
+#             session["department"] = selected_department
+#             session["ward"] = selected_ward
+#             return redirect(url_for('index'))
+#
+#     session["department"] = None
+#     session["ward"] = None
+#     return render_template('user/select_location.html', error=error, departments=departments)
 
-
-
-
-    
 ###### LAB ORDER ROUTES ###########
 # create a new lab test order
 @app.route("/test/create", methods=['POST'])
@@ -474,7 +497,6 @@ def reprint_barcode(test_id):
     var_patient = Patient.get(tests[0]["patient_id"])
     dr = tests[0]["ordered_by"]
     wards = {"4A": "19", "4B": "20", "MSS": "44", "MHDU": "56"}
-
     for test in tests:
         if test["type"] == "test":
             test_ids.append(test["test_type"])
@@ -501,11 +523,16 @@ def reprint_barcode(test_id):
                                datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%s"),
                                wards[tests[0]["ward"]], dr, tests[0]["clinical_history"], tests[0]["sample_type"],
                                datetime.now().strftime("%s"), "^".join(test_ids), tests[0]["Priority"][0]]
+
+    if var_patient["gender"][0] == "m":
+        int_gender = 0
+    else:
+        int_gender = 1
     label_file = open("/tmp/test_order.lbl", "w+")
     label_file.write("N\nq406\nQ203,027\nZT\n")
     label_file.write('A5,10,0,1,1,2,N,"%s"\n' % var_patient["name"])
     label_file.write('A5,40,0,1,1,2,N,"%s (%s)"\n' % (
-        datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%d-%b-%Y"), var_patient["gender"][0]))
+        datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%d-%b-%Y"), int_gender))
     label_file.write('b5,70,P,386,80,"%s$"\n' % "~".join(test_string))
     label_file.write('A20,170,0,1,1,2,N,"%s"\n' % ",".join(test_names))
     label_file.write('A260,170,0,1,1,2,N,"%s" \n' % datetime.now().strftime("%d-%b %H:%M"))
@@ -631,6 +658,16 @@ def prescribers():
 def locations_options():
     return [["MSS", "Medical Short Stay"], ["4A", "Medical Female Ward"], ["4B", "Medical Male Ward"],
             ["MHDU", "Medical HDU"]]
+#
+#     locations = {
+#         "Medical": ["4A", "4B", "Short Stay", "OPD1", "OPD2"],
+#         "Pediatrics": ["Ward A", "Ward B", "Ward C", "HDU"]
+#     }
+#     options = []
+#     for location, wards in locations.items():
+#         options.append([location, wards])
+#     return options
+
 
 
 def specimen_type_map(specimen_type):

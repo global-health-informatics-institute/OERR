@@ -2,7 +2,7 @@
 <html>
     <head>
         {% block head %}
-            <title>RROE - {% block title %}{% endblock %}</title>
+            <title>OERR - {% block title %}{% endblock %}</title>
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/application.css') }}">
             <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/toastify.css') }}">
@@ -19,7 +19,7 @@
                         <img src="/assets/images/appIcon.png" style="height: 5vh; width: 5vw;">
                     </div>
                     <div style="display: table-cell; vertical-align: middle;text-align:center;width: 100%;">
-                        <a href="/login" style="text-decoration: none;font-weight:bold; color: #fff">Results Review and Order Entry System</a>
+                        <a href="/login" style="text-decoration: none;font-weight:bold; color: #fff">Order Entry and Results Review System</a>
                     </div>
                     <div style="display: table-cell; vertical-align:middle;padding-right: 3px;">
                         {{now}}
@@ -67,5 +67,5 @@
         idleTimer()
         setInterval("checkChargeStatus()",10000)
 
-    </script>s
+    </script>
 </html>

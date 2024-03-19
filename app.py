@@ -340,22 +340,29 @@ def activate_user(user_id=None):
         return redirect(url_for("users"))
 
 
-
 @app.route("/select_location", methods=["GET", "POST"])
 def select_location():
     error = None
+    departments = []
+
+    # Load departments data from department.config
+    with open('/home/hazel/Documents/OERR/config/department.config') as json_file:
+        config_data = json.load(json_file)
+        departments = config_data.get('departments', [])
+
     if request.method == "POST":
-        if request.form['location'] == '':
-            flash("Invalid location. Please try again.", 'error')
-            error = "Invalid location. Please try again."
+        selected_department = request.form.get('department')
+        selected_ward = request.form.get('ward')
+
+        if selected_department == '' or selected_ward == '':
+            flash("Please select both department and ward.", 'error')
+            error = "Please select both department and ward."
         else:
-            session["location"] = request.form['location']
+            session["location"] = selected_ward
             return redirect(url_for('index'))
 
-    session["location"] = None
-    return render_template('user/select_location.html', error=error, options=locations_options())
-
-
+    session["ward"] = None
+    return render_template('user/select_location.html', error=error, departments=departments)
 
 #
 # @app.route("/select_location", methods=["GET", "POST"])

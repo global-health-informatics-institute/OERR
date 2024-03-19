@@ -1,43 +1,131 @@
 {% extends 'layout/application.html' %}
-{% block title %}Location{% endblock %}
+{% block title %}Select Location{% endblock %}
 {% block content %}
-<script type="text/javascript">
-    navButtons = ["<button class=\"nvButton red\" onmousedown=\"window.location='/logout'\" style=\"float: left;\">Logout</button>",
-        "<button class=\"nvButton green\" onmousedown='submitSelections()' style=\"float: right;\">Finish</button>"]
+<div style="padding: 10px;">
+        <p>
+            <span style="font-style: italic; font-size:16pt;">Welcome {{ session["user"]["current_user"] }}!</span><br/>
+            <span style="font-weight: bold; font-size:18pt;">Please select your Department :</span>
+        </p>
+        <div class="tab">
+            <button class="tablinks active" onclick="openTab(event, 'location')">Location</button>
+            <button class="tablinks" onclick="openTab(event, 'ward')">Wards</button>
+        </div>
 
-    function submitSelections(){
-        if (document.querySelectorAll('input[type="radio"]:checked').length > 0)
-        {
-            Spinner.show()
-            document.locationSelection.submit();
-            return;
-        }
-        document.getElementById("errorField").innerText = "Please select one location from the list."
-    }
-</script>
-
-<div style="padding: 10px; ">
-    <p>
-        <span style="font-style: italic; font-size:16pt;">Welcome {{ session["user"]["current_user"] }}!</span><br/>
-        <span style="font-weight: bold; font-size:18pt;">Please select your location :</span>
-    </p>
-    <p class="error" id="errorField">
-        {% if error %}
-            <strong>Error:</strong> {{ error }}
-        {% endif %}
-    </p>
-    <form action="/select_location" method="post" name="locationSelection">
-        <div style="width: 100%; height: 80%; border: 2px solid blue;overflow:auto;margin-left: auto;margin-right: auto;">
-            <ul>
-                {%  for i in options %}
+       <!-- Department Tab -->
+    <div id="location" class="tabcontent" style="display:block;">
+        <form action="/select_location" method="post" name="locationSelection">
+            <div style="width: 100%; height: 80%; border: 2px solid blue;overflow:auto;margin-left: auto;margin-right: auto;">
+                <ul>
+                    {% for department in departments %}
                     <div style="display:table-row;">
                         <div style='display: table-cell; vertical-align: center;'>
-                            <li><input type='radio' id={{ i[0] }} value={{ i[0] }} name='location'><label for={{ i[0] }}>{{i[1]}}</label><div class='check'></div></li>
+                            <li>
+                                <input type='radio' id='{{ department.name }}' value='{{ department.name }}' name='department' onclick='showWards("{{ department.name }}")'>
+                                <label for='{{ department.name }}'>{{ department.name }}</label>
+                                <div class='check'></div>
+                            </li>
                         </div>
                     </div>
-                {% endfor %}
-            </ul>
-        </div>
-    </form>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div style="text-align: right; padding-bottom: 10px;">
+                <button type="button" class="nvButton Blue" onclick="nextTab()">Next</button>
+            </div>
+        </form>
+    </div>
+
+       <!-- Ward Tab -->
+    <div id="ward" class="tabcontent" style="display:none;">
+        <form action="/select_location" method="POST" name="wardSelection">
+            <div style="width: 100%; height: 80%; border: 2px solid blue; overflow:auto;">
+                <ul id="wardsList">
+                </ul>
+            </div>
+        </form>
+    </div>
 </div>
+
+<script>
+    function openTab(evt, tabName) {
+        var i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName("tabcontent");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+        }
+        tablinks = document.getElementsByClassName("tablinks");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+        document.getElementById(tabName).style.display = "block";
+        evt.currentTarget.className += " active";
+    }
+
+    function nextTab() {
+        document.getElementById('ward').style.display = "block";
+        document.getElementById('location').style.display = "none";
+        document.getElementsByClassName('tablinks')[1].classList.add('active');
+    }
+
+    function logout() {
+        window.location = '/logout';
+    }
+
+    var departments = {{ departments | tojson }};
+
+    function showWards(departmentName) {
+        var wardsList = document.getElementById("wardsList");
+        wardsList.innerHTML = ""; // Clear existing wards list
+
+        // Find the department in the JSON data
+        var department = departments.find(dep => dep.name === departmentName);
+    if (department) {
+            // Populate the list of wards for the selected department
+            department.wards.forEach(ward => {
+                var li = document.createElement("li");
+                var divCell = document.createElement("div");
+                divCell.style.display = "table-cell";
+                divCell.style.verticalAlign = "center";
+                var input = document.createElement("input");
+                input.type = "radio";
+                input.id = ward;
+                input.name = "ward";
+                input.value = ward;
+                var label = document.createElement("label");
+                label.setAttribute("for", ward);
+                label.textContent = ward;
+                var divCheck = document.createElement("div");
+                divCheck.className = "check";
+                divCell.appendChild(input);
+                divCell.appendChild(label);
+                divCell.appendChild(divCheck);
+                li.appendChild(divCell);
+                wardsList.appendChild(li);
+            });
+        }
+
+         document.getElementById('ward').style.display = "block";
+        document.getElementById('location').style.display = "none";
+        document.getElementsByClassName('tablinks')[1].classList.add('active');
+    }
+
+    function onSubmit() {
+        var selectedWard = document.querySelector('input[name="ward"]:checked');
+        console.log(selectedWard);
+        if (selectedWard) {
+            var wardValue = selectedWard.value;
+            console.log("Selected Ward:", wardValue);
+            Spinner.show()
+            document.wardSelection.submit();
+            return;
+        } else {
+             document.getElementById("errorField").innerText = "Please select one ward from the list."
+        }
+    }
+
+    navButtons = ["<button class=\"nvButton red\" onmousedown=\"window.location='/login'\" style=\"float: left;\">logout</button>",
+        "<button class=\"nvButton green\" id='btnSubmit' onmousedown='onSubmit()' style=\"float: right;\">Finish</button>"]
+
+</script>
+
 {% endblock %}

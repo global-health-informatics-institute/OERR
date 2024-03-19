@@ -13,5 +13,5 @@
         "database":"blis_database"
     },
     "facility":"My Test Facility",
-    "using_rpi": False
+    "using_rpi": "False"
 }

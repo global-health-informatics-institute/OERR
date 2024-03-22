@@ -2,20 +2,19 @@
 # This is the main thread for the application
 # !/usr/bin/python
 
-import os
-import re
 import json
+import os
 import random
-from utils import misc
-from couchdb import Server
-from models.user import User
+import re
 from datetime import datetime
-from models.patient import Patient
-from models.laboratory_test_type import LaboratoryTestType
+from couchdb import Server
+from flask import Flask, render_template, redirect, session, flash, request, url_for, Response, send_file
+from werkzeug.security import check_password_hash
 from models.laboratory_test_panel import LaboratoryTestPanel
-from werkzeug.security import check_password_hash, generate_password_hash
-from flask import Flask, request, flash,render_template, redirect, session, flash, request, url_for, Response,send_file
-from couchdb.http import ResourceNotFound
+from models.laboratory_test_type import LaboratoryTestType
+from models.patient import Patient
+from models.user import User
+from utils import misc
 
 app = Flask(__name__, template_folder="views", static_folder="assets")
 app.secret_key = os.urandom(25)
@@ -422,6 +421,11 @@ def create_lab_order():
     return redirect(url_for('patient', patient_id=request.form['patient_id'],
                             sample_draw=(request.form["sampleCollection"] == "Collect Now")))
 
+
+# Load wards mapping from wards.config file
+with open('/home/hazel/Documents/OERR/config/wards.config') as json_file:
+    wards_mapping = json.load(json_file)
+
 # update lab test orders to specimen collected
 @app.route("/test/<test_id>/collect_specimen")
 def collect_specimens(test_id):
@@ -432,7 +436,8 @@ def collect_specimens(test_id):
         return redirect(url_for("index", error="Tests not found"))
     var_patient = Patient.get(tests[0]["patient_id"])
     dr = tests[0]["ordered_by"]
-    wards = {"4A": "19", "4B": "20", "MSS": "44", "MHDU": "56"}
+    wards = wards_mapping
+    # wards = {"4A": "19", "4B": "20", "MSS": "44", "MHDU": "56"}
     collected_at = int(datetime.now().strftime('%s'))
     collection_id = ''.join(random.choice('ABCDEFGHIJKLMNOPQRSTUVWXYZ') for i in range(2)) + str(collected_at)
 

@@ -345,7 +345,7 @@ def select_location():
     departments = []
 
     # Load departments data from department.config
-    with open('/home/hazel/Documents/OERR/config/department.config') as json_file:
+    with open('config/department.config') as json_file:
         config_data = json.load(json_file)
         departments = config_data.get('departments', [])
 
@@ -423,7 +423,7 @@ def create_lab_order():
 
 
 # Load wards mapping from wards.config file
-with open('/home/hazel/Documents/OERR/config/wards.config') as json_file:
+with open('config/wards.config') as json_file:
     wards_mapping = json.load(json_file)
 
 # update lab test orders to specimen collected
@@ -821,4 +821,3 @@ def internal_error(error):
 
 if __name__ == '__main__':
     app.run(port="7500", debug=True, host='0.0.0.0')
-

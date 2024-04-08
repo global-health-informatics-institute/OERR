@@ -528,15 +528,15 @@ def reprint_barcode(test_id):
     wards = wards_mapping
 
     if var_patient["gender"][0] == "m":
-        int_gender = 0
+        conv_gender = "0"
     else:
-        int_gender = 1
+        conv_gender = "1"
 
     for test in tests:
         if test["type"] == "test":
             test_ids.append(test["test_type"])
             test_names.append(LaboratoryTestType.find_by_test_type(test["test_type"]).printable_name())
-            test_string = [var_patient["name"].replace(" ", "^"), var_patient["_id"], int_gender,
+            test_string = [var_patient["name"].replace(" ", "^"), var_patient["_id"], conv_gender,
                            datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%s"),
                            wards[tests[0]["ward"]], dr, tests[0]["clinical_history"], tests[0]["sample_type"],
                            datetime.now().strftime("%s"), "^".join(test_ids), tests[0]["Priority"][0]]
@@ -545,7 +545,7 @@ def reprint_barcode(test_id):
             test_names.append(panel.short_name)
             if panel.orderable:
                 test_ids.append(panel.panel_id)
-                test_string = [var_patient["name"].replace(" ", "^"), var_patient["_id"], int_gender,
+                test_string = [var_patient["name"].replace(" ", "^"), var_patient["_id"], conv_gender,
                                datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%s"),
                                wards[tests[0]["ward"]], dr, tests[0]["clinical_history"], tests[0]["sample_type"],
                                datetime.now().strftime("%s"), "^".join(test_ids), tests[0]["Priority"][0], "P"]
@@ -554,7 +554,7 @@ def reprint_barcode(test_id):
                     test_id = LaboratoryTestType.get(test_type).test_type_id
                     test_ids.append(test_id)
 
-                test_string = [var_patient["name"].replace(" ", "^"), var_patient["_id"], int_gender,
+                test_string = [var_patient["name"].replace(" ", "^"), var_patient["_id"], conv_gender,
                                datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%s"),
                                wards[tests[0]["ward"]], dr, tests[0]["clinical_history"], tests[0]["sample_type"],
                                datetime.now().strftime("%s"), "^".join(test_ids), tests[0]["Priority"][0]]

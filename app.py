@@ -15,6 +15,7 @@ from models.laboratory_test_type import LaboratoryTestType
 from models.patient import Patient
 from models.user import User
 from utils import misc
+from collections import defaultdict
 
 app = Flask(__name__, template_folder="views", static_folder="assets")
 app.secret_key = os.urandom(25)
@@ -149,6 +150,7 @@ def barcode():
 
 
 ###### PATIENT ROUTES ###########
+###### PATIENT ROUTES ###########
 @app.route("/patient/<patient_id>", methods=['GET'])
 def patient(patient_id):
     draw_sample = False
@@ -194,6 +196,43 @@ def patient(patient_id):
                            requires_keyboard=True,
                            test_options=inject_tests(), specimen_types=inject_specimen_types(),
                            panel_options=inject_panels())
+
+
+    #     else:
+    #         detail = LaboratoryTestType.find_by_test_type(test.get('test_type'))
+    #         record["test_name"] = detail.test_name
+    #         record["measures"] = get_test_measures(test, detail)
+    #         if test["status"] == "Ordered":
+    #             pending_details = get_pending_test_details(test, detail)
+    #             # pending_sample.append( get_pending_test_details(test, detail))
+    #
+    #             # Group tests by department, container
+    #             group_key = (pending_details["department"], pending_details["container"])
+    #             grouped_samples.setdefault(group_key, []).append(pending_details)
+    #
+    #         elif test["status"] == "Analysis Complete" or test["status"] == "Reviewed":
+    #             get_test_measures(test, detail)
+    #
+    #     records.append(record)
+    #
+    # for group, samples in grouped_samples.items():
+    #     if len(samples) > 1:
+    #         test_names = ", ".join([sample["test_name"] for sample in samples])
+    #         samples[0]["test_name"] = test_names
+    #         pending_sample.append(samples[0])
+    #     else:
+    #         pending_sample.append(samples[0])
+    #
+    # records = sorted(records, key=lambda e: e["date"], reverse=True)
+    # permitted_length = 86 - 50 - len(var_patient['name']) - len(var_patient['id'])
+    # return render_template('patient/show.html', pt_details=var_patient, tests=records, pending_orders=pending_sample,
+    #                        containers=misc.container_options(),
+    #                        collect_samples=draw_sample, doctors=prescribers(), ch_length=permitted_length,
+    #                        requires_keyboard=True,
+    #                        test_options=inject_tests(), specimen_types=inject_specimen_types(),
+    #                        panel_options=inject_panels())
+    #
+
 
 # USER ROUTES
 
@@ -280,8 +319,7 @@ def edit_user(username=None):
                 flash("user updated successfully")
                 return redirect(url_for("users"))
         else:
-
-                return render_template("user/edit_user.html", requires_keyboard=True, user=user)
+            return render_template("user/edit_user.html", requires_keyboard=True, user=user)
 
 
 
@@ -363,33 +401,6 @@ def select_location():
     session["ward"] = None
     return render_template('user/select_location.html', error=error, departments=departments)
 
-#
-# @app.route("/select_location", methods=["GET", "POST"])
-# def select_location():
-#     error = None
-#     departments = []
-#
-#     # Load departments data from department.config
-#     with open('/home/hazel/Documents/OERR/config/department.config') as json_file:
-#         config_data = json.load(json_file)
-#         departments = config_data.get('departments', [])
-#
-#     if request.method == "POST":
-#         selected_department = request.form.get('department')
-#         selected_ward = request.form.get('ward')
-#
-#         if selected_department == '' or selected_ward == '':
-#             flash("Please select both department and ward.", 'error')
-#             error = "Please select both department and ward."
-#         else:
-#             session["department"] = selected_department
-#             session["ward"] = selected_ward
-#             return redirect(url_for('index'))
-#
-#     session["department"] = None
-#     session["ward"] = None
-#     return render_template('user/select_location.html', error=error, departments=departments)
-
 ###### LAB ORDER ROUTES ###########
 # create a new lab test order
 @app.route("/test/create", methods=['POST'])
@@ -403,7 +414,8 @@ def create_lab_order():
             'clinical_history': request.form['clinical_history'],
             'Priority': request.form['priority'],
             'ward': session["location"],
-            'patient_id': request.form['patient_id']
+            'patient_id':
+                request.form['patient_id']
         }
         if len(test.split("|")) > 1:
             new_test['tests'] = {}
@@ -437,9 +449,14 @@ def collect_specimens(test_id):
     var_patient = Patient.get(tests[0]["patient_id"])
     dr = tests[0]["ordered_by"]
     wards = wards_mapping
-    # wards = {"4A": "19", "4B": "20", "MSS": "44", "MHDU": "56"}
     collected_at = int(datetime.now().strftime('%s'))
     collection_id = ''.join(random.choice('ABCDEFGHIJKLMNOPQRSTUVWXYZ') for i in range(2)) + str(collected_at)
+
+    #Converting gender
+    if var_patient["gender"][0] == "m":
+        conv_gender = "0"
+    else:
+        conv_gender = "1"
 
     for test in tests:
         test["status"] = "Specimen Collected"
@@ -449,7 +466,7 @@ def collect_specimens(test_id):
         if test["type"] == "test":
             test_ids.append(test["test_type"])
             test_names.append(LaboratoryTestType.find_by_test_type(test["test_type"]).printable_name())
-            test_string = [var_patient["name"].replace(" ", "^"), var_patient["_id"], var_patient["gender"][0],
+            test_string = [var_patient["name"].replace(" ", "^"), var_patient["_id"], conv_gender,
                            datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%s"),
                            wards[tests[0]["ward"]], dr, tests[0]["clinical_history"], tests[0]["sample_type"],
                            datetime.now().strftime("%s"), '^'.join(test_ids), tests[0]["Priority"][0]]
@@ -458,7 +475,7 @@ def collect_specimens(test_id):
             test_names.append(panel.short_name)
             if panel.orderable:
                 test_ids.append(panel.panel_id)
-                test_string = [var_patient["name"].replace(" ", "^"), var_patient["_id"], var_patient["gender"][0],
+                test_string = [var_patient["name"].replace(" ", "^"), var_patient["_id"], conv_gender,
                                datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%s"),
                                wards[tests[0]["ward"]], dr, tests[0]["clinical_history"], tests[0]["sample_type"],
                                datetime.now().strftime("%s"), '^'.join(test_ids), tests[0]["Priority"][0], "P"]
@@ -467,7 +484,7 @@ def collect_specimens(test_id):
                     test_id = LaboratoryTestType.get(test_type).test_type_id
                     test_ids.append(test_id)
 
-                test_string = [var_patient["name"].replace(" ", "^"), var_patient["_id"], var_patient["gender"][0],
+                test_string = [var_patient["name"].replace(" ", "^"), var_patient["_id"], conv_gender,
                                datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%s"),
                                wards[tests[0]["ward"]], dr, tests[0]["clinical_history"], tests[0]["sample_type"],
                                datetime.now().strftime("%s"), '^'.join(test_ids), tests[0]["Priority"][0]]
@@ -508,12 +525,18 @@ def reprint_barcode(test_id):
         return redirect(url_for("index", error="Tests not found"))
     var_patient = Patient.get(tests[0]["patient_id"])
     dr = tests[0]["ordered_by"]
-    wards = {"4A": "19", "4B": "20", "MSS": "44", "MHDU": "56"}
+    wards = wards_mapping
+
+    if var_patient["gender"][0] == "m":
+        int_gender = 0
+    else:
+        int_gender = 1
+
     for test in tests:
         if test["type"] == "test":
             test_ids.append(test["test_type"])
             test_names.append(LaboratoryTestType.find_by_test_type(test["test_type"]).printable_name())
-            test_string = [var_patient["name"].replace(" ", "^"), var_patient["_id"], var_patient["gender"][0],
+            test_string = [var_patient["name"].replace(" ", "^"), var_patient["_id"], int_gender,
                            datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%s"),
                            wards[tests[0]["ward"]], dr, tests[0]["clinical_history"], tests[0]["sample_type"],
                            datetime.now().strftime("%s"), "^".join(test_ids), tests[0]["Priority"][0]]
@@ -522,7 +545,7 @@ def reprint_barcode(test_id):
             test_names.append(panel.short_name)
             if panel.orderable:
                 test_ids.append(panel.panel_id)
-                test_string = [var_patient["name"].replace(" ", "^"), var_patient["_id"], var_patient["gender"][0],
+                test_string = [var_patient["name"].replace(" ", "^"), var_patient["_id"], int_gender,
                                datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%s"),
                                wards[tests[0]["ward"]], dr, tests[0]["clinical_history"], tests[0]["sample_type"],
                                datetime.now().strftime("%s"), "^".join(test_ids), tests[0]["Priority"][0], "P"]
@@ -531,20 +554,17 @@ def reprint_barcode(test_id):
                     test_id = LaboratoryTestType.get(test_type).test_type_id
                     test_ids.append(test_id)
 
-                test_string = [var_patient["name"].replace(" ", "^"), var_patient["_id"], var_patient["gender"][0],
+                test_string = [var_patient["name"].replace(" ", "^"), var_patient["_id"], int_gender,
                                datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%s"),
                                wards[tests[0]["ward"]], dr, tests[0]["clinical_history"], tests[0]["sample_type"],
                                datetime.now().strftime("%s"), "^".join(test_ids), tests[0]["Priority"][0]]
 
-    if var_patient["gender"][0] == "m":
-        int_gender = 0
-    else:
-        int_gender = 1
+
     label_file = open("/tmp/test_order.lbl", "w+")
     label_file.write("N\nq406\nQ203,027\nZT\n")
     label_file.write('A5,10,0,1,1,2,N,"%s"\n' % var_patient["name"])
     label_file.write('A5,40,0,1,1,2,N,"%s (%s)"\n' % (
-        datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%d-%b-%Y"), int_gender))
+        datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%d-%b-%Y"), var_patient["gender"][0]))
     label_file.write('b5,70,P,386,80,"%s$"\n' % "~".join(test_string))
     label_file.write('A20,170,0,1,1,2,N,"%s"\n' % ",".join(test_names))
     label_file.write('A260,170,0,1,1,2,N,"%s" \n' % datetime.now().strftime("%d-%b %H:%M"))

@@ -15,7 +15,7 @@ from models.laboratory_test_type import LaboratoryTestType
 from models.patient import Patient
 from models.user import User
 from utils import misc
-from collections import defaultdict
+
 
 app = Flask(__name__, template_folder="views", static_folder="assets")
 app.secret_key = os.urandom(25)
@@ -149,14 +149,14 @@ def barcode():
         return redirect(url_for("index"))
 
 
-###### PATIENT ROUTES ###########
-###### PATIENT ROUTES ###########
+###### PATIENT ROUTES ##########
 @app.route("/patient/<patient_id>", methods=['GET'])
 def patient(patient_id):
     draw_sample = False
     pending_sample = []
     records = []
     details_of_test = {}
+    grouped_samples = {}
     if request.args.get("sample_draw") == "True":
         draw_sample = True
 
@@ -183,10 +183,31 @@ def patient(patient_id):
             record["test_name"] = detail.test_name
             record["measures"] = get_test_measures(test, detail)
             if test["status"] == "Ordered":
-                pending_sample.append(get_pending_test_details(test, detail))
+                pending_details = get_pending_test_details(test, detail)
+                # pending_sample.append( get_pending_test_details(test, detail))
+
+                # Group tests by department, container
+                group_key = (pending_details["department"], pending_details["container"])
+                grouped_samples.setdefault(group_key, []).append(pending_details)
+
             elif test["status"] == "Analysis Complete" or test["status"] == "Reviewed":
                 get_test_measures(test, detail)
+
         records.append(record)
+
+    for group, samples in grouped_samples.items():
+        if len(samples) > 1:
+            test_names = ", ".join([sample["test_name"] for sample in samples])
+            samples[0]["test_name"] = test_names
+            test_ids = "^".join([sample["test_id"] for sample in samples])
+            samples[0]["test_id"] = test_ids  # Store concatenated IDs
+
+            pending_sample.append(samples[0])
+        else:
+            samples[0]["test_id"] = str(samples[0]["test_id"])  # Single test case
+            pending_sample.append(samples[0])
+            # For single tests, use the existing ID as the grouped ID
+
 
     records = sorted(records, key=lambda e: e["date"], reverse=True)
     permitted_length = 86 - 50 - len(var_patient['name']) - len(var_patient['id'])
@@ -197,41 +218,6 @@ def patient(patient_id):
                            test_options=inject_tests(), specimen_types=inject_specimen_types(),
                            panel_options=inject_panels())
 
-
-    #     else:
-    #         detail = LaboratoryTestType.find_by_test_type(test.get('test_type'))
-    #         record["test_name"] = detail.test_name
-    #         record["measures"] = get_test_measures(test, detail)
-    #         if test["status"] == "Ordered":
-    #             pending_details = get_pending_test_details(test, detail)
-    #             # pending_sample.append( get_pending_test_details(test, detail))
-    #
-    #             # Group tests by department, container
-    #             group_key = (pending_details["department"], pending_details["container"])
-    #             grouped_samples.setdefault(group_key, []).append(pending_details)
-    #
-    #         elif test["status"] == "Analysis Complete" or test["status"] == "Reviewed":
-    #             get_test_measures(test, detail)
-    #
-    #     records.append(record)
-    #
-    # for group, samples in grouped_samples.items():
-    #     if len(samples) > 1:
-    #         test_names = ", ".join([sample["test_name"] for sample in samples])
-    #         samples[0]["test_name"] = test_names
-    #         pending_sample.append(samples[0])
-    #     else:
-    #         pending_sample.append(samples[0])
-    #
-    # records = sorted(records, key=lambda e: e["date"], reverse=True)
-    # permitted_length = 86 - 50 - len(var_patient['name']) - len(var_patient['id'])
-    # return render_template('patient/show.html', pt_details=var_patient, tests=records, pending_orders=pending_sample,
-    #                        containers=misc.container_options(),
-    #                        collect_samples=draw_sample, doctors=prescribers(), ch_length=permitted_length,
-    #                        requires_keyboard=True,
-    #                        test_options=inject_tests(), specimen_types=inject_specimen_types(),
-    #                        panel_options=inject_panels())
-    #
 
 
 # USER ROUTES
@@ -442,6 +428,7 @@ with open('config/wards.config') as json_file:
 @app.route("/test/<test_id>/collect_specimen")
 def collect_specimens(test_id):
     tests = list(db.find({"selector": {"type": {"$in": ["test", "test panel"]}, "_id": {"$in": test_id.split("^")}}}))
+    grouped_ids = []
     test_ids = []
     test_names = []
     if tests is None or tests == []:

@@ -36,6 +36,13 @@ if settings["using_rpi"] == "True":
 # Root page of application
 @app.route("/")
 def index():
+    #Turn on LEDs for Scanning QR-Code
+    if settings["using_rpi"] == "True" and request.path != "/get_charge_state":
+        if request.path == "/":
+            led_control().turn_led_on()
+        else:
+            led_control().turn_led_off()
+                
     records = []
     my_team_recs = []
 
@@ -152,6 +159,11 @@ def barcode():
 ###### PATIENT ROUTES ##########
 @app.route("/patient/<patient_id>", methods=['GET'])
 def patient(patient_id):
+    
+    #turn off LEDs
+    if settings["using_rpi"] == "True":
+        led_control().turn_led_off()
+                    
     draw_sample = False
     pending_sample = []
     records = []
@@ -253,6 +265,10 @@ def login():
 # Route to handle logging out
 @app.route("/logout")
 def logout():
+    #Turn off LEDs
+    if settings["using_rpi"] == "True":
+        led_control().turn_led_off()
+        
     session["user"] = None
     session["location"] = None
     return render_template('user/login.html', requires_keyboard=True)
@@ -365,6 +381,10 @@ def activate_user(user_id=None):
 
 @app.route("/select_location", methods=["GET", "POST"])
 def select_location():
+    #Turn off LEDs
+    if settings["using_rpi"] == "True":
+        led_control().turn_led_off()
+        
     error = None
     departments = []
 
@@ -738,12 +758,7 @@ def initialize_connection():
 def check_authentication():
     if not re.search("asset", request.path):
         initialize_connection()
-        if settings["using_rpi"] == "True" and request.path != "/get_charge_state":
-            if request.path == "/":
-                led_control().turn_led_on()
-            else:
-                led_control().turn_led_off()
-
+        
         if request.path not in ["/login", "/logout", "/get_charge_state", "/low_voltage"]:
             if session.get("user") is None:
                 return redirect(url_for('login'))

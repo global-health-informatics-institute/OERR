@@ -34,6 +34,11 @@ def initialize_connection():
         replica_db = couch_connection[replica_name]
     else:
         replica_db = couch_connection.create(replica_name)
+        # Create main database if it doesn't exist
+        if db_name in couch_connection:
+            main_db = couch_connection[db_name]
+        else:
+            main_db = couch_connection.create(db_name)
 
 
 def initiate_archiving():
@@ -63,7 +68,15 @@ def initiate_archiving():
 
     subprocess.run(delete_command)
 
-
+    replicate_command = [
+        "curl",
+        "-X", "POST",
+        f"http://{settings['couch']['host']}:{settings['couch']['port']}/_replicate",
+        "-d", f'{{"source":"{settings["couch"]["database"]}_records", "target":"{settings["couch"]["database"]}"}}',
+        "-H", "Content-Type: application/json",
+        "-u", f"{settings['couch']['user']}:{settings['couch']['passwd']}"
+    ]
+    subprocess.run(replicate_command)
 def archive_records(records):
     for record in records:
         archived_tests = {}

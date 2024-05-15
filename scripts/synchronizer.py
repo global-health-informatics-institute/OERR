@@ -8,6 +8,7 @@ from models.laboratory_test_panel import LaboratoryTestPanel
 test_statuses = {1: "Specimen Received", 2: "Specimen Received", 3: "Being Analyzed", 4: "Pending Verification",
                  5: "Analysis Complete", 6: "Not Done", 7: "Not Done", 8: "Rejected"}
 
+# loadig the json file
 config_file = "config/application.config"
 settings = {}
 with open(config_file) as json_file:
@@ -48,7 +49,7 @@ def sync_test_statuses():
 
 
 def get_pending_tests():
-    tests = db.find({
+`    tests = db.find({
             "selector": {
                 "type": "test",
                 "status": {"$in": ["Ordered", "Specimen Collected", "Specimen Received", "Being Analyzed",
@@ -161,6 +162,7 @@ def process_test(test):
     if test.get("lims_id") is None:
         # get patient_id in lims
         patient_id = get_patient_id(test["patient_id"])
+
         if patient_id is None:
             log("Couldn't find patient with id %s" % test["patient_id"])
             return None

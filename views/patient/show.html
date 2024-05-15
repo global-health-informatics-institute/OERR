@@ -153,10 +153,10 @@
         {% endfor %}
     </div>
 
-    <div id="sampleDrawContent" hidden>
-        <div class="Table">
-            <div class="Title">
-                Sample Collection
+    <div style="border: 1px solid silver; padding: 10px;height:65vh; overflow:auto;" id="sampleDrawContent" hidden>
+        <div class="Table ">
+            <div  class="Title">
+                 Sample Collection
                 <div style="float: right;" onmousedown=hideDialog('#close')>
                     <img style="vertical-align: middle;" src="/assets/images/cancel.png" onmousedown=hideDialog('#close')>
                 </div>
@@ -176,7 +176,7 @@
                 </div>
                 <div class="TitleCell">
                     <p>Action</p>
-                </div>/
+                </div>
             </div>
             {% for test in pending_orders %}
             <div class="Row">
@@ -282,9 +282,6 @@
                                 </li>
                         {% endfor %}
                     </ul>
-
-
-
                     </div>
                 {% else %}
                     <input type="hidden" name='ordered_by' value={{session["user"]['username']}} >

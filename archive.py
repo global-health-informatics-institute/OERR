@@ -34,19 +34,6 @@ def initialize_connection():
         replica_db = couch_connection[replica_name]
     else:
         replica_db = couch_connection.create(replica_name)
-        # couch_connection.delete(main_db)
-
-    # try:
-    #     replica_db = couch_connection[settings["couch"]["database"]["database"] + "_neweyrr_tests"]
-    #     db = couch_connection[settings["couch"]["database"] + "_archivyeed_records"]
-    #     main_db = couch_connection[settings["couch"]["database"]]
-    #         # couch_connection.delete(main_db)
-    #
-    # except:
-    #     replica_db = couch_connection.create(settings["couch"]["database"] + "_newer_records")
-    #     db = couch_connection.create(settings["couch"]["database"] + "_archived_tests")
-    #     main_db = couch_connection[settings["couch"]["database"]]
-
 
 
 def initiate_archiving():

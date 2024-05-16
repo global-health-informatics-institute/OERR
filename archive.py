@@ -59,15 +59,29 @@ def initiate_archiving():
                 recent_records(test_records)
                 # main_db.delete("doc")
 
+    # Delete main_db
     delete_command = [
         "curl",
         "-X", "DELETE",
         f"http://{settings['couch']['host']}:{settings['couch']['port']}/{settings['couch']['database']}",
         "-u", f"{settings['couch']['user']}:{settings['couch']['passwd']}"
     ]
+    delete_result = subprocess.run(delete_command)
+    if delete_result.returncode != 0:
+        print("Error deleting main database")
 
-    subprocess.run(delete_command)
+    # Recreate main_db
+    create_command = [
+        "curl",
+        "-X", "PUT",
+        f"http://{settings['couch']['host']}:{settings['couch']['port']}/{settings['couch']['database']}",
+        "-u", f"{settings['couch']['user']}:{settings['couch']['passwd']}"
+    ]
+    create_result = subprocess.run(create_command)
+    if create_result.returncode != 0:
+        print("Error creating main database")
 
+    # Replicate replica_db to main_db
     replicate_command = [
         "curl",
         "-X", "POST",
@@ -76,15 +90,30 @@ def initiate_archiving():
         "-H", "Content-Type: application/json",
         "-u", f"{settings['couch']['user']}:{settings['couch']['passwd']}"
     ]
-    subprocess.run(replicate_command)
+    replication_result = subprocess.run(replicate_command)
+    if replication_result.returncode != 0:
+        print("Error replicating databases")
+
+    if replication_result.returncode == 0:
+        print("Replication to main database successful")
+        # Delete replica_db
+        delete_replica_command = [
+            "curl",
+            "-X", "DELETE",
+            f"http://{settings['couch']['host']}:{settings['couch']['port']}/{settings['couch']['database']}_records",
+            "-u", f"{settings['couch']['user']}:{settings['couch']['passwd']}"
+        ]
+        subprocess.run(delete_replica_command)
+    else:
+        print("Replication to main database failed")
+
 def archive_records(records):
     for record in records:
         archived_tests = {}
-
         for i in record.keys():
             if i != "_id":
                 archived_tests[i] = record[i]
-                db.save(archived_tests)
+                db.save(archived_tests) #old data
 
                 # main_db.delete()
 
@@ -92,9 +121,9 @@ def recent_records(records):
     for record in records:
         newer_records = {}
         for i in record.keys():
-            if i == "_id":
+            if i != "_id":
                 newer_records[i] = record[i]
-                replica_db.save(newer_records)
+                replica_db.save(newer_records) #new data
 
 
 def check_recent_test(records):

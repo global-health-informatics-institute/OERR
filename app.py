@@ -184,8 +184,6 @@ def barcode():
                 patient_obj.save()
 
                 flash("Patient record updated", 'success')
-            else:
-             flash("No changes detected", 'info')
 
             return redirect(url_for('patient', patient_id=npid))
     else:
@@ -297,7 +295,7 @@ def login():
     session["user"] = None
     return render_template('user/login.html', error=error, requires_keyboard=True)
 
-
+ 
 # Route to handle logging out
 @app.route("/logout")
 def logout():

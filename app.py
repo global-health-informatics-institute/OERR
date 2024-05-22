@@ -150,10 +150,47 @@ def barcode():
                                   barcode_segments[3])
             var_patient.save()
 
-        return redirect(url_for('patient', patient_id=npid))
+
+        else:
+            # Extract and store the new name from the QR code
+            updated_name = barcode_segments[0].replace(npid, "").strip()
+
+            # Update patient name if it differs
+            if var_patient['name'] != updated_name:
+                var_patient['name'] = updated_name
+
+                # Keep existing DOB and gender
+                var_patient['dob'] = var_patient['dob']
+
+                var_patient['gender'] = var_patient['gender']
+
+                # Save updated patient using Patient object
+                patient_obj = Patient(
+
+                    npid=var_patient['id'],
+
+                    name=var_patient['name'],
+
+                    dob=var_patient['dob'],
+
+                    gender=var_patient['gender'],
+
+                    archived=var_patient.get('archived', False),
+
+                    rev=var_patient.get('_rev', '')
+
+                )
+
+                patient_obj.save()
+
+                flash("Patient record updated", 'success')
+            else:
+             flash("No changes detected", 'info')
+
+            return redirect(url_for('patient', patient_id=npid))
     else:
-        flash("Wrong format for patient identifier. Please use the National patient Identifier", "error")
-        return redirect(url_for("index"))
+            flash("Wrong format for patient identifier. Please use the National patient Identifier", "error")
+            return redirect(url_for("index"))
 
 
 ###### PATIENT ROUTES ##########

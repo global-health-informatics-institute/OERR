@@ -533,7 +533,7 @@ def collect_specimens(test_id):
 
     if len('~'.join(test_string)) > 86:
         chars_subtract = len('~'.join(test_string)) - 86
-        test_string[5] = test_string[7][0:(len(test_string[5]) - chars_subtract)]
+        test_string[6] = test_string[6][0:(len(test_string[6]) - chars_subtract)]
 
     label_file = open("/tmp/test_order.lbl", "w+")
     label_file.write("N\nq406\nQ203,027\nZT\n")

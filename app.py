@@ -558,10 +558,10 @@ def collect_specimens(test_id):
 def download_file():
     return send_file("/tmp/test_order.lbl",as_attachment = True)
 
-# update lab test orders to specimen collected
+# update lab test orders to specimen ++collected
 @app.route("/test/<test_id>/reprint")
 def reprint_barcode(test_id):
-    tests = list(db.find({"selector": {"collection_id": test_id}}))
+    tests = list(db.find({"selector": {"type": {"$in": ["test", "test panel"]}, "_id": {"$in": test_id.split("^")}}}))
     if tests is None or tests == []:
         tests = db.find({"selector": {"_id": test_id}})
     test_ids = []

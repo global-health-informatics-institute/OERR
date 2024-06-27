@@ -125,7 +125,6 @@ def barcode():
         else:
             return redirect(url_for('patient', patient_id=barcode_segments[0].strip()))
 
-
     elif len(barcode_segments) == 5:
         # This section is for the npid qr code
         npid = barcode_segments[1].strip()
@@ -149,7 +148,8 @@ def barcode():
                                   datetime.strptime(barcode_segments[2], dob_format).strftime("%d-%m-%Y"),
                                   barcode_segments[3])
             var_patient.save()
-
+            flash("New patient record created", 'success')
+            return redirect(url_for('patient', patient_id=npid))
 
         else:
             # Extract and store the new name from the QR code

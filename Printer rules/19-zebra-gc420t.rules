@@ -1,0 +1,1 @@
+KERNEL=="lp[0-9]*", SUBSYSTEM=="usbmisc",ATTRS{idVendor}=="0a5f",OWNER="ghii",GROUP="ghii", ATTRS{idProduct}=="00d3",SYMLINK+="usblp0"

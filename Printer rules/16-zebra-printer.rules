@@ -1,0 +1,1 @@
+ATTRS{idVendor}=="0a5f",OWNER="ghii",GROUP="ghii", ATTRS{idProduct}=="000a",SYMLINK+="usblp0"

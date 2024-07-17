@@ -724,7 +724,7 @@ def prescribers():
 
     for user in var_users:
         if len(user['name'].split(" ")) > 1:
-            name = user['name'].split(" ")[0][0] + ". " + user['name'].split(" ")[1]
+            name = user['name'].split(" ")[0] + ". " + user['name'].split(" ")[1]
         else:
             name = user['name']
         providers.append([name, user['_id']])

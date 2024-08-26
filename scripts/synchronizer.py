@@ -49,7 +49,7 @@ def sync_test_statuses():
 
 
 def get_pending_tests():
-`    tests = db.find({
+    tests = db.find({
             "selector": {
                 "type": "test",
                 "status": {"$in": ["Ordered", "Specimen Collected", "Specimen Received", "Being Analyzed",

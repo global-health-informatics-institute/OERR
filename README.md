@@ -1,7 +1,8 @@
 # RROE
 
-1. [Setting Up](#set-up)
-2. [XXXX XXXX](#xxxx-xxxx)
+- [RROE](#rroe)
+  - [Set Up](#set-up)
+  - [Code Analysis](#code-analysis)
 
 ---
 
@@ -27,3 +28,6 @@
    Edit the `application.config.example` file to match your setup. Ensure that the database name matches the one specified in the `exports/modify.js` script and its prefixed scripts.
 
 ---
+
+## Code Analysis
+-  [Scrips Documentation](docs/scripts.md)

@@ -31,7 +31,7 @@ class User:
     @staticmethod
     def get_team_members(team):
         users = []
-        user_results = DataAccess("users").db.find({"selector": {"team": team}, "fields": ["_id"], "limit": 5000})
+        user_results = DataAc  "_rev": "1-1a2444189f9420585398d2974dfc4d39",cess("users").db.find({"selector": {"team": team}, "fields": ["_id"], "limit": 5000})
         for provider in user_results:
             users.append(provider["_id"])
         return users

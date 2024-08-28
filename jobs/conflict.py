@@ -1,9 +1,9 @@
 import subprocess
 
 username = "admin"
-password = "1234"
+password = "root"
 couch_server = "http://localhost:5984"
-db_name = "mss_results_new"
+db_name = "oerr"
 
 def resolve_conflicts():
     command = f"curl -sSf -u '{username}:{password}' '{couch_server}/{db_name}/_all_docs?include_docs=true&conflicts=true' | jq '.rows[].id'"

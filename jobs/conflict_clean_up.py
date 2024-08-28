@@ -2,10 +2,10 @@ import requests
 import random
 import json
 
-url = "http://127.0.0.1:5984"
-DB = "http://127.0.0.1:5984/mss_results_new"
+url = "http://127.0.0.1:5984/"
+DB = "http://127.0.0.1:5984/oerr"
 username = "admin"
-password = "1234"
+password = "root"
 
 
 def writem(docs):

@@ -8,7 +8,7 @@
         ]
 
          {% if pending_orders != [] %}
-            navButtons.push("<button class=\"nvButton\" onmousedown='showDrawDialog()' style=\"float: right;\">Draw Samples</button>")
+            navButtons.push("<button class=\"nvButton\" onmousedown='showDrawDialog()' style=\"float: right;\">Print Label/button>")
         {% endif %}
      </script>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/keyboard.css') }}">
@@ -195,7 +195,7 @@
                 </div>
                 <div class="Cell">
                     <button class="modalNVButton" onmousedown="Spinner.show();window.location='/test/{{test['test_id']}}/collect_specimen';disable_button(this)">
-                        Draw Sample
+                        Print Label
                     </button>
                 </div>
             </div>

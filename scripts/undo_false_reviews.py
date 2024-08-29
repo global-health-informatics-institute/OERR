@@ -23,7 +23,6 @@ couchConnection = Server("http://%s:%s@%s:%s/" %
 
 #del couchConnection[settings["couch"]["database"]]
 
-global db
 # Connect to a database or Create a Database
 try:
     db = couchConnection[settings["couch"]["database"]]

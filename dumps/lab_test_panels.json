@@ -1,0 +1,186 @@
+{
+  "docs": [
+    {
+      "_id": "CSF Analysis",
+      "panel_id": "1",
+      "short_name": "CSF",
+      "orderable": true,
+      "type": "Laboratory Test Panel",
+      "tests": [
+        "Cell Count",
+        "Culture & Sensitivity",
+        "Differential",
+        "Gram Stain",
+        "India Ink"
+      ],
+      "specimen_types": {
+        "2": "CSF"
+      },
+      "availability": true
+    },
+    {
+      "_id": "CSF Analysis (Paeds)",
+      "panel_id": "14",
+      "short_name": "CSF (Paeds)",
+      "orderable": true,
+      "type": "Laboratory Test Panel",
+      "tests": [
+        "Cell Count (Paeds)",
+        "Culture & Sensitivity (Paeds)",
+        "Differential (Paeds)",
+        "Gram Stain (Paeds)",
+        "India Ink (Paeds)"
+      ],
+      "specimen_types": {
+        "2": "CSF"
+      },
+      "availability": true
+    },
+    {
+      "_id": "MC&S",
+      "panel_id": "4",
+      "short_name": "MCS",
+      "orderable": true,
+      "type": "Laboratory Test Panel",
+      "tests": [
+        "Culture & Sensitivity",
+        "Gram Stain"
+      ],
+      "specimen_types": {
+        "1": "Sputum",
+        "2": "CSF",
+        "3": "Blood",
+        "4": "Pleural Fluid",
+        "5": "Ascitic Fluid",
+        "6": "Pericardial Fluid",
+        "7": "Peritoneal Fluid",
+        "8": "HVS",
+        "9": "Swabs",
+        "10": "Pus",
+        "11": "Stool",
+        "12": "Urine",
+        "15": "Semen",
+        "17": "Synovial Fluid",
+        "18": "Plasma",
+        "22": " tissue biopsy"
+      },
+      "availability": true
+    },
+    {
+      "_id": "PBF",
+      "panel_id": null,
+      "short_name": "PBF",
+      "orderable": false,
+      "type": "Laboratory Test Panel",
+      "tests": [
+        "Manual Differential & Cell Morphology",
+        "FBC"
+      ],
+      "specimen_types": {
+        "3": "Blood"
+      },
+      "availability": true
+    },
+    {
+      "_id": "Prostrate Specific Antigens",
+      "panel_id": "10",
+      "short_name": "PSA",
+      "orderable": true,
+      "type": "Laboratory Test Panel",
+      "tests": [
+        "Free Prostrate Specific Antigen",
+        "Total Prostrate Specific Antigen"
+      ],
+      "specimen_types": {
+        "3": "Blood"
+      },
+      "availability": true
+    },
+    {
+      "_id": "Sterile Fluid Analysis",
+      "panel_id": "3",
+      "short_name": "StFL",
+      "orderable": true,
+      "type": "Laboratory Test Panel",
+      "tests": [
+        "Cell Count",
+        "Culture & Sensitivity",
+        "Differential",
+        "Gram Stain",
+        "ZN Stain"
+      ],
+      "specimen_types": {
+        "4": "Pleural Fluid",
+        "5": "Ascitic Fluid",
+        "6": "Pericardial Fluid",
+        "7": "Peritoneal Fluid"
+      },
+      "availability": true
+    },
+    {
+      "_id": "Thyroid Function Tests",
+      "panel_id": "9",
+      "short_name": "TFT",
+      "orderable": true,
+      "type": "Laboratory Test Panel",
+      "tests": [
+        "Free Thyroxine",
+        "Free Triiodothyronine",
+        "Thyroid Stimulating Hormone",
+        "Total Thyroxine",
+        "Total Triiodothyronine"
+      ],
+      "specimen_types": {
+        "3": "Blood"
+      },
+      "availability": true
+    },
+    {
+      "_id": "Urea & Electrolytes",
+      "panel_id": null,
+      "short_name": "U & E",
+      "orderable": false,
+      "type": "Laboratory Test Panel",
+      "tests": [
+        "Renal Function Test",
+        "Electrolytes"
+      ],
+      "specimen_types": {
+        "3": "Blood"
+      },
+      "availability": true
+    },
+    {
+      "_id": "Urinalysis",
+      "panel_id": "2",
+      "short_name": "UA",
+      "orderable": true,
+      "type": "Laboratory Test Panel",
+      "tests": [
+        "Urine Chemistries",
+        "Urine Macroscopy",
+        "Urine Microscopy"
+      ],
+      "specimen_types": {
+        "12": "Urine"
+      },
+      "availability": true
+    },
+    {
+      "_id": "Urinalysis (Paeds)",
+      "panel_id": "13",
+      "short_name": "UA (Paeds)",
+      "orderable": true,
+      "type": "Laboratory Test Panel",
+      "tests": [
+        "Urine chemistry (paeds)",
+        "Urine Macroscopy (Paeds)",
+        "Urine Microscopy (Paeds)"
+      ],
+      "specimen_types": {
+        "12": "Urine"
+      },
+      "availability": true
+    }
+  ]
+}

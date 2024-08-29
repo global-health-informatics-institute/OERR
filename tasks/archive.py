@@ -3,7 +3,7 @@ from requests.auth import HTTPBasicAuth
 from config import url, username, password
 from datetime import datetime, timedelta
 import logging
-
+from tqdm import tqdm  # Import tqdm for progress bars
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -63,9 +63,9 @@ def fetch_entries(batch_size=9000):
             all_documents.extend(documents)
 
             if len(rows) < batch_size:
-                break  # No more documents to fetch
+                break
 
-            last_key = f'"{rows[-1]["id"]}"'  # start key for the next batch
+            last_key = f'"{rows[-1]["id"]}"'
 
         else:
             logging.error(f"Error fetching documents: {response.status_code} - {response.text}")
@@ -77,17 +77,16 @@ def fetch_entries(batch_size=9000):
 def filter_entries():
     documents = fetch_entries()
     if not documents:
-        logging.warning("Mostly - No documents found but maybe error fetching documents.")
+        logging.warning("Mostly - No documents found but ey maybe error fetching documents.")
         return
 
     active_documents = []
     
     eight_days_ago = datetime.now() - timedelta(days=8)
 
-    for doc in documents:
+    for doc in tqdm(documents, desc="Filtering entries", unit="doc"):
         date_ordered_timestamp = doc.get('date_ordered')
         if date_ordered_timestamp:
-            # Convert the Unix timestamp to a datetime object
             date_ordered = datetime.fromtimestamp(date_ordered_timestamp)
 
             if date_ordered > eight_days_ago:
@@ -103,20 +102,16 @@ def save_active_entries():
         logging.info("No active documents to save.")
         return
 
-    # Database where the cleaned documents will be saved
     active_db = f"{DB_BASE}oerr_active"
     
-    # Ensure the 'oerr_active' database exists
     if not ensure_database_exists("active"):
         logging.error("Failed to ensure 'oerr_active' database exists.")
         return
     
-    for doc in active_documents:
-        # Remove '_rev' to prevent conflicts
+    for doc in tqdm(active_documents, desc="Saving active entries", unit="doc"):
         if '_rev' in doc:
             del doc['_rev']
         
-        # save url 
         doc_id = doc.get('_id')
         if not doc_id:
             logging.warning(f"Document without '_id' found: {doc}")
@@ -125,7 +120,6 @@ def save_active_entries():
         save_url = f"{active_db}/{doc_id}"
 
         try:
-            # Save the document to the oerr_active database
             response = requests.put(save_url, json=doc, auth=HTTPBasicAuth(username, password))
 
             if response.status_code in [200, 201]:
@@ -176,18 +170,16 @@ def exodus():
         data = response.json()
         rows = data.get('rows', [])
         if not rows:
-            break  # No more documents
+            break
 
-        for row in rows:
+        for row in tqdm(rows, desc="Exodus process", unit="doc"):
             doc = row.get('doc')
             if not doc:
                 continue
 
-            # Remove the '_rev' 
             if '_rev' in doc:
                 del doc['_rev']
 
-            # Save the cleaned document to the 'oerr' database
             doc_id = doc.get('_id')
             if not doc_id:
                 logging.warning(f"Document without '_id' found: {doc}")
@@ -204,7 +196,6 @@ def exodus():
             except requests.exceptions.RequestException as e:
                 logging.error(f"Error occurred while saving document '{doc_id}' to 'oerr': {str(e)}")
 
-        # Update the last key for the next batch
         last_key = f'"{rows[-1]["id"]}"'
 
         # If less than a full batch was returned, We done!

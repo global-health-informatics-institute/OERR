@@ -1,5 +1,6 @@
 import requests
 import logging
+from tqdm import tqdm
 from config import DB, username, password
 
 # Configure logging
@@ -34,7 +35,7 @@ def read1(id):
 
 def resolve_conflicts():
     """Resolve conflicts by selecting the last written revision."""
-    logger.info("Starting conflict resolution process...")
+    logger.info("Starting conflict resolution process")
     response = requests.get(f"{DB}/_all_docs?include_docs=true&conflicts=true", auth=(username, password))
     response.raise_for_status()
     conflicted_docs = response.json().get("rows", [])
@@ -46,7 +47,8 @@ def resolve_conflicts():
     else:
         logger.info("No documents with conflicts found.")
 
-    for doc in actual_conflicts:
+    # Process each conflicted document with a progress bar
+    for doc in tqdm(actual_conflicts, desc="Resolving conflicts", unit="doc"):
         doc_id = doc["id"]
         logger.info(f"Processing conflicted document: {doc_id}")
 

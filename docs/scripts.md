@@ -1,23 +1,17 @@
-# Script Documentation
-
-## Table of Contents
-
-- [Script Documentation](#script-documentation)
-  - [Table of Contents](#table-of-contents)
-  - [Tree](#tree)
-  - [add\_pbf\_test](#add_pbf_test)
-    - [Key Points:](#key-points)
-  - [battery\_test](#battery_test)
-    - [Key Points:](#key-points-1)
-  - [check\_ip](#check_ip)
-    - [Key Points:](#key-points-2)
-  - [initialize](#initialize)
-    - [Key Points:](#key-points-3)
-  - [load\_dump](#load_dump)
-    - [Key Points:](#key-points-4)
-  - [local\_cleen\_up](#local_cleen_up)
-  - [panels](#panels)
-  - [purge](#purge)
+- [Tree](#tree)
+- [add\_pbf\_test](#add_pbf_test)
+  - [Key Points:](#key-points)
+- [battery\_test](#battery_test)
+  - [Key Points:](#key-points-1)
+- [check\_ip](#check_ip)
+  - [Key Points:](#key-points-2)
+- [initialize](#initialize)
+  - [Key Points:](#key-points-3)
+- [load\_dump](#load_dump)
+  - [Key Points:](#key-points-4)
+- [local\_cleen\_up](#local_cleen_up)
+- [panels](#panels)
+- [purge](#purge)
 
 ---
 

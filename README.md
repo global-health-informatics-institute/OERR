@@ -1,8 +1,5 @@
-# RROE
-
-- [RROE](#rroe)
-  - [Set Up](#set-up)
-  - [Code Analysis](#code-analysis)
+- [Set Up](#set-up)
+- [Code Analysis](#code-analysis)
 
 ---
 
@@ -30,4 +27,6 @@
 ---
 
 ## Code Analysis
--  [Scrips Documentation](docs/scripts.md)
+-  [Scripts Documentation](docs/scripts.md)
+-  [Tasks Documentation](docs/tasks.md)
+-  [Dumps](docs/dumps.md)

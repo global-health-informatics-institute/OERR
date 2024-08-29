@@ -1,5 +1,0 @@
-
-
-```sh
-node modify.js
-```

@@ -2,8 +2,11 @@ import requests
 from requests.auth import HTTPBasicAuth
 from config import url, username, password
 from datetime import datetime, timedelta
+import logging
 
-# Set up CouchDB connection details
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
 DB_BASE = f"{url}/"
 DB = f"{url}/oerr"
 
@@ -21,16 +24,16 @@ def ensure_database_exists(database_name):
             create_db_response = requests.put(address, auth=HTTPBasicAuth(username, password))
 
             if create_db_response.status_code == 201:
-                print(f"Database '{database_name}' created successfully.")
+                logging.info(f"Database '{database_name}' created successfully.")
             else:
-                print(f"Failed to create database '{database_name}': {create_db_response.status_code} - {create_db_response.text}")
+                logging.error(f"Failed to create database '{database_name}': {create_db_response.status_code} - {create_db_response.text}")
         elif response.status_code == 200:
-            print(f"Database '{database_name}' already exists.")
+            logging.info(f"Database '{database_name}' already exists.")
         else:
-            print(f"Error connecting to the database '{database_name}': {response.status_code} - {response.text}")
+            logging.error(f"Error connecting to the database '{database_name}': {response.status_code} - {response.text}")
 
     except requests.exceptions.RequestException as e:
-        print(f"An error occurred while connecting to '{database_name}': {str(e)}")
+        logging.error(f"An error occurred while connecting to '{database_name}': {str(e)}")
         return False
     
     return True
@@ -62,10 +65,10 @@ def fetch_entries(batch_size=9000):
             if len(rows) < batch_size:
                 break  # No more documents to fetch
 
-            last_key = f'"{rows[-1]["id"]}"'  # Prepare the start key for the next batch
+            last_key = f'"{rows[-1]["id"]}"'  # start key for the next batch
 
         else:
-            print(f"Error fetching documents: {response.status_code} - {response.text}")
+            logging.error(f"Error fetching documents: {response.status_code} - {response.text}")
             break
 
     return all_documents
@@ -74,7 +77,7 @@ def fetch_entries(batch_size=9000):
 def filter_entries():
     documents = fetch_entries()
     if not documents:
-        print("No documents found or error fetching documents.")
+        logging.warning("Mostly - No documents found but maybe error fetching documents.")
         return
 
     active_documents = []
@@ -97,7 +100,7 @@ def save_active_entries():
     # Fetch cleaned documents
     active_documents = filter_entries()
     if not active_documents:
-        print("No active documents to save.")
+        logging.info("No active documents to save.")
         return
 
     # Database where the cleaned documents will be saved
@@ -105,18 +108,18 @@ def save_active_entries():
     
     # Ensure the 'oerr_active' database exists
     if not ensure_database_exists("active"):
-        print("Failed to ensure 'oerr_active' database exists.")
+        logging.error("Failed to ensure 'oerr_active' database exists.")
         return
     
     for doc in active_documents:
-        # Remove '_rev' to clean up the document before saving
+        # Remove '_rev' to prevent conflicts
         if '_rev' in doc:
             del doc['_rev']
         
-        # Document save URL (CouchDB uses the PUT method to save documents by ID)
+        # save url 
         doc_id = doc.get('_id')
         if not doc_id:
-            print(f"Document without '_id' found: {doc}")
+            logging.warning(f"Document without '_id' found: {doc}")
             continue
 
         save_url = f"{active_db}/{doc_id}"
@@ -126,12 +129,12 @@ def save_active_entries():
             response = requests.put(save_url, json=doc, auth=HTTPBasicAuth(username, password))
 
             if response.status_code in [200, 201]:
-                print(f"Document '{doc_id}' saved successfully.")
+                logging.info(f"Document '{doc_id}' saved successfully.")
             else:
-                print(f"Failed to save document '{doc_id}': {response.status_code} - {response.text}")
+                logging.error(f"Failed to save document '{doc_id}': {response.status_code} - {response.text}")
         
         except requests.exceptions.RequestException as e:
-            print(f"Error occurred while saving document '{doc_id}': {str(e)}")
+            logging.error(f"Error occurred while saving document '{doc_id}': {str(e)}")
 
 
 # codeE
@@ -142,14 +145,15 @@ def house_keeping_please(db_name):
         response = requests.delete(drop_db_url, auth=HTTPBasicAuth(username, password))
 
         if response.status_code == 200:
-            print(f"Database {db_name} deleted successfully.")
+            logging.info(f"Database {db_name} deleted successfully.")
         elif response.status_code == 404:
-            print(f"Database {db_name} not found.")
+            logging.warning(f"Database {db_name} not found.")
         else:
-            print(f"Failed to delete database {db_name}: {response.status_code} - {response.text}")
+            logging.error(f"Failed to delete database {db_name}: {response.status_code} - {response.text}")
 
     except requests.exceptions.RequestException as e:
-        print(f"Error occurred while deleting the {db_name} database: {str(e)}")
+        logging.error(f"Error occurred while deleting the {db_name} database: {str(e)}")
+
 # codeF
 def exodus():
     # Set up the source and target databases
@@ -166,27 +170,27 @@ def exodus():
 
         response = requests.get(url, auth=HTTPBasicAuth(username, password))
         if response.status_code != 200:
-            print(f"Error fetching documents from 'oerr_active': {response.status_code} - {response.text}")
+            logging.error(f"Error fetching documents from 'oerr_active': {response.status_code} - {response.text}")
             break
 
         data = response.json()
         rows = data.get('rows', [])
         if not rows:
-            break  # No more documents to process
+            break  # No more documents
 
         for row in rows:
             doc = row.get('doc')
             if not doc:
                 continue
 
-            # Remove the '_rev' field to clean the document
+            # Remove the '_rev' 
             if '_rev' in doc:
                 del doc['_rev']
 
             # Save the cleaned document to the 'oerr' database
             doc_id = doc.get('_id')
             if not doc_id:
-                print(f"Document without '_id' found: {doc}")
+                logging.warning(f"Document without '_id' found: {doc}")
                 continue
 
             save_url = f"{target_db}/{doc_id}"
@@ -195,15 +199,15 @@ def exodus():
                 save_response = requests.put(save_url, json=doc, auth=HTTPBasicAuth(username, password))
 
                 if save_response.status_code not in [200, 201]:
-                    print(f"Failed to save document '{doc_id}' to 'oerr': {save_response.status_code} - {save_response.text}")
+                    logging.error(f"Failed to save document '{doc_id}' to 'oerr': {save_response.status_code} - {save_response.text}")
             
             except requests.exceptions.RequestException as e:
-                print(f"Error occurred while saving document '{doc_id}' to 'oerr': {str(e)}")
+                logging.error(f"Error occurred while saving document '{doc_id}' to 'oerr': {str(e)}")
 
         # Update the last key for the next batch
         last_key = f'"{rows[-1]["id"]}"'
 
-        # If less than a full batch was returned, we are done
+        # If less than a full batch was returned, We done!
         if len(rows) < batch_size:
             break
 
@@ -211,6 +215,6 @@ if __name__ == "__main__":
     initialize_setup()
     save_active_entries()
     house_keeping_please("oerr")
-    ensure_database_exists("oerr")  # so it has nothing but a clean start
+    ensure_database_exists("oerr")
     exodus()
     house_keeping_please("oerr_active")

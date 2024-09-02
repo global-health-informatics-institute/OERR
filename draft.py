@@ -3,7 +3,7 @@ from requests.auth import HTTPBasicAuth
 from config import url, username, password
 from datetime import datetime, timedelta
 import logging
-from tqdm import tqdm
+from tqdm import tqdm  # Import tqdm for progress bars
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -77,13 +77,13 @@ def fetch_entries(batch_size=9000):
 def filter_entries():
     documents = fetch_entries()
     if not documents:
-        logging.warning("No documents found.")
-        return [], []
+        logging.warning("Mostly - No documents found but ey maybe error fetching documents.")
+        return
 
     active_documents = []
     archive_documents = []
     
-    eight_days_ago = datetime.now() - timedelta(days=0)
+    eight_days_ago = datetime.now() - timedelta(days=8)
 
     for doc in tqdm(documents, desc="Filtering entries", unit="doc"):
         date_ordered_timestamp = doc.get('date_ordered')
@@ -97,21 +97,17 @@ def filter_entries():
 
     return active_documents, archive_documents
 
-# CodeD1
-def update_patient_records(archive_documents):
-    """
-    Update the patient records to mark them as archived.
-    """
-    patient_db_base_url = f"{DB_BASE}oerr_patients/"
-
-    for doc in tqdm(archive_documents, desc="Updating patient status", unit="doc"):
+# codeD1
+def update_patient():
+    patient_url = f"{DB_BASE}oerr_patient"
+    archive_documents = filter_entries()
+    if not archive_documents:
+        logging.info("No Archive documents available.")
+        return
+    
+    for doc in tqdm(archive_documents, desc="Updating the status", unit="doc"):
         patient_id = doc.get('patient_id')
-        if not patient_id:
-            logging.warning(f"No patient ID found for document: {doc.get('_id')}")
-            continue
 
-        patient_url = f"{patient_db_base_url}{patient_id}"
-        
         try:
             response = requests.get(patient_url, auth=HTTPBasicAuth(username, password))
 
@@ -121,7 +117,7 @@ def update_patient_records(archive_documents):
 
                 save_response = requests.put(patient_url, json=patient_doc, auth=HTTPBasicAuth(username,password))
 
-                if save_response.status_code in [200, 201]:
+                if (save_response.status_code in [200, 201]):
                     logging.info(f"Patient '{patient_id}' updated successfully.")
                 else:
                     logging.error(f"Failed to update patient '{patient_id}': {save_response.status_code} - {save_response.text}")
@@ -132,11 +128,13 @@ def update_patient_records(archive_documents):
         except requests.exceptions.RequestException as e:
             logging.error(f"Error occurred while updating patient '{patient_id}': {str(e)}")
 
+            
+            
+
 # CodeD
-def save_active_entries(active_documents):
-    """
-    Save active documents into the active database.
-    """
+def save_active_entries():
+    # Fetch cleaned documents
+    active_documents = filter_entries()
     if not active_documents:
         logging.info("No active documents to save.")
         return
@@ -168,6 +166,7 @@ def save_active_entries(active_documents):
         
         except requests.exceptions.RequestException as e:
             logging.error(f"Error occurred while saving document '{doc_id}': {str(e)}")
+
 
 # codeE
 def house_keeping_please(db_name):
@@ -242,9 +241,8 @@ def exodus():
 
 if __name__ == "__main__":
     initialize_setup()
-    active_docs, archive_docs = filter_entries()
-    update_patient_records(archive_docs)
-    save_active_entries(active_docs)
+    update_patient()
+    save_active_entries()
     house_keeping_please("oerr")
     ensure_database_exists("oerr")
     exodus()

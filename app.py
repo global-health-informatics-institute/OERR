@@ -9,6 +9,7 @@ import re
 from datetime import datetime
 from couchdb import Server
 from flask import Flask, render_template, redirect, session, flash, request, url_for, Response, send_file
+from werkzeug.security import generate_password_hash
 from werkzeug.security import check_password_hash
 from models.laboratory_test_panel import LaboratoryTestPanel
 from models.laboratory_test_type import LaboratoryTestType
@@ -20,7 +21,10 @@ from utils import misc
 app = Flask(__name__, template_folder="views", static_folder="assets")
 app.secret_key = os.urandom(25)
 
-
+# Generate hashed password
+password = "thatgirl"
+hashed_password = generate_password_hash(password)
+print(hashed_password)
 
 # Main application configuration
 global db
@@ -273,11 +277,21 @@ def patient(patient_id):
 def login():
     error = None
     if request.method == "POST":
+        # username = request.form.get('username')
+        # password = request.form.get('password')
+         
+        # print(f"Username: {username}")
+        # print(f"Password: {password}")
+
+        # user = User.get(username)
         user = User.get(request.form['username'])
         if user is None:
             error = "Invalid username. Please try again."
+            # print("User not found.")
         else:
+            # print("User found:", user)  # Debugging
             if not check_password_hash(user.password_hash, request.form['password']):
+                # print("Password check failed")  # Debugging
                 error = "Wrong password. Please try again."
             else:
                 session.permanent = True

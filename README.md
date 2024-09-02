@@ -30,3 +30,4 @@
 -  [Scripts Documentation](docs/scripts.md)
 -  [Tasks Documentation](docs/tasks.md)
 -  [Dumps](docs/dumps.md)
+-  [clear log](docs/clear_log)

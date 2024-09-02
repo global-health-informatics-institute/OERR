@@ -2,33 +2,59 @@ import json
 from couchdb import Server
 import os
 
+# Load the replication configuration
 replications_file = "config/replications.config"
 config_file = "config/application.config"
-settings = {}
 
+with open(replications_file) as json_file:
+    replication_settings = json.load(json_file)
+
+# Load application settings
 with open(config_file) as json_file:
     settings = json.load(json_file)
 
-couchConnection = Server("http://%s:%s@%s:%s/" %
-                         (settings["couch"]["user"], settings["couch"]["passwd"],
-                          settings["couch"]["host"], settings["couch"]["port"]))
+# Create source and target connection strings
+source_url = "http://%s:%s@%s:%s/oerr" % (
+    replication_settings["source"]["user"],
+    replication_settings["source"]["passwd"],
+    replication_settings["source"]["host"],
+    replication_settings["source"]["port"]
+)
 
-# ip_address = os.popen("hostname -I").read().strip()
-new_ip_address = "http://%s:%s@%s:%s/%s" % (settings["couch"]["user"], settings["couch"]["passwd"],
-                                            'localhost', settings["couch"]["port"], settings["couch"]["database"])
+target_url = "http://%s:%s@%s:%s/oerr" % (
+    replication_settings["target"]["user"],
+    replication_settings["target"]["password"],
+    replication_settings["target"]["host"],
+    replication_settings["target"]["port"]
+)
 
-server = "http://%s:%s@%s:%s/_replicator" % (settings["couch"]["user"], settings["couch"]["passwd"],
-                          settings["couch"]["host"], settings["couch"]["port"])
+replicator_db_url = "http://%s:%s@%s:%s/_replicator" % (
+    replication_settings["source"]["user"],
+    replication_settings["source"]["passwd"],
+    replication_settings["source"]["host"],
+    replication_settings["source"]["port"]
+)
 
-with open(replications_file, "r") as replications:
-    sub_directories = ["", "_lab_test_panels", "_lab_test_type", "_patients", "_users"]
-    os.system('curl -X DELETE %s' % server)
-    os.system('curl -X PUT %s' % server)
-    for destination in replications:
-        for sub_dir in sub_directories:
+sub_directories = ["", "_lab_test_panels", "_lab_test_type", "_patients", "_users"]
 
-            first = 'curl -d \'{"source":"%s", "target":"%s", "create_target":true, "continuous":true}\' -H "Content-Type: application/json" -X POST %s' % ((destination.strip() + sub_dir), (new_ip_address.strip() + sub_dir), server)
-            second = 'curl -d \'{"source":"%s", "target":"%s", "create_target":true, "continuous":true}\' -H "Content-Type: application/json" -X POST %s' % ((new_ip_address.strip() + sub_dir), (destination.strip() + sub_dir), server)
+# Ensure the _replicator database exists (no need to delete/recreate each time)
+os.system('curl -X PUT %s' % replicator_db_url)
 
-            os.system(first)
-            os.system(second)
+for sub_dir in sub_directories:
+    # Replicate from source to target (master)
+    source_to_target = 'curl -d \'{"source":"%s", "target":"%s", "create_target":true, "continuous":true}\' -H "Content-Type: application/json" -X POST %s' % (
+        source_url.strip() + sub_dir,
+        target_url.strip() + sub_dir,
+        replicator_db_url
+    )
+    
+    # Replicate from target (master) to source
+    target_to_source = 'curl -d \'{"source":"%s", "target":"%s", "create_target":true, "continuous":true}\' -H "Content-Type: application/json" -X POST %s' % (
+        target_url.strip() + sub_dir,
+        source_url.strip() + sub_dir,
+        replicator_db_url
+    )
+
+    # Execute the replication commands
+    os.system(source_to_target)
+    os.system(target_to_source)

@@ -24,6 +24,18 @@ replicator_url = "http://%s:%s@%s:%s/_replicator" % (
 with open(replications_file, "r") as replications:
     db_urls = [url.strip() for url in replications]
 
+# Function to check if a replication document already exists
+def replication_exists(source_db, target_db):
+    query = {
+        "selector": {
+            "source": source_db,
+            "target": target_db
+        }
+    }
+    response = requests.post(f"{replicator_url}/_find", json=query)
+    result = response.json()
+    return len(result['docs']) > 0
+
 # Loop through each pair of databases and set up bidirectional replication
 for i in range(len(db_urls)):
     for j in range(len(db_urls)):
@@ -31,30 +43,36 @@ for i in range(len(db_urls)):
             source_db = db_urls[i]
             target_db = db_urls[j]
             
-            # First replication: source -> target
-            replication_doc_1 = {
-                "source": source_db,
-                "target": target_db,
-                "create_target": True,
-                "continuous": True
-            }
-            response_1 = requests.post(
-                replicator_url,
-                json=replication_doc_1,
-                headers={"Content-Type": "application/json"}
-            )
-            print(f"Replication from {source_db} to {target_db}: {response_1.json()}")
+            # Check if the first replication already exists: source -> target
+            if not replication_exists(source_db, target_db):
+                replication_doc_1 = {
+                    "source": source_db,
+                    "target": target_db,
+                    "create_target": True,
+                    "continuous": True
+                }
+                response_1 = requests.post(
+                    replicator_url,
+                    json=replication_doc_1,
+                    headers={"Content-Type": "application/json"}
+                )
+                print(f"Replication from {source_db} to {target_db}: {response_1.json()}")
+            else:
+                print(f"Replication from {source_db} to {target_db} already exists.")
 
-            # Second replication: target -> source
-            replication_doc_2 = {
-                "source": target_db,
-                "target": source_db,
-                "create_target": True,
-                "continuous": True
-            }
-            response_2 = requests.post(
-                replicator_url,
-                json=replication_doc_2,
-                headers={"Content-Type": "application/json"}
-            )
-            print(f"Replication from {target_db} to {source_db}: {response_2.json()}")
+            # Check if the second replication already exists: target -> source
+            if not replication_exists(target_db, source_db):
+                replication_doc_2 = {
+                    "source": target_db,
+                    "target": source_db,
+                    "create_target": True,
+                    "continuous": True
+                }
+                response_2 = requests.post(
+                    replicator_url,
+                    json=replication_doc_2,
+                    headers={"Content-Type": "application/json"}
+                )
+                print(f"Replication from {target_db} to {source_db}: {response_2.json()}")
+            else:
+                print(f"Replication from {target_db} to {source_db} already exists.")

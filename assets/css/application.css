@@ -61,7 +61,7 @@ body {
 
 @media screen and (max-width: 768px) {
 .modalNVButton {
-     padding: 8px 16px; /+-
+     padding: 8px 16px;
      font-size: 14px;
 }
 
@@ -309,7 +309,7 @@ input[type=checkbox]:checked ~ .select::before{
 input[type=checkbox]:checked ~ label{
   color: #0F4C81;
 }
-        * {
+* {
   box-sizing: border-box;
 }
 

@@ -752,20 +752,6 @@ def prescribers():
     return providers
 
 
-def locations_options():
-    return [["MSS", "Medical Short Stay"], ["4A", "Medical Female Ward"], ["4B", "Medical Male Ward"],
-            ["MHDU", "Medical HDU"]]
-#
-#     locations = {
-#         "Medical": ["4A", "4B", "Short Stay", "OPD1", "OPD2"],
-#         "Pediatrics": ["Ward A", "Ward B", "Ward C", "HDU"]
-#     }
-#     options = []
-#     for location, wards in locations.items():
-#         options.append([location, wards])
-#     return options
-
-
 
 def specimen_type_map(specimen_type):
     spec_type = LaboratoryTestType.match_specimen_types(specimen_type)

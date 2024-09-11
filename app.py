@@ -9,6 +9,7 @@ import re
 from datetime import datetime
 from couchdb import Server
 from flask import Flask, render_template, redirect, session, flash, request, url_for, Response, send_file
+from werkzeug.security import generate_password_hash
 from werkzeug.security import check_password_hash
 from models.laboratory_test_panel import LaboratoryTestPanel
 from models.laboratory_test_type import LaboratoryTestType
@@ -20,7 +21,10 @@ from utils import misc
 app = Flask(__name__, template_folder="views", static_folder="assets")
 app.secret_key = os.urandom(25)
 
-
+# Generate hashed password
+password = "thatgirl"
+hashed_password = generate_password_hash(password)
+print(hashed_password)
 
 # Main application configuration
 global db
@@ -273,11 +277,21 @@ def patient(patient_id):
 def login():
     error = None
     if request.method == "POST":
+        # username = request.form.get('username')
+        # password = request.form.get('password')
+         
+        # print(f"Username: {username}")
+        # print(f"Password: {password}")
+
+        # user = User.get(username)
         user = User.get(request.form['username'])
         if user is None:
             error = "Invalid username. Please try again."
+            # print("User not found.")
         else:
+            # print("User found:", user)  # Debugging
             if not check_password_hash(user.password_hash, request.form['password']):
+                # print("Password check failed")  # Debugging
                 error = "Wrong password. Please try again."
             else:
                 session.permanent = True
@@ -561,24 +575,37 @@ def download_file():
 # update lab test orders to specimen ++collected
 @app.route("/test/<test_id>/reprint")
 def reprint_barcode(test_id):
+    print(test_id)
+    print("Point 0")
     tests = list(db.find({"selector": {"type": {"$in": ["test", "test panel"]}, "_id": {"$in": test_id.split("^")}}}))
+    print(tests)
     if tests is None or tests == []:
-        tests = db.find({"selector": {"_id": test_id}})
+        print("Point 1")
+        tests = list(db.find({"selector": {"collection_id": test_id}}))
+        # tests = db.find({"selector": {"_id": test_id}})
+        print(tests)
+
     test_ids = []
     test_names = []
     if tests is None or tests == []:
+        print("Point 2")
         return redirect(url_for("index", error="Tests not found"))
     var_patient = Patient.get(tests[0]["patient_id"])
     dr = tests[0]["ordered_by"]
     wards = wards_mapping
+    print("Point 3")
 
     if var_patient["gender"][0] == "m":
+        print("Point 4")
         conv_gender = "0"
     else:
+        print("Point 5")
         conv_gender = "1"
 
     for test in tests:
+        print("Point 6")
         if test["type"] == "test":
+            print("Point 7")
             test_ids.append(test["test_type"])
             test_names.append(LaboratoryTestType.find_by_test_type(test["test_type"]).printable_name())
             test_string = [var_patient["name"].replace(" ", "^"), var_patient["_id"], conv_gender,
@@ -586,6 +613,7 @@ def reprint_barcode(test_id):
                            wards[tests[0]["ward"]], dr, tests[0]["clinical_history"], tests[0]["sample_type"],
                            datetime.now().strftime("%s"), "^".join(test_ids), tests[0]["Priority"][0]]
         else:
+            print("Point 8")
             panel = LaboratoryTestPanel.get(test["panel_type"])
             test_names.append(panel.short_name)
             if panel.orderable:
@@ -594,8 +622,12 @@ def reprint_barcode(test_id):
                                datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%s"),
                                wards[tests[0]["ward"]], dr, tests[0]["clinical_history"], tests[0]["sample_type"],
                                datetime.now().strftime("%s"), "^".join(test_ids), tests[0]["Priority"][0], "P"]
+                print("Point 9")
+                
             else:
+                print("Point 10")
                 for test_type in panel.tests:
+                    print("Point 11")
                     test_id = LaboratoryTestType.get(test_type).test_type_id
                     test_ids.append(test_id)
 
@@ -603,6 +635,8 @@ def reprint_barcode(test_id):
                                datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%s"),
                                wards[tests[0]["ward"]], dr, tests[0]["clinical_history"], tests[0]["sample_type"],
                                datetime.now().strftime("%s"), "^".join(test_ids), tests[0]["Priority"][0]]
+                print("Point 12")
+                
 
 
     label_file = open("/tmp/test_order.lbl", "w+")
@@ -618,6 +652,8 @@ def reprint_barcode(test_id):
     #os.system('sudo sh ~/print.sh /tmp/test_order.lbl')
 
     return render_template("download.html", patient_id=var_patient["_id"])
+
+
 
 @app.route("/test/<test_id>/review_ajax")
 @app.route("/test/<test_id>/review")

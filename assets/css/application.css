@@ -64,16 +64,7 @@ body {
      padding: 8px 16px; /+-
      font-size: 14px;
 }
-
-/* ul {
-  flex-direction: column; /* Revert to single-column layout on smaller screens */
-} */
-
-/* ul li {
-  width: 100%; /* Make each item take up the full width on small screens */
- */
-
-
+}
 
 .blue {
     background-color:  #0F4C81;
@@ -219,6 +210,24 @@ body {
   margin-bottom: 20px;
 }
 
+#doctor-search {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+#doctor-list li {
+  padding: 10px;
+  margin-bottom: 5px;
+  cursor: pointer;
+  border-bottom: 1px solid #ddd;
+}
+
+#doctor-list li:hover {
+  background-color: #f0f0f0;
+}
 
 ul li{
   color: #000;

@@ -136,6 +136,29 @@ function validateForm() {
     return valid; // return the valid status
 }
 
+function filterDoctors() {
+    // Get the search input value
+    var input = document.getElementById('doctor-search');
+    var filter = input.value.toLowerCase();
+    
+    // Get the doctor list
+    var doctorList = document.getElementById('doctor-list');
+    var doctors = doctorList.getElementsByTagName('li');
+
+    // Loop through all list items, and hide those that don't match the search query
+    for (var i = 0; i < doctors.length; i++) {
+        var label = doctors[i].getElementsByTagName("label")[0];
+        if (label) {
+            var txtValue = label.textContent || label.innerText;
+            if (txtValue.toLowerCase().indexOf(filter) > -1) {
+                doctors[i].style.display = "";
+            } else {
+                doctors[i].style.display = "none";
+            }
+        }
+    }
+}
+
 function fixStepIndicator(n) {
     // This function removes the "active" class of all steps...
     var i, x = document.getElementsByClassName("step");

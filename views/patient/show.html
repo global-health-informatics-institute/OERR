@@ -253,7 +253,7 @@
                 </div>
               <div class="tab">
     <h2>Select test(s) to be performed:</h2>
-    <ul>
+   <ul class="two-column-list">
         {% for test_panel in panel_options %}
         <li data-id="{{(',').join(test_panel[1]['specimen_types'])}}" id="test-panel-{{test_panel[1]['name']}}-container" name="testOptions">
             <input type="checkbox" required id="test-{{test_panel[1]['name']}}" value="|{{test_panel[1]['name']}}|" name="test_type[]" onchange="handleCheckboxChange()">
@@ -270,22 +270,29 @@
         {% endfor %}
     </ul>
 </div>
-                {% if session.get('user').get('role') in ['Nurse', 'Student']  %}
-                    <div class="tab">
-                    <h2>Select person who ordered test(s)</h2>
-                    <ul class="two-column-list">
-                        {% for i in doctors%}
-                                <li>
-                                    <input type='radio' id='type-{{i[1]}}' value="{{i[1]}}" required name='ordered_by' >
-                                    <label for='type-{{i[1]}}'>{{i[0]}}</label>
-                                    <div class='check'></div>
-                                </li>
-                        {% endfor %}
-                    </ul>
-                    </div>
-                {% else %}
-                    <input type="hidden" name='ordered_by' value={{session["user"]['username']}} >
-                {% endif %}
+
+{% if session.get('user').get('role') in ['Nurse', 'Student'] %}
+<div class="tab">
+    <h2>Select person who ordered test(s)</h2>
+    
+    <!-- Search input field -->
+    <input type="text" id="doctor-search" placeholder="Search..." onkeyup="filterDoctors()">
+    
+    <!-- The list of doctors -->
+    <ul class="two-column-list" id="doctor-list">
+        {% for i in doctors %}
+            <li>
+                <input type='radio' id='type-{{i[1]}}' value="{{i[1]}}" required name='ordered_by' >
+                <label for='type-{{i[1]}}'>{{i[0]}}</label>
+                <div class='check'></div>
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+{% else %}
+<input type="hidden" name='ordered_by' value={{session["user"]['username']}} >
+{% endif %}
+
                 <div class="tab">
                     <h2>Enter Clinical Information/History</h2>
                     <div>

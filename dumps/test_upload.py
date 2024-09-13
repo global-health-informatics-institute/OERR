@@ -8,11 +8,21 @@ import io
 log_buffer = io.StringIO()
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s', handlers=[logging.StreamHandler(log_buffer)])
 logger = logging.getLogger(__name__)
+config_file = "config/application.config"
+
+with open(config_file) as json_file:
+    config_settings = json.load(json_file)
+
 
 # CouchDB connection
-couch = couchdb.Server('http://admin:root@localhost:5984/')
-db_name = 'oerr'
-file_name = 'tests_dump.json' 
+couch = couchdb.Server('http://%s:%s@%s:%s/'%(
+    config_settings["couch"]["user"],
+    config_settings["couch"]["passwd"],
+    config_settings["couch"]["host"],
+    config_settings["couch"]["port"]
+))
+db_name = '%s'%(config_settings["couch"]["database"])
+file_name = 'dumps/tests_dump.json' 
 updates = 0
 new_docs = 0
 conflicts = 0

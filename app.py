@@ -61,32 +61,7 @@ def index():
                 "status": {"$in": ["Ordered", "Specimen Collected", "Analysis Complete", "Rejected"]}
             }, "limit": 100
         }
-        '''
-        # Get my team members and then all tests requested by members of my team
-        my_team = User.get_team_members(session.get('user').get('team'))
-
-        # Get all records for my team that require attention
-        team_records_query = {
-            "selector": {
-                "ordered_by": {"$in": my_team},
-                "status": {"$in": ["Ordered", "Specimen Collected", "Analysis Complete", "Rejected"]}
-            }, "limit": 100
-        }
-        team_query_results = db.find(team_records_query)
-        for item in team_query_results:
-            team_test_detail = {'status': item.get('status'), 'date': float(item.get('date_ordered')),
-                                'name': Patient.get(item.get('patient_id')).get('name').title(),
-                                'ordered_by': User.get(item.get("ordered_by")).name.title(),
-                                'ordered_on': datetime.fromtimestamp(float(item.get('date_ordered'))).strftime(
-                                    '%d %b %Y %H:%S'),
-                                "id": item["_id"], 'patient_id': item.get('patient_id')}
-
-            if item.get("type") == "test":
-                team_test_detail['test'] = LaboratoryTestType.find_by_test_type(item.get('test_type')).test_name
-            else:
-                team_test_detail['test'] = item.get('panel_type')
-            my_team_recs.append(team_test_detail)
-    '''
+ 
     # query for records to display on the main page
     main_results = db.find(main_index_query)
     for item in main_results:

@@ -65,7 +65,15 @@ body {
      font-size: 14px;
 }
 
-}
+/* ul {
+  flex-direction: column; /* Revert to single-column layout on smaller screens */
+} */
+
+/* ul li {
+  width: 100%; /* Make each item take up the full width on small screens */
+ */
+
+
 
 .blue {
     background-color:  #0F4C81;
@@ -196,6 +204,21 @@ body {
 	padding:15px 24px;
 	text-shadow:0px 1px 0px #154682;
 }
+
+
+.two-column-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  padding: 0;
+}
+
+.two-column-list li {
+  flex: 1 1 45%;
+  box-sizing: border-box;
+  margin-bottom: 20px;
+}
+
 
 ul li{
   color: #000;

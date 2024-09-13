@@ -195,7 +195,7 @@
                 </div>
                 <div class="Cell">
                     <button class="modalNVButton" onmousedown="Spinner.show();window.location='/test/{{test['test_id']}}/collect_specimen';disable_button(this)">
-                        Draw Sample
+                        Print Label
                     </button>
                 </div>
             </div>
@@ -273,7 +273,7 @@
                 {% if session.get('user').get('role') in ['Nurse', 'Student']  %}
                     <div class="tab">
                     <h2>Select person who ordered test(s)</h2>
-                    <ul>
+                    <ul class="two-column-list">
                         {% for i in doctors%}
                                 <li>
                                     <input type='radio' id='type-{{i[1]}}' value="{{i[1]}}" required name='ordered_by' >

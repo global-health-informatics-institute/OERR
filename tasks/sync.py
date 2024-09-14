@@ -154,7 +154,7 @@ def connect_to_blis():
 
 
 def log(message):
-    f = open("synchronization.log", "a+")
+    f = open("logs/synchronization.log", "a+")
     f.write("%s \n" % message)
     f.close()
 

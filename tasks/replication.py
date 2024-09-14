@@ -22,23 +22,20 @@ source_url = f"http://{replication_settings['source']['user']}:{replication_sett
 target_url = f"http://{replication_settings['target']['user']}:{replication_settings['target']['password']}@{replication_settings['target']['host']}:{replication_settings['target']['port']}/{replication_settings['target_base_db']['database']}"
 replicator_db_url = f"http://{replication_settings['source']['user']}:{replication_settings['source']['passwd']}@{replication_settings['source']['host']}:{replication_settings['source']['port']}/_replicator"
 
-
-
 create_replicator_db_cmd = ['curl', '-X', 'PUT', replicator_db_url]
 try:
     subprocess.run(create_replicator_db_cmd, check=True, capture_output=True, text=True)
     with open(log_file, 'a') as log:
-        log.write(f"Created replicator database:\n")
+        log.write(f"Created replicator databese:\n")
 except subprocess.CalledProcessError as e:
     with open(log_file, 'a') as log:
         log.write(f"Error creating _replicator database: {e.stderr}\n")
 
-design_id = (replication_settings["source"]["host"]).replace('.', '')
+design_id = (replication_settings["source"]["host"]).replace('.','')
 
 design_doc = {
-    "_id": f"_design/ward_filter_{design_id}",
     "filters": {
-        "ward_filter": f"function(doc, req) {{ var wards = {json.dumps(wards)}; return wards.includes(doc.ward); }}"
+        f"ward_filter_{design_id}": f"function(doc, req) {{ var wards = {json.dumps(wards)}; return wards.includes(doc.ward); }}"
     }
 }
 
@@ -50,6 +47,7 @@ try:
     result = subprocess.run(create_design_doc_cmd, check=True, capture_output=True, text=True)
     with open(log_file, 'a') as log:
         log.write(f"Design document created successfully on the target database\n")
+
 except subprocess.CalledProcessError as e:
     with open(log_file, 'a') as log:
         log.write(f"Error creating design document: {e.stderr}\n")
@@ -58,11 +56,10 @@ def execute_replication(command, log_message):
     try:
         result = subprocess.run(command, check=True, capture_output=True, text=True)
         with open(log_file, 'a') as log:
-            log.write(f"{log_message} - Replication setup: {command}\n")
+            log.write(f"Replication setup:\n")
     except subprocess.CalledProcessError as e:
         with open(log_file, 'a') as log:
             log.write(f"Error: {log_message}\n{e.stderr}\n")
-
 
 source_to_target_cmd = [
     'curl', '-d', json.dumps({
@@ -74,20 +71,20 @@ source_to_target_cmd = [
     }), '-H', 'Content-Type: application/json', '-X', 'POST', replicator_db_url
 ]
 
-
-target_to_source_cmd = [
+target_to_source_cmd =[
     'curl', '-d', json.dumps({
-        "_id": "base-target-to-source",
+        "_id": "target-to-source-filtered",
         "source": target_url,
         "target": source_url,
         "create_target": True,
         "continuous": True,
-        "filter": f"_design/ward_filter_{design_id}/ward_filter"
+        "filter": f"ward_filter_{design_id}/ward_filter_{design_id}"
     }), '-H', 'Content-Type: application/json', '-X', 'POST', replicator_db_url
 ]
 
 execute_replication(source_to_target_cmd, "Setting up replication from source to target")
 execute_replication(target_to_source_cmd, "Setting up filtered replication from target to source")
+
 
 sub_directories = ["_lab_test_panels", "_lab_test_type", "_patients", "_users"]
 
@@ -120,30 +117,3 @@ for suffix in sub_directories:
 
     execute_replication(source_to_target_cmd, f"Replication setup from source to target for {suffix}")
     execute_replication(target_to_source_cmd_ltp, f"Replication setup from target to source for {suffix}")
-
-
-    source_url = f"http://{replication_settings['source']['user']}:{replication_settings['source']['passwd']}@{replication_settings['source']['host']}:{replication_settings['source']['port']}/{replication_settings['source_base_db']['database']}{suffix}"
-
-    target_url = f"http://{replication_settings['target']['user']}:{replication_settings['target']['password']}@{replication_settings['target']['host']}:{replication_settings['target']['port']}/{replication_settings['target_base_db']['database']}{suffix}"
-
-    target_to_source_cmd_ltp = [
-        'curl', '-d', json.dumps({
-            "_id": f"base-target-to-source_{suffix}",
-            "source": target_url,
-            "target": source_url,
-            "create_target": True,
-            "continuous": True,
-        }), '-H', 'Content-Type: application/json', '-X', 'POST', replicator_db_url
-    ]
-    execute_replication(source_to_target_cmd, f"{suffix}")
-
-    source_to_target_cmd = [
-        'curl', '-d', json.dumps({
-            "_id": f"base-source-to-target_{suffix}",
-            "source": source_url,
-            "target": target_url,
-            "create_target": True,
-            "continuous": True
-        }), '-H', 'Content-Type: application/json', '-X', 'POST', replicator_db_url
-    ]
-    execute_replication(target_to_source_cmd, f"{suffix}")

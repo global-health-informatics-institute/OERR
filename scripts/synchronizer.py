@@ -17,7 +17,6 @@ with open(config_file) as json_file:
 global db
 global mysqldb
 
-
 def sync_test_statuses():
     log("Check begun at %s" % datetime.now().strftime("%d/%m/%Y %H:%S"))
     print("Check begun at %s" % datetime.now().strftime("%d/%m/%Y %H:%S"))

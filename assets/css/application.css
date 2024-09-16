@@ -116,6 +116,13 @@ body {
 }
 
 /* Style the tab */
+.mainDiv {
+    margin-top: 0.5vh;
+    margin-bottom: 0.5vh;
+    padding-left:0.5vw;
+    height: 85vh; /* Adjust height as needed */
+    overflow: auto; /* Changed from 'hidden' to 'auto' */
+}
 .maintab {
   width: 96vw;
   overflow: hidden;
@@ -222,7 +229,7 @@ body {
   padding: 10px;
   margin-bottom: 5px;
   cursor: pointer;
-  border-bottom: 1px solid #ddd;
+  /* border-bottom: 1px solid #ddd; */
 }
 
 #doctor-list li:hover {

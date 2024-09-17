@@ -215,10 +215,12 @@ body {
   z-index: 1000; /* Higher z-index to float above other content */
   /* box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Optional: adds shadow for better visibility */
 /* } */ 
-#search-container {
-  position: relative;
-  width: 100%;  /* Adjust width as necessary */
+
+
+.keyboard-visible {
+  margin-top: 200px;  /* Adjust this value based on the keyboard's height */
 }
+
 
 #keyboard {
   display: none;
@@ -229,7 +231,7 @@ body {
   background: white;
   padding: 10px;
   border: 1px solid #ccc;
-  z-index: 1000;  /* High z-index to ensure it appears above other content */
+
   box-shadow: 0 -4px 8px rgba(0,0,0,0.1);  /* Optional shadow for better visibility */
 }
 

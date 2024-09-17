@@ -206,6 +206,17 @@ function updateKeyboardKeys() {
     });
 }
 
+function showKeyboard() {
+    document.getElementById('keyboard').style.display = 'block';
+    document.getElementById('doctor-list').classList.add('keyboard-visible');
+}
+
+// function hideKeyboard() {
+//     document.getElementById('keyboard').style.display = 'none';
+//     document.getElementById('doctor-list').classList.remove('keyboard-visible');
+// }
+
+
 function fixStepIndicator(n) {
     // This function removes the "active" class of all steps...
     var i, x = document.getElementsByClassName("step");

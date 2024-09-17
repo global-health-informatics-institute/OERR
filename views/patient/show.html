@@ -275,9 +275,67 @@
 <div class="tab">
     <h2>Select person who ordered test(s)</h2>
     
-    <!-- Search input field -->
-    <input type="text" id="doctor-search" placeholder="Search..." onkeyup="filterDoctors()">
-    
+    <!-- Container for search input and keyboard -->
+    <div id="search-container" style="position: relative;">
+        <!-- Search input field -->
+        <input type="text" id="doctor-search" placeholder="Search..." onfocus="showKeyboard()" onkeyup="filterDoctors()">
+        <div id="keyboard" style="display: none; position: absolute; top: 100%; left: 0; background: white; padding: 10px; border: 1px solid #ccc; z-index: 1000;">
+            <!-- Number keys -->
+            <div class="keyboard-row">
+                <button onclick="typeKey('1')">1</button>
+                <button onclick="typeKey('2')">2</button>
+                <button onclick="typeKey('3')">3</button>
+                <button onclick="typeKey('4')">4</button>
+                <button onclick="typeKey('5')">5</button>
+                <button onclick="typeKey('6')">6</button>
+                <button onclick="typeKey('7')">7</button>
+                <button onclick="typeKey('8')">8</button>
+                <button onclick="typeKey('9')">9</button>
+                <button onclick="typeKey('0')">0</button>
+                <button onclick="typeKey('Backspace')">backspace</button>
+            </div>
+            <!-- Top row letters -->
+            <div class="keyboard-row">
+                <button onclick="typeKey('q')">q</button>
+                <button onclick="typeKey('w')">w</button>
+                <button onclick="typeKey('e')">e</button>
+                <button onclick="typeKey('r')">r</button>
+                <button onclick="typeKey('t')">t</button>
+                <button onclick="typeKey('y')">y</button>
+                <button onclick="typeKey('u')">u</button>
+                <button onclick="typeKey('i')">i</button>
+                <button onclick="typeKey('o')">o</button>
+                <button onclick="typeKey('p')">p</button>
+            </div>
+            <!-- Second row letters -->
+            <div class="keyboard-row">
+                <button id="caps" onclick="toggleCapsLock()">caps</button>
+                <button onclick="typeKey('a')">a</button>
+                <button onclick="typeKey('s')">s</button>
+                <button onclick="typeKey('d')">d</button>
+                <button onclick="typeKey('f')">f</button>
+                <button onclick="typeKey('g')">g</button>
+                <button onclick="typeKey('h')">h</button>
+                <button onclick="typeKey('j')">j</button>
+                <button onclick="typeKey('k')">k</button>
+                <button onclick="typeKey('l')">l</button>
+            </div>
+            <!-- Third row letters -->
+            <div class="keyboard-row">
+                <button onclick="typeKey('z')">z</button>
+                <button onclick="typeKey('x')">x</button>
+                <button onclick="typeKey('c')">c</button>
+                <button onclick="typeKey('v')">v</button>
+                <button onclick="typeKey('b')">b</button>
+                <button onclick="typeKey('n')">n</button>
+                <button onclick="typeKey('m')">m</button>
+                <button onclick="typeKey(',')">,</button>
+                <button onclick="typeKey('.')">.</button>
+                <button onclick="typeKey(' ')">Space</button>
+            </div>
+        </div>
+    </div>
+
     <!-- The list of doctors -->
     <ul class="two-column-list" id="doctor-list">
         {% for i in doctors %}

@@ -206,6 +206,15 @@ function updateKeyboardKeys() {
     });
 }
 
+function showKeyboard() {
+    document.getElementById('keyboard').style.display = 'block';
+}
+
+function hideKeyboard() {
+    document.getElementById('keyboard').style.display = 'none';
+}
+
+
 function fixStepIndicator(n) {
     // This function removes the "active" class of all steps...
     var i, x = document.getElementsByClassName("step");

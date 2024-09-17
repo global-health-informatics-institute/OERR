@@ -204,22 +204,21 @@ body {
 }
 
 #search-container {
-  position: relative;
-  z-index: 1;
+    position: relative;
+    z-index: 1;
 }
 
 #keyboard {
-  display: none;
-  position: absolute;
-  bottom: 100%; /* positions the keyboard above the input field */
-  left: 0;
-  right: 0;
-  background: white;
-  padding: 10px;
-  border: 1px solid #ccc;
-  z-index: 1000;
-  box-shadow: 0 -4px 8px rgba(0,0,0,0.1);
-  /* Optional: smooth transition for keyboard appearance */
+    display: none;
+    position: absolute;
+    bottom: 100%;  
+    left: 0;
+    right: 0;
+    background: white;
+    padding: 10px;
+    border: 1px solid #ccc;
+    z-index: 1000;
+    box-shadow: 0 -4px 8px rgba(0,0,0,0.1);
 }
 
 

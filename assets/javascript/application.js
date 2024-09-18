@@ -1,3 +1,4 @@
+var isCapsLock = false;
 
 //function to add navigation buttons to footer
 function addNavButtons(){
@@ -135,6 +136,86 @@ function validateForm() {
     }
     return valid; // return the valid status
 }
+
+function filterDoctors() {
+    // Get the search input value
+    var input = document.getElementById('doctor-search');
+    var filter = input.value.toLowerCase();
+    
+    // Get the doctor list
+    var doctorList = document.getElementById('doctor-list');
+    var doctors = doctorList.getElementsByTagName('li');
+
+    // Loop through all list items, and hide those that don't match the search query
+    for (var i = 0; i < doctors.length; i++) {
+        var label = doctors[i].getElementsByTagName("label")[0];
+        if (label) {
+            var txtValue = label.textContent || label.innerText;
+            if (txtValue.toLowerCase().indexOf(filter) > -1) {
+                doctors[i].style.display = "";
+            } else {
+                doctors[i].style.display = "none";
+            }
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    var input = document.getElementById('doctor-search');
+    var keyboard = document.getElementById('keyboard');
+
+    input.addEventListener('focus', function () {
+        keyboard.style.display = 'block';
+    });
+
+    document.addEventListener('click', function (event) {
+        // Check if the click is outside of the input and keyboard
+        if (!input.contains(event.target) && !keyboard.contains(event.target)) {
+            keyboard.style.display = 'none';
+        }
+    });
+});
+
+function typeKey(key) {
+    var input = document.getElementById('doctor-search');
+    if (key === 'Backspace') {
+        input.value = input.value.slice(0, -1); // Remove last character
+    } else {
+        input.value += isCapsLock && key.length === 1 ? key.toUpperCase() : key;
+    }
+    // Trigger the filter function after typing
+    filterDoctors();
+    input.focus(); // Maintain focus on the input after typing
+}
+
+function toggleCapsLock() {
+    isCapsLock = !isCapsLock;
+    updateKeyboardKeys();
+    var capsButton = document.getElementById('caps');
+    capsButton.classList.toggle('active'); // Toggle the active class on the Caps button
+    document.getElementById('doctor-search').focus();
+}
+
+
+function updateKeyboardKeys() {
+    var keys = document.querySelectorAll('#keyboard button');
+    keys.forEach(function(key) {
+        if (key.textContent.length === 1) { // Check if the button is a single character key
+            key.textContent = isCapsLock ? key.textContent.toUpperCase() : key.textContent.toLowerCase();
+        }
+    });
+}
+
+function showKeyboard() {
+    document.getElementById('keyboard').style.display = 'block';
+    document.getElementById('doctor-list').classList.add('keyboard-visible');
+}
+
+// function hideKeyboard() {
+//     document.getElementById('keyboard').style.display = 'none';
+//     document.getElementById('doctor-list').classList.remove('keyboard-visible');
+// }
+
 
 function fixStepIndicator(n) {
     // This function removes the "active" class of all steps...

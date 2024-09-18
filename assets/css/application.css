@@ -225,7 +225,7 @@ body {
 #keyboard {
   display: none;
   position: absolute;
-  bottom: 100%;  /* Positions the keyboard directly above the search bar */
+   /* Positions the keyboard directly above the search bar */
   left: 0;
   width: 100%;  /* Ensures the keyboard spans the width of the container */
   background: white;

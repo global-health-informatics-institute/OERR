@@ -211,11 +211,26 @@ function showKeyboard() {
     document.getElementById('doctor-list').classList.add('keyboard-visible');
 }
 
-// function hideKeyboard() {
-//     document.getElementById('keyboard').style.display = 'none';
-//     document.getElementById('doctor-list').classList.remove('keyboard-visible');
-// }
+function hideKeyboard() {
+    document.getElementById('keyboard').style.display = 'none';
+    document.getElementById('doctor-list').classList.remove('keyboard-visible');
+}
 
+// Detect clicks outside the keyboard and search bar to hide the keyboard
+document.addEventListener('click', function(event) {
+    var keyboard = document.getElementById('keyboard');
+    var searchInput = document.getElementById('doctor-search');
+
+    // If click is outside the search bar and keyboard, hide the keyboard
+    if (!keyboard.contains(event.target) && !searchInput.contains(event.target)) {
+        hideKeyboard();
+    }
+});
+
+// Keep the keyboard open when clicking inside the search bar
+document.getElementById('doctor-search').addEventListener('focus', function() {
+    showKeyboard();
+});
 
 function fixStepIndicator(n) {
     // This function removes the "active" class of all steps...

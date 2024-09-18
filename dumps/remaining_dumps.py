@@ -2,7 +2,7 @@ import json
 import requests
 import logging
 from tqdm import tqdm
-
+# choose json file and database
 json_file_path = "users.json"
 db_url = "http://localhost:5984"
 db_name = "oerr_users"

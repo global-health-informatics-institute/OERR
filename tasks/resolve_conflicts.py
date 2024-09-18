@@ -1,11 +1,24 @@
+import json
 import requests
 import logging
 from tqdm import tqdm
-from config import DB, username, password
+import time
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+basis_file = "config/basis.config"
+
+
+with open(basis_file) as json_file:
+    basis_settings = json.load(json_file)
+url = f"http://{basis_settings['couch']['host']}:{basis_settings['couch']['port']}"
+DB = f"{url}/{basis_settings['couch']['database']}"
+username = f"{basis_settings['couch']['user']}"
+password = f"{basis_settings['couch']['passwd']}"
+
+
 
 def read1(id):
     """Read a document from the database, returning all revisions if there are conflicts."""
@@ -80,4 +93,6 @@ def resolve_conflicts():
     logger.info("Conflict resolution process completed.")
 
 if __name__ == "__main__":
-    resolve_conflicts()
+    while 1:
+        resolve_conflicts()
+        time.sleep(60)

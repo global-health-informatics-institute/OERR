@@ -1,19 +1,32 @@
+import json
 import requests
 from requests.auth import HTTPBasicAuth
-from config import url, username, password
 from datetime import datetime, timedelta
 import logging
 from tqdm import tqdm
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
+basis_file = "config/basis.config"
+
+
+with open(basis_file) as json_file:
+    basis_settings = json.load(json_file)
+url = f"http://{basis_settings['couch']['host']}:{basis_settings['couch']['port']}"
+DB = f"{url}/{basis_settings['couch']['database']}"
+username = f"{basis_settings['couch']['user']}"
+password = f"{basis_settings['couch']['passwd']}"
+database = f"{basis_settings['couch']['database']}"
+
+
+
 DB_BASE = f"{url}/"
-DB = f"{url}/oerr"
+DB = f"{url}/{database}"
 
 # CodeA_Helper
 def ensure_database_exists(database_name):
-    if database_name != "oerr":
-        database_name = f"oerr_{database_name}"
+    if database_name != f"{database}":
+        database_name = f"{database}_{database_name}"
 
     address = f"{DB_BASE}{database_name}"
 
@@ -40,7 +53,7 @@ def ensure_database_exists(database_name):
 
 # CodeA
 def initialize_setup():
-    db_list = ["oerr", "active"]
+    db_list = [f"{database}", "active"]
     for db in db_list:
         ensure_database_exists(db)
 
@@ -83,7 +96,7 @@ def filter_entries():
     active_documents = []
     archive_documents = []
     
-    eight_days_ago = datetime.now() - timedelta(days=0)
+    eight_days_ago = datetime.now() - timedelta(days=8)
 
     for doc in tqdm(documents, desc="Filtering entries", unit="doc"):
         date_ordered_timestamp = doc.get('date_ordered')
@@ -102,7 +115,7 @@ def update_patient_records(archive_documents):
     """
     Update the patient records to mark them as archived.
     """
-    patient_db_base_url = f"{DB_BASE}oerr_patients/"
+    patient_db_base_url = f"{DB_BASE}{database}_patients/"
 
     for doc in tqdm(archive_documents, desc="Updating patient status", unit="doc"):
         patient_id = doc.get('patient_id')
@@ -141,7 +154,7 @@ def save_active_entries(active_documents):
         logging.info("No active documents to save.")
         return
 
-    active_db = f"{DB_BASE}oerr_active"
+    active_db = f"{DB_BASE}{database}_active"
     
     if not ensure_database_exists("active"):
         logging.error("Failed to ensure 'oerr_active' database exists.")
@@ -189,8 +202,8 @@ def house_keeping_please(db_name):
 # codeF
 def exodus():
     # Set up the source and target databases
-    source_db = f"{DB_BASE}oerr_active"
-    target_db = f"{DB_BASE}oerr"
+    source_db = f"{DB_BASE}{database}_active"
+    target_db = f"{DB_BASE}{database}"
     batch_size = 9000
     last_key = None
 
@@ -202,7 +215,7 @@ def exodus():
 
         response = requests.get(url, auth=HTTPBasicAuth(username, password))
         if response.status_code != 200:
-            logging.error(f"Error fetching documents from 'oerr_active': {response.status_code} - {response.text}")
+            logging.error(f"Error fetching documents from '{database}_active': {response.status_code} - {response.text}")
             break
 
         data = response.json()
@@ -229,10 +242,10 @@ def exodus():
                 save_response = requests.put(save_url, json=doc, auth=HTTPBasicAuth(username, password))
 
                 if save_response.status_code not in [200, 201]:
-                    logging.error(f"Failed to save document '{doc_id}' to 'oerr': {save_response.status_code} - {save_response.text}")
+                    logging.error(f"Failed to save document '{doc_id}' to '{database}': {save_response.status_code} - {save_response.text}")
             
             except requests.exceptions.RequestException as e:
-                logging.error(f"Error occurred while saving document '{doc_id}' to 'oerr': {str(e)}")
+                logging.error(f"Error occurred while saving document '{doc_id}' to '{database}': {str(e)}")
 
         last_key = f'"{rows[-1]["id"]}"'
 
@@ -245,7 +258,7 @@ if __name__ == "__main__":
     active_docs, archive_docs = filter_entries()
     update_patient_records(archive_docs)
     save_active_entries(active_docs)
-    house_keeping_please("oerr")
-    ensure_database_exists("oerr")
+    house_keeping_please(f"{database}")
+    ensure_database_exists(f"{database}")
     exodus()
-    house_keeping_please("oerr_active")
+    house_keeping_please(f"{database}_active")

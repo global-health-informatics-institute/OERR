@@ -416,9 +416,9 @@ if __name__ == "__main__":
     logger.error(f"Errors Updating docs: {error_update}")
     logger.error(f"Errors - Misc: {error_misc}")
     logger.info(f"Database_created: {database}")
+    print("\n\nSetting up replication now...")
 
     # Print all buffered log messages at the end
     print(log_buffer.getvalue())
     time.sleep(10)
-    print("\n\nSetting up replication now...")
     lazarous()

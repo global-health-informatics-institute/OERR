@@ -28,4 +28,9 @@
    curl -X PUT http://admin:sinthaMW@127.0.0.1:5984/mss_results_new/1 \
     -H "Content-Type: application/json" \
     -d '{"ward": "other"}'
-   ```    
+   ```
+
+1. get _replication docs 
+   ```bash
+   curl http://admin:sinthaMW@127.0.0.1:5984/_replicator/_all_docs?include_docs=true | jq
+   ```

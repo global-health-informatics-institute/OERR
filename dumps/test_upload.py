@@ -60,6 +60,4 @@ logger.info(f"Documents added: {new_docs}")
 logger.info(f"Documents updated: {updates}")
 logger.warning(f"Documents skipped: {conflicts}")
 logger.info("Upload complete.")
-
-
 print(log_buffer.getvalue())

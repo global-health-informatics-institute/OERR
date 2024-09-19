@@ -1,424 +1,241 @@
-import io
 import json
-import requests
-from requests.auth import HTTPBasicAuth
-from datetime import datetime, timedelta
 import time
-import logging
-from tqdm import tqdm
+import mysql.connector
+from couchdb import Server
+from datetime import datetime, timedelta
+from models.laboratory_test_type import LaboratoryTestType
+from models.laboratory_test_panel import LaboratoryTestPanel
 
-# Global error counter
-log_buffer = io.StringIO()
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s', handlers=[logging.StreamHandler(log_buffer)])
-logger = logging.getLogger(__name__)
+test_statuses = {1: "Specimen Received", 2: "Specimen Received", 3: "Being Analyzed", 4: "Pending Verification",
+                 5: "Analysis Complete", 6: "Not Done", 7: "Not Done", 8: "Rejected"}
 
-basis_file = "config/basis.config"
+# loadig the json file
+config_file = "config/application.config"
+settings = {}
+with open(config_file) as json_file:
+    settings = json.load(json_file)
 
-with open(basis_file) as json_file:
-    basis_settings = json.load(json_file)
+global db
+global mysqldb
 
-url = f"http://{basis_settings['couch']['host']}:{basis_settings['couch']['port']}"
-DB = f"{url}/{basis_settings['couch']['database']}"
-username = f"{basis_settings['couch']['user']}"
-password = f"{basis_settings['couch']['passwd']}"
-database = f"{basis_settings['couch']['database']}"
 
-DB_BASE = f"{url}/"
-DB = f"{url}/{database}"
+def sync_test_statuses():
+    log("Check begun at %s" % datetime.now().strftime("%d/%m/%Y %H:%S"))
+    print("Check begun at %s" % datetime.now().strftime("%d/%m/%Y %H:%S"))
 
-# Function to ensure the database exists
-def ensure_database_exists(database_name):
-    if database_name != f"{database}":
-        database_name = f"{database}_{database_name}"
+    # Connect to MySQL database at the start of the synchronization process
+    connect_to_blis()
 
-    address = f"{DB_BASE}{database_name}"
-
-    try:
-        response = requests.get(address, auth=HTTPBasicAuth(username, password))
-
-        if response.status_code == 404:
-            create_db_response = requests.put(address, auth=HTTPBasicAuth(username, password))
-
-            if create_db_response.status_code == 201:
-                logger.info(f"Database '{database_name}' created successfully.")
-            else:
-                logger.error(f"Failed to create database '{database_name}': {create_db_response.status_code} - {create_db_response.text}")
-        elif response.status_code == 200:
-            logger.info(f"Database '{database_name}' already exists.")
-        else:
-            logger.error(f"Error connecting to the database '{database_name}': {response.status_code} - {response.text}")
-
-    except requests.exceptions.RequestException as e:
-        logger.error(f"An error occurred while connecting to '{database_name}': {str(e)}")
-        return False
-    
-    return True
-
-# Initialize setup
-def initialize_setup():
-    db_list = [f"{database}", "active"]
-    for db in db_list:
-        ensure_database_exists(db)
-
-# Fetch entries from the database
-def fetch_entries(batch_size=9000):
-    all_docs_url = f"{DB}/_all_docs?include_docs=true&limit={batch_size}"
-    last_key = None
-    all_documents = []
-
-    while True:
-        url = all_docs_url
-        if last_key:
-            url += f"&startkey={last_key}"
-
-        response = requests.get(url, auth=HTTPBasicAuth(username, password))
-        if response.status_code == 200:
-            data = response.json()
-            rows = data.get('rows', [])
-            documents = [row['doc'] for row in rows]
-            all_documents.extend(documents)
-
-            if len(rows) < batch_size:
-                break
-
-            last_key = f'"{rows[-1]["id"]}"'
-
-        else:
-            logger.error(f"Error fetching documents: {response.status_code} - {response.text}")
-            break
-
-    return all_documents
-
-# Filter entries into active and archive lists
-def filter_entries():
-    documents = fetch_entries()
-    if not documents:
-        logger.warning("No documents found.")
-        return [], []
-
-    active_documents = []
-    archive_documents = []
-    
-    eight_days_ago = datetime.now() - timedelta(days=8)
-
-    for doc in tqdm(documents, desc="Filtering entries", unit="doc"):
-        date_ordered_timestamp = doc.get('date_ordered')
-        if date_ordered_timestamp:
-            date_ordered = datetime.fromtimestamp(date_ordered_timestamp)
-
-            if date_ordered > eight_days_ago:
-                active_documents.append(doc)
-            else:
-                archive_documents.append(doc)
-
-    return active_documents, archive_documents
-
-# Update patient records and increment error count on failures
-def update_patient_records(archive_documents):
-    global error_misc, error_fetch, error_update, patient_update
-    patient_db_base_url = f"{DB_BASE}{database}_patients/"
-
-    patient_update = 0
-    error_update = 0
-    error_fetch = 0
-    error_misc = 0
-
-    for doc in tqdm(archive_documents, desc="Updating patient status", unit="doc"):
-        patient_id = doc.get('patient_id')
-        if not patient_id:
-            logger.warning(f"No patient ID found for document: {doc.get('_id')}")
-            error_misc += 1
-            continue
-
-        patient_url = f"{patient_db_base_url}{patient_id}"
-        
-        try:
-            response = requests.get(patient_url, auth=HTTPBasicAuth(username, password))
-
-            if response.status_code == 200:
-                patient_doc = response.json()
-                patient_doc["archived"] = True 
-
-                save_response = requests.put(patient_url, json=patient_doc, auth=HTTPBasicAuth(username, password))
-
-                if save_response.status_code in [200, 201]:
-                    logger.info(f"Patient '{patient_id}' updated successfully.")
-                    patient_update += 1
-                else:
-                    logger.error(f"Failed to update patient '{patient_id}': {save_response.status_code} - {save_response.text}")
-                    error_update += 1
-
-            else:
-                # logger.error(f"Failed to fetch patient '{patient_id}': {response.status_code} - {response.text}")
-                error_fetch += 1
-
-        except requests.exceptions.RequestException as e:
-            logger.error(f"Error occurred while updating patient '{patient_id}': {str(e)}")
-            error_update += 1
-
-    return patient_update
-
-# Save active documents and increment error count on failures
-def save_active_entries(active_documents):
-    global error_misc
-    if not active_documents:
-        logger.info("No active documents to save.")
-        return
-
-    active_db = f"{DB_BASE}{database}_active"
-    
-    if not ensure_database_exists("active"):
-        logger.error("Failed to ensure 'active' database exists.")
-        error_misc += 1
-        return
-    
-    for doc in tqdm(active_documents, desc="Saving active entries", unit="doc"):
-        if '_rev' in doc:
-            del doc['_rev']
-        
-        doc_id = doc.get('_id')
-        if not doc_id:
-            logger.warning(f"Document without '_id' found: {doc}")
-            error_misc += 1
-            continue
-
-        save_url = f"{active_db}/{doc_id}"
-
-        try:
-            response = requests.put(save_url, json=doc, auth=HTTPBasicAuth(username, password))
-
-            if response.status_code in [200, 201]:
-                logger.info(f"Document '{doc_id}' saved successfully.")
-            else:
-                logger.error(f"Failed to save document '{doc_id}': {response.status_code} - {response.text}")
-                error_count += 1
-        
-        except requests.exceptions.RequestException as e:
-            logger.error(f"Error occurred while saving document '{doc_id}': {str(e)}")
-            error_misc += 1
-
-# Housekeeping function to delete databases
-def house_keeping_please(db_name):
-    global error_misc
-    drop_db_url = f"{DB_BASE}{db_name}"
-
-    try:
-        response = requests.delete(drop_db_url, auth=HTTPBasicAuth(username, password))
-
-        if response.status_code == 200:
-            logger.info(f"Database {db_name} deleted successfully.")
-        elif response.status_code == 404:
-            logger.warning(f"Database {db_name} not found.")
-        else:
-            logger.error(f"Failed to delete database {db_name}: {response.status_code} - {response.text}")
-            error_misc += 1
-
-    except requests.exceptions.RequestException as e:
-        logger.error(f"Error occurred while deleting the {db_name} database: {str(e)}")
-        error_misc += 1
-
-# migration
-def exodus():
-    global error_misc, error_fetch
-    source_db = f"{DB_BASE}{database}_active"
-    target_db = f"{DB_BASE}{database}"
-    batch_size = 9000
-    last_key = None
-
-    while True:
-        url = f"{source_db}/_all_docs?include_docs=true&limit={batch_size}"
-        if last_key:
-            url += f"&startkey={last_key}"
-
-        response = requests.get(url, auth=HTTPBasicAuth(username, password))
-        if response.status_code != 200:
-            logger.error(f"Error fetching documents from '{database}_active': {response.status_code} - {response.text}")
-            error_fetch += 1
-            break
-
-        data = response.json()
-        rows = data.get('rows', [])
-        if not rows:
-            break
-
-        for row in tqdm(rows, desc="Exodus process", unit="doc"):
-            doc = row.get('doc')
-            if not doc:
-                continue
-
-            if '_rev' in doc:
-                del doc['_rev']
-
-            doc_id = doc.get('_id')
-            if not doc_id:
-                logger.warning(f"Document without '_id' found: {doc}")
-                error_count += 1
-                continue
-
-            save_url = f"{target_db}/{doc_id}"
-
+    pending_tests = list(get_pending_tests())  # Convert the map object to a list
+    for test in pending_tests:
+        updated_test = process_test(test)
+        if updated_test is not None:
             try:
-                save_response = requests.put(save_url, json=doc, auth=HTTPBasicAuth(username, password))
+                db.save(updated_test)
+            except:
+                pass
 
-                if save_response.status_code not in [200, 201]:
-                    logger.error(f"Failed to save document '{doc_id}' to '{database}': {save_response.status_code} - {save_response.text}")
-                    error_misc += 1
-            
-            except requests.exceptions.RequestException as e:
-                logger.error(f"Error occurred while saving document '{doc_id}' to '{database}': {str(e)}")
-                error_misc += 1
-
-        last_key = f'"{rows[-1]["id"]}"' if rows else None
-        if len(rows) < batch_size:
-            break
-    
-# satrt replication
-def lazarous():
-    import json
-    import subprocess
-
-    replications_file = "config/replications.config"
-    ward_file = "config/department.config"
-    log_file = "logs/replication_errors.log"
-
-    with open(replications_file) as json_file:
-        replication_settings = json.load(json_file)
-
-    with open(ward_file) as json_file:
-        wards_data = json.load(json_file)
-
-    department_name = replication_settings["specific_department"]["department"]
-    wards = []
-    for department in wards_data["departments"]:
-        if department["name"] == department_name:
-            wards = department["wards"]
-            break
-
-    source_url = f"http://{replication_settings['source']['user']}:{replication_settings['source']['passwd']}@{replication_settings['source']['host']}:{replication_settings['source']['port']}/{replication_settings['source_base_db']['database']}"
-    target_url = f"http://{replication_settings['target']['user']}:{replication_settings['target']['password']}@{replication_settings['target']['host']}:{replication_settings['target']['port']}/{replication_settings['target_base_db']['database']}"
-    replicator_db_url = f"http://{replication_settings['source']['user']}:{replication_settings['source']['passwd']}@{replication_settings['source']['host']}:{replication_settings['source']['port']}/_replicator"
-
-    create_replicator_db_cmd = ['curl', '-X', 'PUT', replicator_db_url]
-    try:
-        subprocess.run(create_replicator_db_cmd, check=True, capture_output=True, text=True)
-        with open(log_file, 'a') as log:
-            log.write(f"Created replicator databese:\n")
-    except subprocess.CalledProcessError as e:
-        with open(log_file, 'a') as log:
-            log.write(f"Error creating _replicator database: {e.stderr}\n")
-
-    design_id = (replication_settings["source"]["host"]).replace('.','')
-
-    design_doc = {
-        "filters": {
-            f"ward_filter_{design_id}": f"function(doc, req) {{ var wards = {json.dumps(wards)}; return wards.includes(doc.ward); }}"
-        }
-    }
-
-    create_design_doc_cmd = [
-        'curl', '-d', json.dumps(design_doc), '-H', 'Content-Type: application/json',
-        '-X', 'PUT', f"{target_url}/_design/ward_filter_{design_id}"
-    ]
-    try:
-        result = subprocess.run(create_design_doc_cmd, check=True, capture_output=True, text=True)
-        with open(log_file, 'a') as log:
-            log.write(f"Design document created successfully on the target database\n")
-
-    except subprocess.CalledProcessError as e:
-        with open(log_file, 'a') as log:
-            log.write(f"Error creating design document: {e.stderr}\n")
-
-    def execute_replication(command, log_message):
+    pending_panels = list(get_pending_panels())  # Convert the map object to a list
+    for panel in pending_panels:
+        processed_panel = process_panel(panel)
         try:
-            result = subprocess.run(command, check=True, capture_output=True, text=True)
-            with open(log_file, 'a') as log:
-                log.write(f"Replication setup:\n")
-        except subprocess.CalledProcessError as e:
-            with open(log_file, 'a') as log:
-                log.write(f"Error: {log_message}\n{e.stderr}\n")
+            db.save(processed_panel)
+        except:
+            pass
 
-    source_to_target_cmd = [
-        'curl', '-d', json.dumps({
-            "_id": "base-source-to-target",
-            "source": source_url,
-            "target": target_url,
-            "create_target": True,
-            "continuous": True
-        }), '-H', 'Content-Type: application/json', '-X', 'POST', replicator_db_url
-    ]
-
-    target_to_source_cmd =[
-        'curl', '-d', json.dumps({
-            "_id": "target-to-source-filtered",
-            "source": target_url,
-            "target": source_url,
-            "create_target": True,
-            "continuous": True,
-            "filter": f"ward_filter_{design_id}/ward_filter_{design_id}"
-        }), '-H', 'Content-Type: application/json', '-X', 'POST', replicator_db_url
-    ]
-
-    execute_replication(source_to_target_cmd, "Setting up replication from source to target")
-    execute_replication(target_to_source_cmd, "Setting up filtered replication from target to source")
+    log("Check concluded at %s" % datetime.now().strftime("%d/%m/%Y %H:%S"))
+    print("Check concluded at %s" % datetime.now().strftime("%d/%m/%Y %H:%S"))
 
 
-    sub_directories = ["_lab_test_panels", "_lab_test_type", "_patients", "_users"]
-
-    for suffix in sub_directories:
-        source_suffix_url = f"{replication_settings['source_base_db']['database']}{suffix}"
-        target_suffix_url = f"{replication_settings['target_base_db']['database']}{suffix}"
-        
-        source_url = f"http://{replication_settings['source']['user']}:{replication_settings['source']['passwd']}@{replication_settings['source']['host']}:{replication_settings['source']['port']}/{source_suffix_url}"
-        target_url = f"http://{replication_settings['target']['user']}:{replication_settings['target']['password']}@{replication_settings['target']['host']}:{replication_settings['target']['port']}/{target_suffix_url}"
-
-        source_to_target_cmd = [
-            'curl', '-d', json.dumps({
-                "_id": f"base-source-to-target_{suffix}",
-                "source": source_url,
-                "target": target_url,
-                "create_target": True,
-                "continuous": True
-            }), '-H', 'Content-Type: application/json', '-X', 'POST', replicator_db_url
-        ]
-        
-        target_to_source_cmd_ltp = [
-            'curl', '-d', json.dumps({
-                "_id": f"base-target-to-source_{suffix}",
-                "source": target_url,
-                "target": source_url,
-                "create_target": True,
-                "continuous": True,
-            }), '-H', 'Content-Type: application/json', '-X', 'POST', replicator_db_url
-        ]
-
-        execute_replication(source_to_target_cmd, f"Replication setup from source to target for {suffix}")
-        execute_replication(target_to_source_cmd_ltp, f"Replication setup from target to source for {suffix}")
+def get_pending_tests():
+    tests = db.find({
+            "selector": {
+                "type": "test",
+                "status": {"$in": ["Ordered", "Specimen Collected", "Specimen Received", "Being Analyzed",
+                                   "Pending Verification"]}}, "limit": 1000
+    })
+    return tests
 
 
-# Log final results
-if __name__ == "__main__":
-    initialize_setup()
-    active_docs, archive_docs = filter_entries()
-    patient_update = update_patient_records(archive_docs)
-    save_active_entries(active_docs)
-    house_keeping_please(f"{database}")
-    ensure_database_exists(f"{database}")
-    exodus()
-    house_keeping_please(f"{database}_active")
-    house_keeping_please("_replicator")
+def get_pending_panels():
+    return db.find({
+            "selector": {
+                "type": "test panel",
+                "status": {"$in": ["Ordered", "Specimen Collected", "Specimen Received", "Being Analyzed",
+                                   "Pending Verification"]}
+            }, "limit": 1000})
 
-    # Log final messages with document and error counts
-    logger.info(f"Documents Updated patient: {patient_update}")
-    logger.warning(f"Error: None" if patient_update else f"Error: No updates")
-    logger.info(f"Active Documents count: {len(active_docs)}")
-    logger.info(f"Old Documents count: {len(archive_docs)}")
-    logger.error(f"Errors Fetching docs: {error_fetch}")
-    logger.error(f"Errors Updating docs: {error_update}")
-    logger.error(f"Errors - Misc: {error_misc}")
-    logger.info(f"Database_created: {database}")
-    print("\n\nSetting up replication now...")
 
-    # Print all buffered log messages at the end
-    print(log_buffer.getvalue())
-    time.sleep(10)
-    lazarous()
+def get_patient_id(npid):
+    # Get patient id from blis
+
+    cursor = mysqldb.cursor()
+    cursor.execute("SELECT id FROM patients where external_patient_number = '%s' order by id desc LIMIT 1" % npid)
+    patient_records = cursor.fetchone()
+    if patient_records is None:
+        return None
+    else:
+        return patient_records[0]
+
+
+def get_patient_test(patient_id, test_type_id, ordered_by, ordered_on):
+    my_cursor = mysqldb.cursor()
+    query = "SELECT id, test_status_id,not_done_reasons,specimen_id from tests where test_type_id = "+test_type_id+\
+            " and requested_by = '"+ordered_by + "' and visit_id in (select id from visits where patient_id = "+\
+            str(patient_id)+" and created_at between '"+\
+            (datetime.fromtimestamp(float(ordered_on)) - timedelta(hours=2)).strftime("%Y-%m-%d %H:%M")+"' and now()) order by id desc LIMIT 1"
+    my_cursor.execute(query)
+    my_test = my_cursor.fetchone()
+    if my_test is None:
+        return None
+    else:
+        return my_test
+
+
+def get_test(test_id):
+    my_cursor = mysqldb.cursor()
+    query = "SELECT id, test_status_id,not_done_reasons,specimen_id from tests where id = %s" % test_id
+    my_cursor.execute(query)
+    my_test = my_cursor.fetchone()
+    if my_test is None:
+        return None
+    else:
+        return my_test
+
+
+def update_test_status(test, test_details):
+    # Test has different state? update status
+    old_test = test
+    test["status"] = test_statuses[test_details[1]]
+
+    if test_details[1] == 7:
+        # Test not done
+        mycursor = mysqldb.cursor()
+        mycursor.execute("SELECT reason from not_done_reasons where id = %s" % test_details[2])
+        reason= mycursor.fetchone()
+        test["rejection_reason"] = reason[0]
+    elif test_details[1] == 8:
+        # test rejected
+        mycursor = mysqldb.cursor()
+        mycursor.execute("SELECT reason from rejection_reasons WHERE id = " +
+                         "(select rejection_reason_id from specimens where id = %s)" % test_details[3])
+        reason= mycursor.fetchone()
+        test["rejection_reason"] = reason[0]
+    elif test_statuses[test_details[1]] == "Analysis Complete":
+        # test authorized? yes, get results
+        test["measures"] = {}
+        mycursor = mysqldb.cursor()
+        mycursor.execute("SELECT (SELECT `name` FROM measures where id = measure_id) as measure, result " +
+                         "FROM test_results where test_id = %s" % test_details[0])
+        measures= mycursor.fetchall()
+        for measure in measures:
+            test["measures"][measure[0]] = measure[1]
+
+    return test
+
+
+def connect_to_couch():
+    couchConnection = Server("http://%s:%s@%s:%s/" % (settings["couch"]["user"], settings["couch"]["passwd"],
+                                                      settings["couch"]["host"], settings["couch"]["port"]))
+    # Connect to a database or Create a Database
+    global db
+    try:
+       db = couchConnection[settings["couch"]["database"]]
+    except:
+       db = couchConnection.create(settings["couch"]["database"])
+
+
+def connect_to_blis():
+    global mysqldb
+    mysqldb = mysql.connector.connect(host=settings["iblis"]["host"], user=settings["iblis"]["user"],
+                                      passwd=settings["iblis"]["password"], database=settings["iblis"]["database"])
+
+
+def log(message):
+    f = open("logs/synchronization.log", "a+")
+    f.write("%s \n" % message)
+    f.close()
+
+
+def process_test(test):
+    if test.get("lims_id") is None:
+        # get patient_id in lims
+        patient_id = get_patient_id(test["patient_id"])
+
+        if patient_id is None:
+            log("Couldn't find patient with id %s" % test["patient_id"])
+            return None
+        else:
+            # get last test for patient with that id.
+            test_details = get_patient_test(patient_id,test.get("test_type"),test.get("ordered_by"),
+                                            test.get("date_ordered"))
+
+            if test_details is None:
+                log("Couldn't find test for patient with id %s and test type %s ordered on %s" %
+                    (test["patient_id"], test.get("test_type"),
+                     datetime.fromtimestamp(float(test.get('date_ordered'))).strftime('%d %b %Y %H:%S')))
+                return None
+            else:
+                test["lims_id"] = test_details[0]
+    else:
+        # if test has lims id
+        test_details = get_test(test.get("lims_id"))
+
+    if test_details is None:
+            log("Couldn't find test for patient with id %s and test id %s" % (test["patient_id"], test.get("lims_id")))
+            return
+    else:
+        if test.get("status") != test_statuses[test_details[1]]:
+            updated_test = update_test_status(test, test_details)
+            return updated_test
+
+
+def process_panel(panel):
+    patient_id = None
+
+    if not panel.get("tests").keys():
+        panel_details = LaboratoryTestPanel.get(panel["panel_type"])
+        if panel_details is not None:
+            for test_in_panel in panel_details.tests:
+                panel['tests'][LaboratoryTestType.get(test_in_panel).test_type_id] = {}
+
+    for test_type_id in panel.get("tests").keys():
+        test = panel.get("tests")[test_type_id]
+        test_details = None
+        if test.get("lims_id") is None:
+            # get patient_id in lims
+            if patient_id is None:
+                result = get_patient_id(panel["patient_id"])
+                if result is None:
+                    log("Couldn't find patient with id %s" % panel["patient_id"])
+                    return panel
+                patient_id = result
+
+            # get last test for patient with that id
+            test_details = get_patient_test(patient_id,test_type_id,panel.get("ordered_by"), panel.get("date_ordered"))
+        else:
+            # if test has lims id
+            test_details = get_test(test.get("lims_id"))
+
+        if test_details is None:
+            log("Couldn't find test for patient with id %s and panel test type %s ordered on %s" %
+                (panel["patient_id"], test_type_id, panel.get("date_ordered")))
+        else:
+            print("Found test for patient with id %s and panel test type %s ordered on %s" %
+                  (panel["patient_id"], test_type_id, panel.get("date_ordered")))
+            if test.get("lims_id") is None:
+                test["lims_id"] = test_details[0]
+
+            if test.get("status") is None or test.get("status") != test_statuses[test_details[1]]:
+                updated_test = update_test_status(test, test_details)
+                panel["tests"][test_type_id] = updated_test
+                if panel["status"] != "Analysis Complete":
+                    panel["status"] = test.get("status")
+    return panel
+
+
+if __name__ == '__main__':
+
+    connect_to_couch()
+    sync_test_statuses()
+

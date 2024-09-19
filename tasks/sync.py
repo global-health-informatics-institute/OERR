@@ -1,4 +1,5 @@
 import json
+import time
 import mysql.connector
 from couchdb import Server
 from datetime import datetime, timedelta
@@ -237,6 +238,8 @@ def process_panel(panel):
 
 
 if __name__ == '__main__':
-    connect_to_couch()
-    sync_test_statuses()
+    while 1:
+        connect_to_couch()
+        sync_test_statuses()
+        time.sleep(300)
 

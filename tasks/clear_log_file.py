@@ -27,11 +27,4 @@ def clear_log_file(file_path, file_path2, file_path3):
         logging.error(f"Error while clearing logs: {e}")
 
 
-try:
-    while True:
-        clear_log_file(log_file, log_file2, log_file3)
-        time.sleep(43200)  # half a day
-except KeyboardInterrupt:
-    print("Stopping the log clearing process...")
-except Exception as e:
-    logging.error(f"Unexpected error: {e}")
+clear_log_file(log_file, log_file2, log_file3)

@@ -23,12 +23,10 @@ def sync_test_statuses():
     log("Check begun at %s" % datetime.now().strftime("%d/%m/%Y %H:%S"))
     print("Check begun at %s" % datetime.now().strftime("%d/%m/%Y %H:%S"))
 
+    # Connect to MySQL database at the start of the synchronization process
+    connect_to_blis()
+
     pending_tests = list(get_pending_tests())  # Convert the map object to a list
-
-    # Have items that need updating
-    if len(pending_tests) > 0:
-        connect_to_blis()
-
     for test in pending_tests:
         updated_test = process_test(test)
         if updated_test is not None:
@@ -38,7 +36,6 @@ def sync_test_statuses():
                 pass
 
     pending_panels = list(get_pending_panels())  # Convert the map object to a list
-
     for panel in pending_panels:
         processed_panel = process_panel(panel)
         try:
@@ -48,7 +45,6 @@ def sync_test_statuses():
 
     log("Check concluded at %s" % datetime.now().strftime("%d/%m/%Y %H:%S"))
     print("Check concluded at %s" % datetime.now().strftime("%d/%m/%Y %H:%S"))
-
 
 def get_pending_tests():
     tests = db.find({
@@ -238,8 +234,7 @@ def process_panel(panel):
 
 
 if __name__ == '__main__':
-    while 1:
-        connect_to_couch()
-        sync_test_statuses()
-        time.sleep(300)
+
+    connect_to_couch()
+    sync_test_statuses()
 

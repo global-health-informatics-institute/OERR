@@ -124,6 +124,6 @@ dmypy.json
 
 cython_debug/
 
-!logs/*
+logs/*
 
 config/*

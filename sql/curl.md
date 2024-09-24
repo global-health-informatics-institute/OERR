@@ -25,7 +25,7 @@
 
 1. add a doc with id 2 and a field "ward":"other"
    ```bash
-   curl -X PUT http://admin:sinthaMW@127.0.0.1:5984/mss_results_new/1 \
+   curl -X PUT http://admin:sinthaMW@127.0.0.1:5984/mss_results_new/11 \
     -H "Content-Type: application/json" \
     -d '{"ward": "other"}'
    ```

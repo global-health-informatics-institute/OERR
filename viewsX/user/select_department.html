@@ -15,14 +15,15 @@
         <button class="tablinks" onclick="openTab(event, 'ward')">Wards</button>
     </div>
 
-   <!-- Department Tab -->
+<!-- Department Tab -->
 <div id="location" class="tabcontent" style="display:block;">
     <form action="/select_location" method="post" name="locationSelection">
-        <div style="width: 100%; height: 80%; border: 2px solid blue;overflow:auto;margin-left: auto;margin-right: auto;">
+        <!-- Fixed height container to ensure the list scrolls properly -->
+        <div style="width: 100%; max-height: 300px; border: 2px solid blue; overflow-x: auto; margin-left: auto; margin-right: auto;">
             <ul>
                 {% for department in departments %}
                 <div style="display:table-row;">
-                    <div style='display: table-cell; vertical-align: center;'>
+                    <div style='display: table-cell; vertical-align: middle;'>
                         <li>
                             <input type='radio' id='{{ department.name }}' value='{{ department.name }}' name='department' onclick='showWards("{{ department.name }}")'>
                             <label for='{{ department.name }}'>{{ department.name }}</label>
@@ -33,6 +34,7 @@
                 {% endfor %}
             </ul>
         </div>
+        <!-- Logout and Next buttons -->
         <div style="text-align: left; padding-top: 10px;">
             <button type="button" class="nvButton red" onclick="logout()">Logout</button>
         </div>

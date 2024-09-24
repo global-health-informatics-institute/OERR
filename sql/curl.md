@@ -40,3 +40,9 @@
    curl -X DELETE http://admin:sinthaMW@127.0.0.1:5984/_replicator
    ```
 
+
+1. get jiyar
+   ```bash
+   curl http://OERRuser:sinthaMW@127.0.0.1:5984/mss_results_new/jiyar | jq
+   ```
+

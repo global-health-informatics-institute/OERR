@@ -8,7 +8,7 @@
         ]
 
          {% if pending_orders != [] %}
-            navButtons.push("<button class=\"nvButton\" onmousedown='showDrawDialog()' style=\"float: right;\">Draw Samples</button>")
+            navButtons.push("<button class=\"nvButton\" onmousedown='showDrawDialog()' style=\"float: right;\">Print Label</button>")
         {% endif %}
      </script>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/keyboard.css') }}">
@@ -253,7 +253,7 @@
                 </div>
               <div class="tab">
     <h2>Select test(s) to be performed:</h2>
-   <ul class="two-column-list">
+    <ul>
         {% for test_panel in panel_options %}
         <li data-id="{{(',').join(test_panel[1]['specimen_types'])}}" id="test-panel-{{test_panel[1]['name']}}-container" name="testOptions">
             <input type="checkbox" required id="test-{{test_panel[1]['name']}}" value="|{{test_panel[1]['name']}}|" name="test_type[]" onchange="handleCheckboxChange()">
@@ -270,88 +270,22 @@
         {% endfor %}
     </ul>
 </div>
-
-{% if session.get('user').get('role') in ['Nurse', 'Student'] %}
-<div class="tab">
-    <h2>Select person who ordered test(s)</h2>
-    
-    <!-- Container for search input and keyboard -->
-    <div id="search-container" style="position: relative;">
-        <!-- Search input field -->
-        <input type="text" id="doctor-search" placeholder="Search..." onfocus="showKeyboard()" onkeyup="filterDoctors()">
-        <div id="keyboard" style="display: none; position: absolute; top: 100%; left: 0; background: white; padding: 10px; border: 1px solid #ccc; z-index: 1000;">
-            <!-- <div id="keyboard" style="display: none;"> -->
-            <!-- Number keys -->
-            <div class="keyboard-row">
-                <button onclick="typeKey('1')">1</button>
-                <button onclick="typeKey('2')">2</button>
-                <button onclick="typeKey('3')">3</button>
-                <button onclick="typeKey('4')">4</button>
-                <button onclick="typeKey('5')">5</button>
-                <button onclick="typeKey('6')">6</button>
-                <button onclick="typeKey('7')">7</button>
-                <button onclick="typeKey('8')">8</button>
-                <button onclick="typeKey('9')">9</button>
-                <button onclick="typeKey('0')">0</button>
-                <button onclick="typeKey('Backspace')">backspace</button>
-            </div>
-            <!-- Top row letters -->
-            <div class="keyboard-row">
-                <button onclick="typeKey('q')">q</button>
-                <button onclick="typeKey('w')">w</button>
-                <button onclick="typeKey('e')">e</button>
-                <button onclick="typeKey('r')">r</button>
-                <button onclick="typeKey('t')">t</button>
-                <button onclick="typeKey('y')">y</button>
-                <button onclick="typeKey('u')">u</button>
-                <button onclick="typeKey('i')">i</button>
-                <button onclick="typeKey('o')">o</button>
-                <button onclick="typeKey('p')">p</button>
-            </div>
-            <!-- Second row letters -->
-            <div class="keyboard-row">
-                <button id="caps" onclick="toggleCapsLock()">caps</button>
-                <button onclick="typeKey('a')">a</button>
-                <button onclick="typeKey('s')">s</button>
-                <button onclick="typeKey('d')">d</button>
-                <button onclick="typeKey('f')">f</button>
-                <button onclick="typeKey('g')">g</button>
-                <button onclick="typeKey('h')">h</button>
-                <button onclick="typeKey('j')">j</button>
-                <button onclick="typeKey('k')">k</button>
-                <button onclick="typeKey('l')">l</button>
-            </div>
-            <!-- Third row letters -->
-            <div class="keyboard-row">
-                <button onclick="typeKey('z')">z</button>
-                <button onclick="typeKey('x')">x</button>
-                <button onclick="typeKey('c')">c</button>
-                <button onclick="typeKey('v')">v</button>
-                <button onclick="typeKey('b')">b</button>
-                <button onclick="typeKey('n')">n</button>
-                <button onclick="typeKey('m')">m</button>
-                <button onclick="typeKey(',')">,</button>
-                <button onclick="typeKey('.')">.</button>
-                <button onclick="typeKey(' ')">Space</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- The list of doctors -->
-    <ul class="two-column-list" id="doctor-list">
-        {% for i in doctors %}
-            <li>
-                <input type='radio' id='type-{{i[1]}}' value="{{i[1]}}" required name='ordered_by' >
-                <label for='type-{{i[1]}}'>{{i[0]}}</label>
-                <div class='check'></div>
-            </li>
-        {% endfor %}
-    </ul>
-</div>
-{% else %}
-<input type="hidden" name='ordered_by' value={{session["user"]['username']}} >
-{% endif %}
-
+                {% if session.get('user').get('role') in ['Nurse', 'Student']  %}
+                    <div class="tab">
+                    <h2>Select person who ordered test(s)</h2>
+                    <ul>
+                        {% for i in doctors%}
+                                <li>
+                                    <input type='radio' id='type-{{i[1]}}' value="{{i[1]}}" required name='ordered_by' >
+                                    <label for='type-{{i[1]}}'>{{i[0]}}</label>
+                                    <div class='check'></div>
+                                </li>
+                        {% endfor %}
+                    </ul>
+                    </div>
+                {% else %}
+                    <input type="hidden" name='ordered_by' value={{session["user"]['username']}} >
+                {% endif %}
                 <div class="tab">
                     <h2>Enter Clinical Information/History</h2>
                     <div>

@@ -1,0 +1,68 @@
+{% extends 'layout/application.html' %}
+
+{% block content %}
+
+<div class="header">
+    <table style="width: 100%;">
+        <tr>
+            <td><b>Facility</b></td>
+            <td>:</td>
+            <td><i>{{current_facility}}</i></td>
+            <td><b>User</b></td>
+            <td>:</td>
+            <td><i>{{ session["user"]["current_user"] }}</i></td>
+        </tr>
+        <tr>
+            <td><b>Department</b></td>
+            <td>:</td>
+            <td><i>{{ session["location"] }}</i></td>
+            <td><b>Role</b></td>
+            <td>:</td>
+            <td><i>{{ session["user"]["rank"] }}</i></td>
+        </tr>
+    </table>
+</div>
+
+{% if session.get('user').get('role') == 'Administrator' %}
+    {% include 'main/_admin_view.html' %}
+    <script type="text/javascript">
+        navButtons = ["<button class=\"nvButton red\" onmousedown=\"window.location='/logout'\" style=\"float: left;\">Logout</button>"]
+        document.getElementById("defaultOpen").click();
+    </script>
+{% else %}
+    <div style="display: table-row;margin-top: 4vh !important;">
+        <div style="display: table-cell;">
+            <img src="/assets/images/2D_barcode.png" style="height: 4vh; width: 7vw;"> <br/>
+            <img src="/assets/images/barcode.png" style="height: 4vh; width: 7vw;">
+        </div>
+        <div style="display: table-cell">
+            <form action="/process_barcode" name="barcodeScan" method="post">
+                <input type="text" id="barcode" name="barcode" size="15" style="height: 8vh; vertical-align: middle;font-size:40px;">
+            </form>
+        </div>
+    </div>
+    <br/>
+    <div class="tabs">
+        {% include
+        'main/_nurse_view.html' if session.get('user').get('role') in ['Nurse', 'Student']   else  'main/_doctor_view.html' %}
+    </div>
+    <script type="text/javascript">
+        navButtons = ["<button class=\"nvButton red\" onmousedown=\"window.location='/logout'\" style=\"float: left;\">Logout</button>",
+            "<button class=\"nvButton lightGreen\" onmousedown=\"window.location='/select_location'\" style=\"float: right;\">Change Location</button>"]
+        barcode_length = 0;
+        document.getElementById("defaultOpen").click();
+        setTimeout(initializeListener(), 3000);
+
+        function choosePath(patient,test, status){
+            if(status == "Analysis Complete"){
+                window.location = "/test/"+test+"/review"
+            }
+            else{
+                window.location = "/patient/" + patient
+            }
+        }
+    </script>
+{% endif %}
+
+
+{% endblock %}

@@ -96,9 +96,4 @@ def check_replication():
             restart_replication(doc)
 
 
-try:
-    while True:
-        check_replication()
-        time.sleep(1800)  # 30
-except KeyboardInterrupt:
-    print("Stopping the replication monitor...")
+check_replication()

@@ -406,6 +406,7 @@ if __name__ == "__main__":
     exodus()
     house_keeping_please(f"{database}_active")
     house_keeping_please("_replicator")
+    lazarous()
 
     # Log final messages with document and error counts
     logger.info(f"Documents Updated patient: {patient_update}")
@@ -417,7 +418,6 @@ if __name__ == "__main__":
     logger.error(f"Errors - Misc: {error_misc}")
     logger.info(f"Database_created: {database}")
     print("\n\nSetting up replication now...")
-
     # Print all buffered log messages at the end
     print(log_buffer.getvalue())
     time.sleep(10)

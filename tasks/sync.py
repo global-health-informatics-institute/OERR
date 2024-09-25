@@ -21,7 +21,8 @@ global mysqldb
 def sync_test_statuses():
     log("Check begun at %s" % datetime.now().strftime("%d/%m/%Y %H:%S"))
     print("Check begun at %s" % datetime.now().strftime("%d/%m/%Y %H:%S"))
-    pending_tests = get_pending_tests()
+
+    pending_tests = list(get_pending_tests())  # Convert the map object to a list
 
     # Have items that need updating
     if len(pending_tests) > 0:
@@ -35,7 +36,7 @@ def sync_test_statuses():
             except:
                 pass
 
-    pending_panels = get_pending_panels()
+    pending_panels = list(get_pending_panels())  # Convert the map object to a list
 
     for panel in pending_panels:
         processed_panel = process_panel(panel)
@@ -55,9 +56,7 @@ def get_pending_tests():
                 "status": {"$in": ["Ordered", "Specimen Collected", "Specimen Received", "Being Analyzed",
                                    "Pending Verification"]}}, "limit": 1000
     })
-    return list(tests)  # Convert map or any iterable to list
-
-
+    return tests
 
 
 def get_pending_panels():
@@ -155,7 +154,7 @@ def connect_to_blis():
 
 
 def log(message):
-    f = open("synchronization.log", "a+")
+    f = open("logs/synchronization.log", "a+")
     f.write("%s \n" % message)
     f.close()
 

@@ -218,23 +218,20 @@ body {
 
 
 .keyboard-visible {
-  margin-top: 200px;  /* Adjust this value based on the keyboard's height */
+  margin-top: 200px; 
 }
 
 
 #keyboard {
   display: none;
   position: absolute;
-  bottom: 100%;  /* Positions the keyboard directly above the search bar */
   left: 0;
-  width: 100%;  /* Ensures the keyboard spans the width of the container */
+  width: 100%;  
   background: white;
   padding: 10px;
   border: 1px solid #ccc;
-
-  box-shadow: 0 -4px 8px rgba(0,0,0,0.1);  /* Optional shadow for better visibility */
+  box-shadow: 0 -4px 8px rgba(0,0,0,0.1);  
 }
-
 
 
 .keyboard-row {
@@ -245,10 +242,25 @@ body {
 
 #keyboard button {
   margin: 2px;
-  padding: 5px 10px;
+  padding: 5px 15px;
   background-color: #f0f0f0;
   border: 1px solid #ddd;
   cursor: pointer;
+  font-size: 18px;
+}
+
+.key {
+  padding: 15px 25px; /* Larger padding */
+  margin: 5px;
+  background-color: #ddd;
+  border: none;
+  cursor: pointer;
+  user-select: none;
+  font-size: 18px; /* Larger font size */
+}
+
+.key:hover {
+  background-color: #ccc;
 }
 
 #keyboard button:hover {
@@ -256,7 +268,7 @@ body {
 }
 
 #caps.active {
-  background-color: #cccccc; /* Grey background to indicate active state */
+  background-color: #cccccc; 
 }
 
 
@@ -281,11 +293,14 @@ body {
   border-radius: 4px;
 }
 
+#doctor-list {
+  transition: margin-top 0.3s ease; /* Smooth transition for the doctor list */
+}
+
 #doctor-list li {
   padding: 10px;
   margin-bottom: 5px;
   cursor: pointer;
-  /* border-bottom: 1px solid #ddd; */
 }
 
 #doctor-list li:hover {

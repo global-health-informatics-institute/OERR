@@ -1,5 +1,17 @@
 import json
 import subprocess
+import datetime
+import sys
+
+now = datetime.datetime.now()
+
+start_time = now.replace(hour=7, minute=45, second=0, microsecond=0)
+end_time = now.replace(hour=8, minute=15, second=0, microsecond=0)
+
+if start_time <= now <= end_time:
+    sys.exit(0)
+
+
 
 replications_file = "config/replications.config"
 ward_file = "config/department.config"

@@ -35,7 +35,7 @@
    curl http://admin:sinthaMW@127.0.0.1:5984/_replicator/_all_docs?include_docs=true | jq
    ```
 
-1. get _replication docs 
+1. drop replicator indtance
    ```bash
    curl -X DELETE http://admin:sinthaMW@127.0.0.1:5984/_replicator
    ```

@@ -126,4 +126,4 @@ cython_debug/
 
 logs/*
 *.config
-
+*.log

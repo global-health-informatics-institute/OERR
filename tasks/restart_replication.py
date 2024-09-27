@@ -1,99 +1,119 @@
 import json
-import requests
-import time
-import logging
+import subprocess
 
-# Logging
-restart_log = "logs/replication_restarts.log"
-logging.basicConfig(filename=restart_log, level=logging.INFO,
-                    format='%(asctime)s %(message)s')
+replications_file = "config/replications.config"
+ward_file = "config/department.config"
+log_file = "logs/replication_errors.log"
 
-application_file = "config/application.config"
-with open(application_file) as json_file:
-    application_settings = json.load(json_file)
+with open(replications_file) as json_file:
+    replication_settings = json.load(json_file)
 
-url = f"http://{application_settings['couch']['host']}:{application_settings['couch']['port']}"
-DB = f"{url}/{application_settings['couch']['database']}"
-username = f"{application_settings['couch']['user']}"
-password = f"{application_settings['couch']['passwd']}"
-database = f"{application_settings['couch']['database']}"
+with open(ward_file) as json_file:
+    wards_data = json.load(json_file)
 
-COUCHDB_URL = url
-REPLICATOR_DB = f"{COUCHDB_URL}/_replicator"
+department_name = replication_settings["specific_department"]["department"]
+wards = []
+for department in wards_data["departments"]:
+    if department["name"] == department_name:
+        wards = department["wards"]
+        break
+
+source_url = f"http://{replication_settings['source']['user']}:{replication_settings['source']['passwd']}@{replication_settings['source']['host']}:{replication_settings['source']['port']}/{replication_settings['source_base_db']['database']}"
+target_url = f"http://{replication_settings['target']['user']}:{replication_settings['target']['password']}@{replication_settings['target']['host']}:{replication_settings['target']['port']}/{replication_settings['target_base_db']['database']}"
+replicator_db_url = f"http://{replication_settings['source']['user']}:{replication_settings['source']['passwd']}@{replication_settings['source']['host']}:{replication_settings['source']['port']}/_replicator"
+
+create_replicator_db_cmd = ['curl', '-X', 'PUT', replicator_db_url]
+try:
+    subprocess.run(create_replicator_db_cmd, check=True, capture_output=True, text=True)
+    with open(log_file, 'a') as log:
+        log.write(f"Created replicator databese:\n")
+except subprocess.CalledProcessError as e:
+    with open(log_file, 'a') as log:
+        log.write(f"Error creating _replicator database: {e.stderr}\n")
+
+design_id = (replication_settings["source"]["host"]).replace('.','')
+
+design_doc = {
+    "filters": {
+        f"ward_filter_{design_id}": f"function(doc, req) {{ var wards = {json.dumps(wards)}; return wards.includes(doc.ward); }}"
+    }
+}
+
+create_design_doc_cmd = [
+    'curl', '-d', json.dumps(design_doc), '-H', 'Content-Type: application/json',
+    '-X', 'PUT', f"{target_url}/_design/ward_filter_{design_id}"
+]
+try:
+    result = subprocess.run(create_design_doc_cmd, check=True, capture_output=True, text=True)
+    with open(log_file, 'a') as log:
+        log.write(f"Design document created successfully on the target database\n")
+
+except subprocess.CalledProcessError as e:
+    with open(log_file, 'a') as log:
+        log.write(f"Error creating design document: {e.stderr}\n")
+
+def execute_replication(command, log_message):
+    try:
+        result = subprocess.run(command, check=True, capture_output=True, text=True)
+        with open(log_file, 'a') as log:
+            log.write(f"Replication setup:\n")
+    except subprocess.CalledProcessError as e:
+        with open(log_file, 'a') as log:
+            log.write(f"Error: {log_message}\n{e.stderr}\n")
+
+source_to_target_cmd = [
+    'curl', '-d', json.dumps({
+        "_id": "base-source-to-target",
+        "source": source_url,
+        "target": target_url,
+        "create_target": True,
+        "continuous": True
+    }), '-H', 'Content-Type: application/json', '-X', 'POST', replicator_db_url
+]
+
+target_to_source_cmd =[
+    'curl', '-d', json.dumps({
+        "_id": "target-to-source-filtered",
+        "source": target_url,
+        "target": source_url,
+        "create_target": True,
+        "continuous": True,
+        "filter": f"ward_filter_{design_id}/ward_filter_{design_id}"
+    }), '-H', 'Content-Type: application/json', '-X', 'POST', replicator_db_url
+]
+
+execute_replication(source_to_target_cmd, "Setting up replication from source to target")
+execute_replication(target_to_source_cmd, "Setting up filtered replication from target to source")
 
 
-auth = (username, password)
+sub_directories = ["_lab_test_panels", "_lab_test_type", "_patients", "_users"]
 
-def fetch_replicator_docs():
-    """Fetch all documents from the _replicator database with authentication."""
-    replicator_url = f"{REPLICATOR_DB}/_all_docs?include_docs=true"
-    response = requests.get(replicator_url, auth=auth)
+for suffix in sub_directories:
+    source_suffix_url = f"{replication_settings['source_base_db']['database']}{suffix}"
+    target_suffix_url = f"{replication_settings['target_base_db']['database']}{suffix}"
     
-    if response.status_code == 200:
-        replicator_docs = response.json()
-        # Return the list of documents
-        return {doc['id']: doc['doc'] for doc in replicator_docs.get('rows', [])}
-    else:
-        logging.error(f"Failed to fetch replicator docs. Response: {response.json()}")
-        return {}
+    source_url = f"http://{replication_settings['source']['user']}:{replication_settings['source']['passwd']}@{replication_settings['source']['host']}:{replication_settings['source']['port']}/{source_suffix_url}"
+    target_url = f"http://{replication_settings['target']['user']}:{replication_settings['target']['password']}@{replication_settings['target']['host']}:{replication_settings['target']['port']}/{target_suffix_url}"
 
-def fetch_active_tasks():
-    """Fetch all active tasks from the _active_tasks endpoint with authentication."""
-    tasks_url = f"{COUCHDB_URL}/_active_tasks"
-    response = requests.get(tasks_url, auth=auth)
+    source_to_target_cmd = [
+        'curl', '-d', json.dumps({
+            "_id": f"base-source-to-target{suffix}",
+            "source": source_url,
+            "target": target_url,
+            "create_target": True,
+            "continuous": True
+        }), '-H', 'Content-Type: application/json', '-X', 'POST', replicator_db_url
+    ]
     
-    if response.status_code == 200:
-        tasks = response.json()
-        # Filter out only replication tasks
-        active_replications = [task for task in tasks if task.get('type') == 'replication']
-        return active_replications
-    else:
-        logging.error(f"Failed to fetch active tasks. Response: {response.json()}")
-        return []
+    target_to_source_cmd_ltp = [
+        'curl', '-d', json.dumps({
+            "_id": f"base-target-to-source{suffix}",
+            "source": target_url,
+            "target": source_url,
+            "create_target": True,
+            "continuous": True,
+        }), '-H', 'Content-Type: application/json', '-X', 'POST', replicator_db_url
+    ]
 
-
-def restart_replication(doc):
-    """Restart the replication by deleting and recreating the document while keeping the same _id."""
-    replication_id = doc['_id']
-    
-
-    delete_url = f"{REPLICATOR_DB}/{replication_id}?rev={doc['_rev']}"
-    delete_response = requests.delete(delete_url, auth=auth)
-    
-    if delete_response.status_code == 200:
-        logging.info(f"Deleted replication task {replication_id}. Now restarting...")
-
-
-        doc.pop('_rev', None)
-        
-
-        create_url = f"{REPLICATOR_DB}/{replication_id}"
-        create_response = requests.put(create_url, json=doc, auth=auth)
-        
-        if create_response.status_code == 201:
-            logging.info(f"Replication {replication_id} restarted successfully.")
-        else:
-            logging.error(f"Failed to restart replication {replication_id}. Response: {create_response.json()}")
-    else:
-        logging.error(f"Failed to delete replication {replication_id}. Response: {delete_response.json()}")
-
-
-def check_replication():
-    """Check the status of all replication tasks and restart if inactive."""
-
-
-    replicator_docs = fetch_replicator_docs()
-    
-
-    active_tasks = fetch_active_tasks()
-
-    
-    active_doc_ids = {task['doc_id'] for task in active_tasks}
-
-    for doc_id, doc in replicator_docs.items():
-        if doc_id not in active_doc_ids:
-            logging.info(f"Replication task with doc_id {doc_id} is not active. Restarting...")
-            restart_replication(doc)
-
-
-check_replication()
+    execute_replication(source_to_target_cmd, f"Replication setup from source to target for {suffix}")
+    execute_replication(target_to_source_cmd_ltp, f"Replication setup from target to source for {suffix}")

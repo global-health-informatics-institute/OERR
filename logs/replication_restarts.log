@@ -1,0 +1,22 @@
+2024-09-27 11:30:10,833 Replication task with doc_id base-source-to-target_users is not active. Restarting replication2.
+2024-09-27 11:30:10,886 Deleted replication task base-source-to-target_users. Now restarting...
+2024-09-27 11:30:10,941 Replication base-source-to-target_users restarted successfully.
+2024-09-27 11:30:10,942 Replication task with doc_id base-target-to-source_users is not active. Restarting replication1.
+2024-09-27 11:30:11,001 Deleted replication task base-target-to-source_users.
+2024-09-27 11:30:11,050 Replication base-target-to-source_users restarted successfully.
+2024-09-27 11:30:11,051 Replication task with doc_id base-target-to-source_users is not active. Restarting replication2.
+2024-09-27 11:30:11,087 Failed to delete replication base-target-to-source_users. Response: {'error': 'conflict', 'reason': 'Document update conflict.'}
+2024-09-27 11:30:11,087 Replication task with doc_id base-source-to-target_users is not active. Restarting replication1.
+2024-09-27 11:30:11,146 Deleted replication task base-source-to-target_users.
+2024-09-27 11:30:11,208 Replication base-source-to-target_users restarted successfully.
+2024-09-27 11:31:38,848 Replication task with doc_id base-source-to-target_users is not active. Restarting replication2.
+2024-09-27 11:31:38,902 Deleted replication task base-source-to-target_users. Now restarting...
+2024-09-27 11:31:38,959 Replication base-source-to-target_users restarted successfully.
+2024-09-27 11:31:38,959 Replication task with doc_id base-target-to-source_users is not active. Restarting replication1.
+2024-09-27 11:31:39,018 Deleted replication task base-target-to-source_users.
+2024-09-27 11:31:39,075 Replication base-target-to-source_users restarted successfully.
+2024-09-27 11:31:39,076 Replication task with doc_id base-target-to-source_users is not active. Restarting replication2.
+2024-09-27 11:31:39,130 Failed to delete replication base-target-to-source_users. Response: {'error': 'conflict', 'reason': 'Document update conflict.'}
+2024-09-27 11:31:39,130 Replication task with doc_id base-source-to-target_users is not active. Restarting replication1.
+2024-09-27 11:31:39,189 Deleted replication task base-source-to-target_users.
+2024-09-27 11:31:39,246 Replication base-source-to-target_users restarted successfully.+

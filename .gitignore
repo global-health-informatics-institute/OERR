@@ -127,3 +127,4 @@ cython_debug/
 logs/*
 
 config/*
+k.service

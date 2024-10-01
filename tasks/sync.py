@@ -232,9 +232,5 @@ def process_panel(panel):
                     panel["status"] = test.get("status")
     return panel
 
-
-if __name__ == '__main__':
-    while 1:
-        connect_to_couch()
-        sync_test_statuses()
-        time.sleep(10)
+connect_to_couch()
+sync_test_statuses()

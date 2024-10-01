@@ -6,6 +6,7 @@ import json
 import os
 import random
 import re
+import pytz
 from datetime import datetime
 from couchdb import Server
 from flask import Flask, render_template, redirect, session, flash, request, url_for, Response, send_file
@@ -36,6 +37,8 @@ if settings["using_rpi"] == "True":
     from utils.charging_checker import CheckChargeState
     from utils.voltage_checker import CheckVoltage
 
+# Define the timezone
+CAT = pytz.timezone('Africa/Blantyre')  # Central Africa Time
 
 # Root page of application
 @app.route("/")
@@ -216,9 +219,9 @@ def patient(patient_id):
     # get tests for patient
     test_query_result = db.find({"selector": {"patient_id": patient_id}, "limit": 100})
     for test in test_query_result:
-        record = {"date_ordered": datetime.fromtimestamp(float(test["date_ordered"])).strftime('%d %b %Y %H:%S'),
+        record = {"date_ordered": test["date_ordered"],
                   "id": test.get("_id"), "type": test.get("type"), "status": test.get("status"),
-                  "priority": test.get("Priority"), "date": float(test["date_ordered"]),
+                  "priority": test.get("Priority"), "date": test["date_ordered"],
                   "collection_id": test.get("collection_id", ""), "history": test.get("clinical_history"),
                   "ordered_by": test.get("ordered_by"), "rejection_reason": test.get("rejection_reason"),
                   "test_type": "test" if test.get("type") == "test" else "test panel"}
@@ -259,7 +262,7 @@ def patient(patient_id):
             # For single tests, use the existing ID as the grouped ID
 
 
-    records = sorted(records, key=lambda e: e["date"], reverse=True)
+    records = sorted(records, key=lambda e: datetime.fromtimestamp(e["date"]) if isinstance(e["date"], int) else datetime.strptime(e["date"], '%Y-%m-%d %H:%M:%S'), reverse=True)
     permitted_length = 85 - 50 - len(var_patient['name']) - len(var_patient['id'])
     return render_template('patient/show.html', pt_details=var_patient, tests=records, pending_orders=pending_sample,
                            containers=misc.container_options(),
@@ -460,9 +463,13 @@ def select_location():
 @app.route("/test/create", methods=['POST'])
 def create_lab_order():
     for test in request.form.getlist('test_type[]'):
+
+           # Get current time in CAT and format it as a string
+        now = datetime.now(CAT).strftime('%Y-%m-%d %H:%M:%S')
         new_test = {
             'ordered_by': request.form['ordered_by'],
-            'date_ordered': int(datetime.now().strftime('%s')),
+            # 'date_ordered': int(datetime.now().strftime('%s')),
+            'date_ordered': now,
             'status': 'Ordered',
             'sample_type': request.form['specimen_type'],
             'clinical_history': request.form['clinical_history'],

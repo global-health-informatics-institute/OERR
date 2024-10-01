@@ -1,5 +1,6 @@
 var isCapsLock = false;
 
+
 //function to add navigation buttons to footer
 function addNavButtons(){
     if (navButtons == undefined ) return

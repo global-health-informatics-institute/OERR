@@ -128,3 +128,4 @@ logs/*
 
 config/*
 k.service
+*.config

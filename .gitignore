@@ -125,7 +125,7 @@ dmypy.json
 cython_debug/
 
 logs/*
-
+*.log
 config/*
 k.service
 *.config

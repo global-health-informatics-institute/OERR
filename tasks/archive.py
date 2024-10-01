@@ -53,7 +53,7 @@ def ensure_database_exists(database_name):
 
 # CodeA
 def initialize_setup():
-    db_list = [f"{database}", "active"]
+    db_list = [f"{database}", "active", "archive"]
     for db in db_list:
         ensure_database_exists(db)
 
@@ -81,7 +81,7 @@ def fetch_entries(batch_size=9000):
             last_key = f'"{rows[-1]["id"]}"'
 
         else:
-            logging.error(f"Error fetching documents: {response.status_code} - {response.text}")
+            # logging.error(f"Error fetching documents: {response.status_code} - {response.text}")
             break
 
     return all_documents
@@ -112,15 +112,12 @@ def filter_entries():
 
 # CodeD1
 def update_patient_records(archive_documents):
-    """
-    Update the patient records to mark them as archived.
-    """
     patient_db_base_url = f"{DB_BASE}{database}_patients/"
 
     for doc in tqdm(archive_documents, desc="Updating patient status", unit="doc"):
         patient_id = doc.get('patient_id')
         if not patient_id:
-            logging.warning(f"No patient ID found for document: {doc.get('_id')}")
+            f"No patient ID found for document: {doc.get('_id')}"
             continue
 
         patient_url = f"{patient_db_base_url}{patient_id}"
@@ -135,12 +132,12 @@ def update_patient_records(archive_documents):
                 save_response = requests.put(patient_url, json=patient_doc, auth=HTTPBasicAuth(username,password))
 
                 if save_response.status_code in [200, 201]:
-                    logging.info(f"Patient '{patient_id}' updated successfully.")
+                    f"Patient '{patient_id}' updated successfully."
                 else:
-                    logging.error(f"Failed to update patient '{patient_id}': {save_response.status_code} - {save_response.text}")
+                    f"Failed to update patient '{patient_id}': {save_response.status_code} - {save_response.text}"
 
             else:
-                logging.error(f"Failed to fetch patient '{patient_id}': {response.status_code} - {response.text}")
+                f"Failed to fetch patient '{patient_id}': {response.status_code} - {response.text}"
 
         except requests.exceptions.RequestException as e:
             logging.error(f"Error occurred while updating patient '{patient_id}': {str(e)}")
@@ -175,12 +172,52 @@ def save_active_entries(active_documents):
             response = requests.put(save_url, json=doc, auth=HTTPBasicAuth(username, password))
 
             if response.status_code in [200, 201]:
-                logging.info(f"Document '{doc_id}' saved successfully.")
+                f"Document '{doc_id}' saved successfully."
             else:
-                logging.error(f"Failed to save document '{doc_id}': {response.status_code} - {response.text}")
+                f"Failed to save document '{doc_id}': {response.status_code} - {response.text}"
         
         except requests.exceptions.RequestException as e:
             logging.error(f"Error occurred while saving document '{doc_id}': {str(e)}")
+
+# CodeD.2
+def save_archive_entries(archive_documents):
+    """
+    Save archive documents into the archive database.
+    """
+    if not archive_documents:
+        logging.info("No archive documents to save.")
+        return
+
+    archive_db = f"{DB_BASE}{database}_archive"
+    
+    if not ensure_database_exists("archive"):
+        f"Failed to ensure '{archive_db}' database exists."
+        return
+    
+    for doc in tqdm(archive_documents, desc="Saving archive entries", unit="doc"):
+        if '_rev' in doc:
+            del doc['_rev']
+        
+        doc_id = doc.get('_id')
+        if not doc_id:
+            f"Document without '_id' found: {doc}"
+            continue
+
+        save_url = f"{archive_db}/{doc_id}"
+
+        try:
+            response = requests.put(save_url, json=doc, auth=HTTPBasicAuth(username, password))
+
+            if response.status_code in [200, 201]:
+                f"Document '{doc_id}' saved successfully."
+            else:
+                f"Failed to save document '{doc_id}': {response.status_code} - {response.text}"
+                
+        
+        except requests.exceptions.RequestException as e:
+            logging.error(f"Error occurred while saving document '{doc_id}': {str(e)}")
+
+
 
 # codeE
 def house_keeping_please(db_name):
@@ -258,6 +295,7 @@ if __name__ == "__main__":
     active_docs, archive_docs = filter_entries()
     update_patient_records(archive_docs)
     save_active_entries(active_docs)
+    save_archive_entries(archive_docs)
     house_keeping_please(f"{database}")
     ensure_database_exists(f"{database}")
     exodus()

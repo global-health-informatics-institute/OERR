@@ -53,6 +53,15 @@ def initialize_settings():
     return settings
 
 
+def initialize_remote_settings():
+    settings = {}
+    try:
+        with open("config/replication.config") as json_file:
+            settings = json.load(json_file)
+    finally:
+        pass
+    return settings
+
 def current_facility():
     try:
         with open("config/application.config") as json_file:

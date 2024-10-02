@@ -81,7 +81,7 @@ def fetch_entries(batch_size=9000):
             last_key = f'"{rows[-1]["id"]}"'
 
         else:
-            logging.error(f"Error fetching documents: {response.status_code} - {response.text}")
+            f"Error fetching documents: {response.status_code} - {response.text}"
             break
 
     return all_documents
@@ -120,7 +120,7 @@ def update_patient_records(archive_documents):
     for doc in tqdm(archive_documents, desc="Updating patient status", unit="doc"):
         patient_id = doc.get('patient_id')
         if not patient_id:
-            logging.warning(f"No patient ID found for document: {doc.get('_id')}")
+            f"No patient ID found for document: {doc.get('_id')}"
             continue
 
         patient_url = f"{patient_db_base_url}{patient_id}"
@@ -135,15 +135,15 @@ def update_patient_records(archive_documents):
                 save_response = requests.put(patient_url, json=patient_doc, auth=HTTPBasicAuth(username,password))
 
                 if save_response.status_code in [200, 201]:
-                    logging.info(f"Patient '{patient_id}' updated successfully.")
+                    f"Patient '{patient_id}' updated successfully."
                 else:
-                    logging.error(f"Failed to update patient '{patient_id}': {save_response.status_code} - {save_response.text}")
+                    f"Failed to update patient '{patient_id}': {save_response.status_code} - {save_response.text}"
 
             else:
-                logging.error(f"Failed to fetch patient '{patient_id}': {response.status_code} - {response.text}")
+                f"Failed to fetch patient '{patient_id}': {response.status_code} - {response.text}"
 
         except requests.exceptions.RequestException as e:
-            logging.error(f"Error occurred while updating patient '{patient_id}': {str(e)}")
+            f"Error occurred while updating patient '{patient_id}': {str(e)}"
 
 # CodeD
 def save_active_entries(active_documents):
@@ -166,7 +166,7 @@ def save_active_entries(active_documents):
         
         doc_id = doc.get('_id')
         if not doc_id:
-            logging.warning(f"Document without '_id' found: {doc}")
+            f"Document without '_id' found: {doc}"
             continue
 
         save_url = f"{active_db}/{doc_id}"
@@ -175,12 +175,12 @@ def save_active_entries(active_documents):
             response = requests.put(save_url, json=doc, auth=HTTPBasicAuth(username, password))
 
             if response.status_code in [200, 201]:
-                logging.info(f"Document '{doc_id}' saved successfully.")
+                f"Document '{doc_id}' saved successfully."
             else:
-                logging.error(f"Failed to save document '{doc_id}': {response.status_code} - {response.text}")
+                f"Failed to save document '{doc_id}': {response.status_code} - {response.text}"
         
         except requests.exceptions.RequestException as e:
-            logging.error(f"Error occurred while saving document '{doc_id}': {str(e)}")
+            f"Error occurred while saving document '{doc_id}': {str(e)}"
 
 # codeE
 def house_keeping_please(db_name):
@@ -215,7 +215,7 @@ def exodus():
 
         response = requests.get(url, auth=HTTPBasicAuth(username, password))
         if response.status_code != 200:
-            logging.error(f"Error fetching documents from '{database}_active': {response.status_code} - {response.text}")
+            f"Error fetching documents from '{database}_active': {response.status_code} - {response.text}"
             break
 
         data = response.json()
@@ -242,10 +242,10 @@ def exodus():
                 save_response = requests.put(save_url, json=doc, auth=HTTPBasicAuth(username, password))
 
                 if save_response.status_code not in [200, 201]:
-                    logging.error(f"Failed to save document '{doc_id}' to '{database}': {save_response.status_code} - {save_response.text}")
+                    f"Failed to save document '{doc_id}' to '{database}': {save_response.status_code} - {save_response.text}"
             
             except requests.exceptions.RequestException as e:
-                logging.error(f"Error occurred while saving document '{doc_id}' to '{database}': {str(e)}")
+                f"Error occurred while saving document '{doc_id}' to '{database}': {str(e)}"
 
         last_key = f'"{rows[-1]["id"]}"'
 

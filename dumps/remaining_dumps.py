@@ -3,9 +3,9 @@ import requests
 import logging
 from tqdm import tqdm
 # choose json file and database
-json_file_path = "dumps/patients.json"
+json_file_path = "dumps/lab_test_panels.json"
 db_url = "http://localhost:5984"
-db_name = "source_db_patients"
+db_name = "local_db_lab_test_panels"
 username = "admin"
 password = "root"
 

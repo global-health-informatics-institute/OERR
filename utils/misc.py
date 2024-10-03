@@ -56,7 +56,7 @@ def initialize_settings():
 def initialize_remote_settings():
     settings = {}
     try:
-        with open("config/replication.config") as json_file:
+        with open("config/replications.config") as json_file:
             settings = json.load(json_file)
     finally:
         pass
@@ -76,3 +76,54 @@ def container_options():
             'Red top': "red_top.jpg", 'Baktech': "bactec.png",
             'Conical container': "conical_contatiner.jpeg",
             'EDTA': 'purple_top.jpg', 'yellow top': "yellow_top.jpg"}
+
+
+def update_patient(patient_id):
+    import json
+    import requests
+    from requests.auth import HTTPBasicAuth
+    with open('config/application.config') as json_file:
+        patient_db_settings = json.load(json_file)
+
+    
+    db_address = f"http://{patient_db_settings['couch']['host']}:{patient_db_settings['couch']['port']}"
+    username = patient_db_settings['couch']['user']
+    password = patient_db_settings['couch']['passwd']
+    database_name = f"{patient_db_settings['couch']['database']}_patients"
+
+
+    db_url = f"{db_address}/{database_name}/_find"
+
+    query = {
+        "selector": {
+            "_id": patient_id
+        },
+        "limit": 1
+    }
+
+    response = requests.post(db_url, json=query, auth=HTTPBasicAuth(username, password))
+
+    if response.status_code == 200:
+        docs = response.json()['docs']
+        
+        for doc in docs:
+            if 'archived' in doc and ((doc['archived'] is True) or (doc['archived'] is False)):
+                doc['archived'] = 'restored'  
+
+                doc_id = doc['_id']
+                doc_rev = doc['_rev']
+                update_url = f"{db_address}/{database_name}/{doc_id}"
+                
+                updated_doc = {
+                    **doc,
+                    '_rev': doc_rev
+                }
+                
+                update_response = requests.put(update_url, json=updated_doc, auth=HTTPBasicAuth(username, password))
+
+                if update_response.status_code == 201:
+                    f"Document {doc_id} updated successfully."
+                else:
+                    f"Failed to update document {doc_id}: {update_response.status_code} - {update_response.text}"
+    else:
+        f"Failed to retrieve documents: {response.status_code} - {response.text}"

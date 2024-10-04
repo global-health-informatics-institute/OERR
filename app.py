@@ -7,6 +7,7 @@ import os
 import random
 import re
 import pytz
+import time 
 from datetime import datetime
 from couchdb import Server
 from flask import Flask, render_template, redirect, session, flash, request, url_for, Response, send_file
@@ -23,9 +24,9 @@ app = Flask(__name__, template_folder="views", static_folder="assets")
 app.secret_key = os.urandom(25)
 
 # Generate hashed password
-password = "thatgirl"
-hashed_password = generate_password_hash(password)
-print(hashed_password)
+# password = "thatgirl"
+# hashed_password = generate_password_hash(password)
+# print(hashed_password)
 
 # Main application configuration
 global db
@@ -38,7 +39,7 @@ if settings["using_rpi"] == "True":
     from utils.voltage_checker import CheckVoltage
 
 # Define the timezone
-CAT = pytz.timezone('Africa/Blantyre')  # Central Africa Time
+CAT = pytz.timezone('Africa/Blantyre') 
 
 # Root page of application
 @app.route("/")
@@ -98,10 +99,10 @@ def index():
     main_results = db.find(main_index_query)
     for item in main_results:
         try:
-            test_detail = {'status': item.get('status'), "date": float(item.get('date_ordered')),
+            cat_time = item.get('date_ordered') 
+            test_detail = {'status': item.get('status'), "date": cat_time,
                            'name': Patient.get(item.get('patient_id')).get('name').title(),
-                           'ordered_on': datetime.fromtimestamp(float(item.get('date_ordered'))).strftime(
-                               '%d %b %Y %H:%S'),
+                           'ordered_on': cat_time,
                            "id": item["_id"], 'patient_id': item.get('patient_id')}
 
             if item.get("type") == "test":
@@ -464,12 +465,17 @@ def select_location():
 def create_lab_order():
     for test in request.form.getlist('test_type[]'):
 
-           # Get current time in CAT and format it as a string
-        now = datetime.now(CAT).strftime('%Y-%m-%d %H:%M:%S')
+         # Get current time in CAT as a string
+        now_CAT = datetime.now(CAT).strftime('%Y-%m-%d %H:%M:%S')
+
+        # Get current time as a UNIX timestamp (seconds since the epoch)
+        now_unix = int(time.time())
+
         new_test = {
             'ordered_by': request.form['ordered_by'],
-            # 'date_ordered': int(datetime.now().strftime('%s')),
-            'date_ordered': now,
+            # 'date_ordered': now,
+            'date_ordered': now_CAT,  # CAT format
+            'date_ordered_unix': now_unix,  # UNIX format
             'status': 'Ordered',
             'sample_type': request.form['specimen_type'],
             'clinical_history': request.form['clinical_history'],
@@ -671,7 +677,7 @@ def review_test(test_id):
     else:
         test["status"] = "Specimen Rejected"
     test["reviewed_by"] = session["user"]['username']
-    test["reviewed_at"] = int(datetime.now().strftime('%s'))
+    test["reviewed_at"] = datetime.now(CAT).strftime('%Y-%m-%d %H:%M:%S')
     db.save(test)
 
     if "review_ajax" in request.path.split("/"):

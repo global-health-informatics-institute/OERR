@@ -1,5 +1,5 @@
 import subprocess
-import datetime
+from datetime import datetime, timedelta
 from utils import misc
 from couchdb import Server
 from models.patient import Patient
@@ -126,12 +126,26 @@ def recent_records(records):
                 replica_db.save(newer_records) #new data
 
 
+# def check_recent_test(records):
+#     current_time = (datetime.datetime.now() - datetime.timedelta(days=8)).strftime('%s')
+#     for i in records:
+#         if float(i["date_ordered"]) >= float(current_time):
+#             return False
+#     return True
+
 def check_recent_test(records):
-    current_time = (datetime.datetime.now() - datetime.timedelta(days=8)).strftime('%s')
+    # Get the current time minus 8 days as a datetime object
+    current_time = datetime.now() - timedelta(days=8)
+
+    # Loop through the test records
     for i in records:
-        if float(i["date_ordered"]) >= float(current_time):
+        # Convert the 'date_ordered' string into a datetime object for comparison
+        record_time = datetime.strptime(i["date_ordered"], '%Y-%m-%d %H:%M:%S')
+
+        # Compare the datetime objects
+        if record_time >= current_time:
             return False
-    return True
+
 
 
 if __name__ == '__main__':

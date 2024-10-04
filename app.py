@@ -99,10 +99,11 @@ def index():
     main_results = db.find(main_index_query)
     for item in main_results:
         try:
-            cat_time = item.get('date_ordered') 
-            test_detail = {'status': item.get('status'), "date": cat_time,
+            cat_time = datetime.now(CAT).strftime('%Y-%B-%d %H:%M:%S')  # Full month name
+
+            test_detail = {'status': item.get('status'), "date": datetime.strptime(item.get('date_ordered'), '%Y-%m-%d %H:%M:%S').strftime('%Y-%B-%d %H:%M:%S'),
                            'name': Patient.get(item.get('patient_id')).get('name').title(),
-                           'ordered_on': cat_time,
+                           'ordered_on': datetime.strptime(item.get('date_ordered'), '%Y-%m-%d %H:%M:%S').strftime('%Y-%B-%d %H:%M:%S'),
                            "id": item["_id"], 'patient_id': item.get('patient_id')}
 
             if item.get("type") == "test":
@@ -466,16 +467,12 @@ def create_lab_order():
     for test in request.form.getlist('test_type[]'):
 
          # Get current time in CAT as a string
-        now_CAT = datetime.now(CAT).strftime('%Y-%m-%d %H:%M:%S')
-
-        # Get current time as a UNIX timestamp (seconds since the epoch)
-        now_unix = int(time.time())
+        now = datetime.now(CAT).strftime('%Y-%m-%d %H:%M:%S')
+        # now = datetime.now(CAT).strftime('%Y-%B-%d %H:%M:%S')  
 
         new_test = {
             'ordered_by': request.form['ordered_by'],
-            # 'date_ordered': now,
-            'date_ordered': now_CAT,  # CAT format
-            'date_ordered_unix': now_unix,  # UNIX format
+            'date_ordered': now,  # CAT format        
             'status': 'Ordered',
             'sample_type': request.form['specimen_type'],
             'clinical_history': request.form['clinical_history'],

@@ -1,161 +1,44 @@
-Created replicator databese:
-Design document created successfully on the target database
-Replication setup:
-Replication setup:
-Replication setup:
-Replication setup:
-Replication setup:
-Replication setup:
-Replication setup:
-Replication setup:
-Replication setup:
-Replication setup:
-Created replicator databese:
-Design document created successfully on the target database
-Replication setup:
-Replication setup:
-Replication setup:
-Replication setup:
-Replication setup:
-Replication setup:
-Replication setup:
-Replication setup:
-Replication setup:
-Replication setup:
-Created replicator databese:
-Design document created successfully on the target database
-Replication setup:
-Replication setup:
-Replication setup:
-Replication setup:
-Replication setup:
-Replication setup:
-Replication setup:
-Replication setup:
-Replication setup:
-Replication setup:
 Error creating _replicator database:   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
                                  Dload  Upload   Total   Spent    Left  Speed
 
+   0     0    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0
+  0     0    0     0    0     0      0      0 --:--:--  0:00:02 --:--:--     0
+  0     0    0     0    0     0      0      0 --:--:--  0:00:03 --:--:--     0
+curl: (7) Failed to connect to 192.168.10.193 port 5984 after 3072 ms: No route to host
+
+Error creating design document:   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
   0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
   0     0    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0
   0     0    0     0    0     0      0      0 --:--:--  0:00:02 --:--:--     0
   0     0    0     0    0     0      0      0 --:--:--  0:00:03 --:--:--     0
-curl: (7) Failed to connect to 192.168.10.194 port 5984 after 3075 ms: No route to host
+curl: (7) Failed to connect to 192.168.10.206 port 5984 after 3057 ms: No route to host
 
-Design document created successfully on the target database
 Error: Setting up replication from source to target
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
                                  Dload  Upload   Total   Spent    Left  Speed
 
   0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
   0     0    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0
   0     0    0     0    0     0      0      0 --:--:--  0:00:02 --:--:--     0
   0     0    0     0    0     0      0      0 --:--:--  0:00:03 --:--:--     0
-curl: (7) Failed to connect to 192.168.10.194 port 5984 after 3079 ms: No route to host
+curl: (7) Failed to connect to 192.168.10.193 port 5984 after 3060 ms: No route to host
 
 Error: Setting up filtered replication from target to source
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
                                  Dload  Upload   Total   Spent    Left  Speed
 
   0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
   0     0    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0
   0     0    0     0    0     0      0      0 --:--:--  0:00:02 --:--:--     0
   0     0    0     0    0     0      0      0 --:--:--  0:00:03 --:--:--     0
-curl: (7) Failed to connect to 192.168.10.194 port 5984 after 3056 ms: No route to host
+curl: (7) Failed to connect to 192.168.10.193 port 5984 after 3056 ms: No route to host
 
 Error: Replication setup from source to target for _lab_test_panels
-  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
-
-  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
-  0     0    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0
-  0     0    0     0    0     0      0      0 --:--:--  0:00:02 --:--:--     0
-  0     0    0     0    0     0      0      0 --:--:--  0:00:03 --:--:--     0
-curl: (7) Failed to connect to 192.168.10.194 port 5984 after 3061 ms: No route to host
-
-Error: Replication setup from target to source for _lab_test_panels
-  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
-
-  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
-  0     0    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0
-  0     0    0     0    0     0      0      0 --:--:--  0:00:02 --:--:--     0
-  0     0    0     0    0     0      0      0 --:--:--  0:00:03 --:--:--     0
-curl: (7) Failed to connect to 192.168.10.194 port 5984 after 3064 ms: No route to host
-
-Error: Replication setup from source to target for _lab_test_type
-  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
-
-  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
-  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
-  0     0    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0
-  0     0    0     0    0     0      0      0 --:--:--  0:00:02 --:--:--     0
-  0     0    0     0    0     0      0      0 --:--:--  0:00:03 --:--:--     0
-curl: (7) Failed to connect to 192.168.10.194 port 5984 after 3058 ms: No route to host
-
-Error: Replication setup from target to source for _lab_test_type
-  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
-
-  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
-  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
-  0     0    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0
-  0     0    0     0    0     0      0      0 --:--:--  0:00:02 --:--:--     0
-  0     0    0     0    0     0      0      0 --:--:--  0:00:03 --:--:--     0
-curl: (7) Failed to connect to 192.168.10.194 port 5984 after 3059 ms: No route to host
-
-Error: Replication setup from source to target for _patients
-  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
-
-  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
-  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
-  0     0    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0
-  0     0    0     0    0     0      0      0 --:--:--  0:00:02 --:--:--     0
-  0     0    0     0    0     0      0      0 --:--:--  0:00:03 --:--:--     0
-curl: (7) Failed to connect to 192.168.10.194 port 5984 after 3060 ms: No route to host
-
-Error: Replication setup from target to source for _patients
-  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
-
-  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
-  0     0    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0
-  0     0    0     0    0     0      0      0 --:--:--  0:00:02 --:--:--     0
-  0     0    0     0    0     0      0      0 --:--:--  0:00:03 --:--:--     0
-curl: (7) Failed to connect to 192.168.10.194 port 5984 after 3064 ms: No route to host
-
-Error: Replication setup from source to target for _users
-  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
-
-  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
-  0     0    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0
-  0     0    0     0    0     0      0      0 --:--:--  0:00:02 --:--:--     0
-  0     0    0     0    0     0      0      0 --:--:--  0:00:03 --:--:--     0
-curl: (7) Failed to connect to 192.168.10.194 port 5984 after 3058 ms: No route to host
-
-Error creating _replicator database:   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
-
-  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
-  0     0    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0
-  0     0    0     0    0     0      0      0 --:--:--  0:00:02 --:--:--     0
-  0     0    0     0    0     0      0      0 --:--:--  0:00:03 --:--:--     0
-curl: (7) Failed to connect to 192.168.10.193 port 5984 after 3097 ms: No route to host
-
-Error creating design document:   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
-
-  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
-  0     0    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0
-  0     0    0     0    0     0      0      0 --:--:--  0:00:02 --:--:--     0
-  0     0    0     0    0     0      0      0 --:--:--  0:00:03 --:--:--     0
-curl: (7) Failed to connect to 192.168.10.206 port 5984 after 3061 ms: No route to host
-
-Error: Setting up replication from source to target
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
                                  Dload  Upload   Total   Spent    Left  Speed
 
@@ -165,26 +48,6 @@ Error: Setting up replication from source to target
   0     0    0     0    0     0      0      0 --:--:--  0:00:03 --:--:--     0
 curl: (7) Failed to connect to 192.168.10.193 port 5984 after 3058 ms: No route to host
 
-Error: Setting up filtered replication from target to source
-  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
-
-  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
-  0     0    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0
-  0     0    0     0    0     0      0      0 --:--:--  0:00:02 --:--:--     0
-  0     0    0     0    0     0      0      0 --:--:--  0:00:03 --:--:--     0
-curl: (7) Failed to connect to 192.168.10.193 port 5984 after 3060 ms: No route to host
-
-Error: Replication setup from source to target for _lab_test_panels
-  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
-
-  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
-  0     0    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0
-  0     0    0     0    0     0      0      0 --:--:--  0:00:02 --:--:--     0
-  0     0    0     0    0     0      0      0 --:--:--  0:00:03 --:--:--     0
-curl: (7) Failed to connect to 192.168.10.193 port 5984 after 3063 ms: No route to host
-
 Error: Replication setup from target to source for _lab_test_panels
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
                                  Dload  Upload   Total   Spent    Left  Speed
@@ -193,7 +56,7 @@ Error: Replication setup from target to source for _lab_test_panels
   0     0    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0
   0     0    0     0    0     0      0      0 --:--:--  0:00:02 --:--:--     0
   0     0    0     0    0     0      0      0 --:--:--  0:00:03 --:--:--     0
-curl: (7) Failed to connect to 192.168.10.193 port 5984 after 3060 ms: No route to host
+curl: (7) Failed to connect to 192.168.10.193 port 5984 after 3059 ms: No route to host
 
 Error: Replication setup from source to target for _lab_test_type
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
@@ -203,7 +66,7 @@ Error: Replication setup from source to target for _lab_test_type
   0     0    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0
   0     0    0     0    0     0      0      0 --:--:--  0:00:02 --:--:--     0
   0     0    0     0    0     0      0      0 --:--:--  0:00:03 --:--:--     0
-curl: (7) Failed to connect to 192.168.10.193 port 5984 after 3059 ms: No route to host
+curl: (7) Failed to connect to 192.168.10.193 port 5984 after 3057 ms: No route to host
 
 Error: Replication setup from target to source for _lab_test_type
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
@@ -213,7 +76,7 @@ Error: Replication setup from target to source for _lab_test_type
   0     0    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0
   0     0    0     0    0     0      0      0 --:--:--  0:00:02 --:--:--     0
   0     0    0     0    0     0      0      0 --:--:--  0:00:03 --:--:--     0
-curl: (7) Failed to connect to 192.168.10.193 port 5984 after 3059 ms: No route to host
+curl: (7) Failed to connect to 192.168.10.193 port 5984 after 3058 ms: No route to host
 
 Error: Replication setup from source to target for _patients
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
@@ -223,7 +86,7 @@ Error: Replication setup from source to target for _patients
   0     0    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0
   0     0    0     0    0     0      0      0 --:--:--  0:00:02 --:--:--     0
   0     0    0     0    0     0      0      0 --:--:--  0:00:03 --:--:--     0
-curl: (7) Failed to connect to 192.168.10.193 port 5984 after 3060 ms: No route to host
+curl: (7) Failed to connect to 192.168.10.193 port 5984 after 3057 ms: No route to host
 
 Error: Replication setup from target to source for _patients
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
@@ -233,27 +96,25 @@ Error: Replication setup from target to source for _patients
   0     0    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0
   0     0    0     0    0     0      0      0 --:--:--  0:00:02 --:--:--     0
   0     0    0     0    0     0      0      0 --:--:--  0:00:03 --:--:--     0
-curl: (7) Failed to connect to 192.168.10.193 port 5984 after 3062 ms: No route to host
+curl: (7) Failed to connect to 192.168.10.193 port 5984 after 3063 ms: No route to host
 
 Error: Replication setup from source to target for _users
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
                                  Dload  Upload   Total   Spent    Left  Speed
 
   0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
-  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
   0     0    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0
   0     0    0     0    0     0      0      0 --:--:--  0:00:02 --:--:--     0
   0     0    0     0    0     0      0      0 --:--:--  0:00:03 --:--:--     0
-curl: (7) Failed to connect to 192.168.10.193 port 5984 after 3064 ms: No route to host
+curl: (7) Failed to connect to 192.168.10.193 port 5984 after 3059 ms: No route to host
 
 Error: Replication setup from target to source for _users
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
                                  Dload  Upload   Total   Spent    Left  Speed
 
   0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
-  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
   0     0    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0
   0     0    0     0    0     0      0      0 --:--:--  0:00:02 --:--:--     0
   0     0    0     0    0     0      0      0 --:--:--  0:00:03 --:--:--     0
-curl: (7) Failed to connect to 192.168.10.193 port 5984 after 3061 ms: No route to host
+curl: (7) Failed to connect to 192.168.10.193 port 5984 after 3060 ms: No route to host
 

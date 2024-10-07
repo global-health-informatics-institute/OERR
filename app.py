@@ -264,7 +264,7 @@ def patient(patient_id):
             # For single tests, use the existing ID as the grouped ID
 
 
-    records = sorted(records, key=lambda e: datetime.fromtimestamp(e["date"]) if isinstance(e["date"], int) else datetime.strptime(e["date"], '%Y-%m-%d %H:%M:%S'), reverse=True)
+    records = sorted(records, key=lambda e: datetime.fromtimestamp(e["date"]) if isinstance(e["date"], int) else datetime.strptime(e["date"], '%Y-%B-%d %H:%M:%S'), reverse=True)
     permitted_length = 85 - 50 - len(var_patient['name']) - len(var_patient['id'])
     return render_template('patient/show.html', pt_details=var_patient, tests=records, pending_orders=pending_sample,
                            containers=misc.container_options(),
@@ -467,12 +467,12 @@ def create_lab_order():
     for test in request.form.getlist('test_type[]'):
 
          # Get current time in CAT as a string
-        now = datetime.now(CAT).strftime('%Y-%m-%d %H:%M:%S')
-        # now = datetime.now(CAT).strftime('%Y-%B-%d %H:%M:%S')  
+        #now = datetime.now(CAT).strftime('%Y-%m-%d %H:%M:%S')
+        now = datetime.now(CAT).strftime('%Y-%B-%d %H:%M:%S')  
 
         new_test = {
             'ordered_by': request.form['ordered_by'],
-            'date_ordered': now,  # CAT format        
+            'date_ordered': now,         
             'status': 'Ordered',
             'sample_type': request.form['specimen_type'],
             'clinical_history': request.form['clinical_history'],

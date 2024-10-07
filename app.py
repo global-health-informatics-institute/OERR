@@ -468,7 +468,7 @@ def create_lab_order():
 
          # Get current time in CAT as a string
         #now = datetime.now(CAT).strftime('%Y-%m-%d %H:%M:%S')
-        now = datetime.now(CAT).strftime('%Y-%B-%d %H:%M:%S')  
+        now = datetime.now(CAT).strftime('%Y-%B-%d %H:%M:%S')#show month name instead of monh number
 
         new_test = {
             'ordered_by': request.form['ordered_by'],

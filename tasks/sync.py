@@ -1,4 +1,5 @@
 import json
+import time
 import mysql.connector
 from couchdb import Server
 from datetime import datetime, timedelta
@@ -22,12 +23,10 @@ def sync_test_statuses():
     log("Check begun at %s" % datetime.now().strftime("%d/%m/%Y %H:%S"))
     print("Check begun at %s" % datetime.now().strftime("%d/%m/%Y %H:%S"))
 
+    # Connect to MySQL database at the start of the synchronization process
+    connect_to_blis()
+
     pending_tests = list(get_pending_tests())  # Convert the map object to a list
-
-    # Have items that need updating
-    if len(pending_tests) > 0:
-        connect_to_blis()
-
     for test in pending_tests:
         updated_test = process_test(test)
         if updated_test is not None:
@@ -37,7 +36,6 @@ def sync_test_statuses():
                 pass
 
     pending_panels = list(get_pending_panels())  # Convert the map object to a list
-
     for panel in pending_panels:
         processed_panel = process_panel(panel)
         try:
@@ -47,7 +45,6 @@ def sync_test_statuses():
 
     log("Check concluded at %s" % datetime.now().strftime("%d/%m/%Y %H:%S"))
     print("Check concluded at %s" % datetime.now().strftime("%d/%m/%Y %H:%S"))
-
 
 def get_pending_tests():
     tests = db.find({
@@ -165,7 +162,8 @@ def process_test(test):
         patient_id = get_patient_id(test["patient_id"])
 
         if patient_id is None:
-            log("Couldn't find patient with id %s" % test["patient_id"])
+            # log("Couldn't find patient with id %s" % test["patient_id"])
+            ""
             return None
         else:
             # get last test for patient with that id.
@@ -173,9 +171,10 @@ def process_test(test):
                                             test.get("date_ordered"))
 
             if test_details is None:
-                log("Couldn't find test for patient with id %s and test type %s ordered on %s" %
-                    (test["patient_id"], test.get("test_type"),
-                     datetime.fromtimestamp(float(test.get('date_ordered'))).strftime('%d %b %Y %H:%S')))
+                # log("Couldn't find test for patient with id %s and test type %s ordered on %s" %
+                #     (test["patient_id"], test.get("test_type"),
+                #      datetime.fromtimestamp(float(test.get('date_ordered'))).strftime('%d %b %Y %H:%S')))
+                ""
                 return None
             else:
                 test["lims_id"] = test_details[0]
@@ -184,7 +183,8 @@ def process_test(test):
         test_details = get_test(test.get("lims_id"))
 
     if test_details is None:
-            log("Couldn't find test for patient with id %s and test id %s" % (test["patient_id"], test.get("lims_id")))
+            # log("Couldn't find test for patient with id %s and test id %s" % (test["patient_id"], test.get("lims_id")))
+            ""
             return
     else:
         if test.get("status") != test_statuses[test_details[1]]:
@@ -209,7 +209,7 @@ def process_panel(panel):
             if patient_id is None:
                 result = get_patient_id(panel["patient_id"])
                 if result is None:
-                    log("Couldn't find patient with id %s" % panel["patient_id"])
+                    # log("Couldn't find patient with id %s" % panel["patient_id"])
                     return panel
                 patient_id = result
 
@@ -220,8 +220,9 @@ def process_panel(panel):
             test_details = get_test(test.get("lims_id"))
 
         if test_details is None:
-            log("Couldn't find test for patient with id %s and panel test type %s ordered on %s" %
-                (panel["patient_id"], test_type_id, panel.get("date_ordered")))
+            # log("Couldn't find test for patient with id %s and panel test type %s ordered on %s" %
+            #     (panel["patient_id"], test_type_id, panel.get("date_ordered")))
+            ""
         else:
             print("Found test for patient with id %s and panel test type %s ordered on %s" %
                   (panel["patient_id"], test_type_id, panel.get("date_ordered")))
@@ -237,6 +238,7 @@ def process_panel(panel):
 
 
 if __name__ == '__main__':
-    connect_to_couch()
-    sync_test_statuses()
-
+    while 1:
+        connect_to_couch()
+        sync_test_statuses()
+        time.sleep(10)

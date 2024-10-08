@@ -7,7 +7,6 @@ import os
 import random
 import re
 import pytz
-import time 
 from datetime import datetime
 from couchdb import Server
 from flask import Flask, render_template, redirect, session, flash, request, url_for, Response, send_file
@@ -99,7 +98,7 @@ def index():
     main_results = db.find(main_index_query)
     for item in main_results:
         try:
-            cat_time = datetime.now(CAT).strftime('%Y-%B-%d %H:%M:%S')  # Full month name
+            cat_time = datetime.now(CAT).strftime('%Y-%B-%d %H:%M:%S')
 
             test_detail = {'status': item.get('status'), "date": datetime.strptime(item.get('date_ordered'), '%Y-%m-%d %H:%M:%S').strftime('%Y-%B-%d %H:%M:%S'),
                            'name': Patient.get(item.get('patient_id')).get('name').title(),

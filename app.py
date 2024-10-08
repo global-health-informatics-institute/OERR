@@ -98,7 +98,7 @@ def index():
             test_detail = {'status': item.get('status'), "date": float(item.get('date_ordered')),
                            'name': Patient.get(item.get('patient_id')).get('name').title(),
                            'ordered_on': datetime.fromtimestamp(float(item.get('date_ordered'))).strftime(
-                               '%d %b %Y %H:%S'),
+                               '%d %b %Y %H:%M'),
                            "id": item["_id"], 'patient_id': item.get('patient_id')}
 
             if item.get("type") == "test":
@@ -216,7 +216,7 @@ def patient(patient_id):
     # get tests for patient
     test_query_result = db.find({"selector": {"patient_id": patient_id}, "limit": 100})
     for test in test_query_result:
-        record = {"date_ordered": datetime.fromtimestamp(float(test["date_ordered"])).strftime('%d %b %Y %H:%S'),
+        record = {"date_ordered": datetime.fromtimestamp(float(test["date_ordered"])).strftime('%d %b %Y %H:%M'),
                   "id": test.get("_id"), "type": test.get("type"), "status": test.get("status"),
                   "priority": test.get("Priority"), "date": float(test["date_ordered"]),
                   "collection_id": test.get("collection_id", ""), "history": test.get("clinical_history"),

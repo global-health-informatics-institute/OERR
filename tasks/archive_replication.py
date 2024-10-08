@@ -104,9 +104,7 @@ def filter_entries():
     for doc in tqdm(documents, desc="Filtering entries", unit="doc"):
         date_ordered_timestamp = doc.get('date_ordered')
         if date_ordered_timestamp:
-            # Parse the date string into a datetime object
-            date_ordered = datetime.strptime(date_ordered_timestamp, '%Y-%B-%d %H:%M:%S')
-
+            date_ordered = datetime.fromtimestamp(date_ordered_timestamp)
 
             if date_ordered > eight_days_ago:
                 active_documents.append(doc)

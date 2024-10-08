@@ -6,7 +6,6 @@ import json
 import os
 import random
 import re
-import pytz
 from datetime import datetime
 from couchdb import Server
 from flask import Flask, render_template, redirect, session, flash, request, url_for, Response, send_file
@@ -17,7 +16,6 @@ from models.laboratory_test_type import LaboratoryTestType
 from models.patient import Patient
 from models.user import User
 from utils import misc
-
 
 app = Flask(__name__, template_folder="views", static_folder="assets")
 app.secret_key = os.urandom(25)
@@ -37,8 +35,6 @@ if settings["using_rpi"] == "True":
     from utils.charging_checker import CheckChargeState
     from utils.voltage_checker import CheckVoltage
 
-# Define the timezone
-CAT = pytz.timezone('Africa/Blantyre') 
 
 # Root page of application
 @app.route("/")
@@ -98,11 +94,10 @@ def index():
     main_results = db.find(main_index_query)
     for item in main_results:
         try:
-            cat_time = datetime.now(CAT).strftime('%Y-%B-%d %H:%M:%S')
-
-            test_detail = {'status': item.get('status'), "date": datetime.strptime(item.get('date_ordered'), '%Y-%m-%d %H:%M:%S').strftime('%Y-%B-%d %H:%M:%S'),
+            test_detail = {'status': item.get('status'), "date": float(item.get('date_ordered')),
                            'name': Patient.get(item.get('patient_id')).get('name').title(),
-                           'ordered_on': datetime.strptime(item.get('date_ordered'), '%Y-%m-%d %H:%M:%S').strftime('%Y-%B-%d %H:%M:%S'),
+                           'ordered_on': datetime.fromtimestamp(float(item.get('date_ordered'))).strftime(
+                               '%d %b %Y %H:%M'),
                            "id": item["_id"], 'patient_id': item.get('patient_id')}
 
             if item.get("type") == "test":
@@ -117,7 +112,6 @@ def index():
     records = sorted(records, key=lambda e: e["date"], reverse=True)
     # my_team_recs = sorted(my_team_recs, key=lambda e: e["date"], reverse=True)
     return render_template('main/index.html', orders=records, current_facility=misc.current_facility())
-
 
 # process barcode from the main index page
 @app.route("/process_barcode", methods=["POST"])
@@ -220,9 +214,9 @@ def patient(patient_id):
     # get tests for patient
     test_query_result = db.find({"selector": {"patient_id": patient_id}, "limit": 100})
     for test in test_query_result:
-        record = {"date_ordered": test["date_ordered"],
+        record = {"date_ordered": datetime.fromtimestamp(float(test["date_ordered"])).strftime('%d %b %Y %H:%M'),
                   "id": test.get("_id"), "type": test.get("type"), "status": test.get("status"),
-                  "priority": test.get("Priority"), "date": test["date_ordered"],
+                  "priority": test.get("Priority"), "date": float(test["date_ordered"]),
                   "collection_id": test.get("collection_id", ""), "history": test.get("clinical_history"),
                   "ordered_by": test.get("ordered_by"), "rejection_reason": test.get("rejection_reason"),
                   "test_type": "test" if test.get("type") == "test" else "test panel"}
@@ -263,7 +257,7 @@ def patient(patient_id):
             # For single tests, use the existing ID as the grouped ID
 
 
-    records = sorted(records, key=lambda e: datetime.fromtimestamp(e["date"]) if isinstance(e["date"], int) else datetime.strptime(e["date"], '%Y-%B-%d %H:%M:%S'), reverse=True)
+    records = sorted(records, key=lambda e: e["date"], reverse=True)
     permitted_length = 85 - 50 - len(var_patient['name']) - len(var_patient['id'])
     return render_template('patient/show.html', pt_details=var_patient, tests=records, pending_orders=pending_sample,
                            containers=misc.container_options(),
@@ -464,14 +458,9 @@ def select_location():
 @app.route("/test/create", methods=['POST'])
 def create_lab_order():
     for test in request.form.getlist('test_type[]'):
-
-         # Get current time in CAT as a string
-        #now = datetime.now(CAT).strftime('%Y-%m-%d %H:%M:%S')
-        now = datetime.now(CAT).strftime('%Y-%B-%d %H:%M:%S')#show month name instead of monh number
-
         new_test = {
             'ordered_by': request.form['ordered_by'],
-            'date_ordered': now,         
+            'date_ordered': int(datetime.now().strftime('%s')),
             'status': 'Ordered',
             'sample_type': request.form['specimen_type'],
             'clinical_history': request.form['clinical_history'],
@@ -492,6 +481,7 @@ def create_lab_order():
             new_test['type'] = 'test'
             new_test['test_type'] = test
         db.save(new_test)
+       
         flash("New test ordered.", 'success')
     return redirect(url_for('patient', patient_id=request.form['patient_id'],
                             sample_draw=(request.form["sampleCollection"] == "Collect Now")))
@@ -662,8 +652,6 @@ def reprint_barcode(test_id):
 
     return render_template("download.html", patient_id=var_patient["_id"])
 
-
-
 @app.route("/test/<test_id>/review_ajax")
 @app.route("/test/<test_id>/review")
 def review_test(test_id):
@@ -673,14 +661,12 @@ def review_test(test_id):
     else:
         test["status"] = "Specimen Rejected"
     test["reviewed_by"] = session["user"]['username']
-    test["reviewed_at"] = datetime.now(CAT).strftime('%Y-%m-%d %H:%M:%S')
+    test["reviewed_at"] = int(datetime.now().strftime('%s'))
     db.save(test)
-
     if "review_ajax" in request.path.split("/"):
         return "Success"
     else:
         return redirect(url_for('patient', patient_id=test['patient_id']))
-
 
 @app.route("/get_charge_state")
 def get_charge_state():
@@ -854,7 +840,6 @@ def check_authentication():
 @app.context_processor
 def inject_now():
     return {'now': datetime.now().strftime("%H:%M%p")}
-
 
 @app.context_processor
 def inject_user():

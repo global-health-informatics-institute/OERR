@@ -354,11 +354,15 @@
 
                 <div class="tab">
                     <h2>Enter Clinical Information/History</h2>
-                    <div>
-                    <input type="text" placeholder="Clinical history" name="clinical_history" id="input20" class="input" value="{{
-                      request.form.clinical_history }}" maxlength="{{ch_length}}" required style="width: 90%; font-size : 18pt;border-radius:5px;height: 7vh;">
-                        <span style="font-weight:500;font-size:14pt;">Max Char : {{ch_length}}</span>
-                    </div>
+                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                        <input type="text" placeholder="Clinical history" name="clinical_history" id="input20" class="input" 
+                          value="{{ request.form.clinical_history }}" 
+                          maxlength="{{ch_length}}" 
+                          required 
+                          style="width: 90%; font-size: 18pt; border-radius:5px; height: 7vh;">
+                        <span style="font-weight:500; font-size: 14pt; white-space: nowrap;">Max Char : {{ch_length}}</span>
+                      </div>
+                      
                     <div id="antibiotics" style="margin-top: 10px;">
                     <label  style="font-size: 18pt;">Antibiotics:</label>
                     <input type="text"  value="" name="antibiotics" style="width: 45%; font-size: 18pt; border-radius: 5px;

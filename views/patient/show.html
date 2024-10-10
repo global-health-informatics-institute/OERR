@@ -508,6 +508,16 @@
             x.innerHTML= "Printing..";
         }
 
+         // Add event listener to enforce maxLength at runtime
+    document.getElementById("input20").addEventListener("input", function() {
+        var maxLength = {{ch_length}};
+        var currentLength = this.value.length;
+
+        if (currentLength >= maxLength) {
+            this.value = this.value.slice(0, maxLength); // Truncate to the allowed length
+        }
+    });
+
 
 function handleCheckboxChange() {
     var checkboxes = document.querySelectorAll('input[name="test_type[]"]:checked');

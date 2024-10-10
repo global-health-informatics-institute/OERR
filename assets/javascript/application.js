@@ -138,6 +138,7 @@ function validateForm() {
     return valid; // return the valid status
 }
 
+// Start here for Doctors search
 function filterDoctors() {
     // Get the search input value
     var input = document.getElementById('doctor-search');
@@ -232,6 +233,7 @@ document.addEventListener('click', function(event) {
 document.getElementById('doctor-search').addEventListener('focus', function() {
     showKeyboard();
 });
+// It ends here
 
 function fixStepIndicator(n) {
     // This function removes the "active" class of all steps...

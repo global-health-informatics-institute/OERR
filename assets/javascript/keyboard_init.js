@@ -1,6 +1,7 @@
 let Keyboard = window.SimpleKeyboard.default;
 
 let selectedInput;
+let maxCharacters = 10
 
 let keyboard = new Keyboard({
   onChange: input => onChange(input),
@@ -23,8 +24,6 @@ let keyboard = new Keyboard({
       '{space}': 'space',
       '{lock}': 'CAPS'
     }
-  },
-maxLength: {
   }
 });
 
@@ -44,11 +43,18 @@ function onInputFocus(event) {
 }
 
 function onInputChange(event) {
-  keyboard.setInput(event.target.value, event.target.id);
+  let currentLength = event.target.value.length;
+  if (currentLength <= maxCharacters) {
+    keyboard.setInput(event.target.value, event.target.id);
+  }
 }
 
 function onChange(input) {
-  document.querySelector(selectedInput || ".input").value = input;
+  // Get the length of the current input
+  let currentInputElement = document.querySelector(selectedInput || ".input");
+  if (input.length <= maxCharacters) {
+    currentInputElement.value = input;
+  }
 }
 
 function onKeyPress(button) {

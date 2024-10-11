@@ -357,10 +357,10 @@
                     <div style="display: flex; align-items: center; justify-content: space-between;">
                         <input type="text" placeholder="Clinical history" name="clinical_history" id="input20" class="input" 
                           value="{{ request.form.clinical_history }}" 
-                          maxlength="{{ch_length}}" 
+                          maxlength="{{ ch_length }}" 
                           required 
                           style="width: 90%; font-size: 18pt; border-radius:5px; height: 7vh;">
-                        <span style="font-weight:500; font-size: 14pt; white-space: nowrap;">Max Char : {{ch_length}}</span>
+                        <span style="font-weight:500; font-size: 14pt; white-space: nowrap;">Max Char : {{ ch_length }}</span>
                       </div>                      
                     <div id="antibiotics" style="margin-top: 10px;">
                     <label  style="font-size: 18pt;">Antibiotics:</label>
@@ -492,44 +492,32 @@
         }
 
         function waitForKeyboard() {
-    if (typeof keyboard !== 'undefined') {
-        // Set maxLength for onscreen keyboard
-        keyboard.options.maxLength["default"] = {{ch_length}};
-        return;
-    } else {
-        setTimeout(function() {
-            waitForKeyboard();
-        }, 2000);
-    }
-}
-waitForKeyboard();
+            if(typeof keyboard !== 'undefined' ) {
+                keyboard.options.maxLength["default"] = {{ch_length}}
+                return;
+            }
+            else {
+                setTimeout(function() {
+                    waitForKeyboard();
+                }, 2000);
+            }
+        }
+        waitForKeyboard()
+        function disable_button(x){
+            x.disabled =  true;
+            x.innerHTML= "Printing..";
+        }
+        console.log("ch_length:", {{ ch_length }});  // Log the character limit
 
-function disable_button(x) {
-    x.disabled = true;
-    x.innerHTML = "Printing..";
-}
+    //      // Add event listener to enforce maxLength at runtime
+    // document.getElementById("input20").addEventListener("input", function() {
+    //     var maxLength = {{ch_length}};
+    //     var currentLength = this.value.length;
 
-// Strict enforcement of maxLength for all keyboards, including onscreen
-document.getElementById("input20").addEventListener("input", function() {
-    var maxLength = {{ch_length}};
-    var currentLength = this.value.length;
-
-    if (currentLength > maxLength) {
-        // Trim the value if it exceeds the allowed length
-        this.value = this.value.slice(0, maxLength);
-    }
-});
-
-// Keyup and keydown event listeners for additional control
-document.getElementById("input20").addEventListener("keydown", function(e) {
-    var maxLength = {{ch_length}};
-    var currentLength = this.value.length;
-
-    // Prevent adding more characters if the limit is reached
-    if (currentLength >= maxLength && ![8, 37, 39, 46].includes(e.keyCode)) { // Allow Backspace, Delete, and Arrow keys
-        e.preventDefault();
-    }
-});
+    //     if (currentLength >= maxLength) {
+    //         this.value = this.value.slice(0, maxLength); // Truncate to the allowed length
+    //     }
+    // });
 
 
 function handleCheckboxChange() {

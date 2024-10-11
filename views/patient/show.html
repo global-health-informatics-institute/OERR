@@ -491,33 +491,83 @@
             xhr.send();
         }
 
-        function waitForKeyboard() {
-            if(typeof keyboard !== 'undefined' ) {
-                keyboard.options.maxLength["default"] = {{ch_length}}
-                return;
-            }
-            else {
-                setTimeout(function() {
-                    waitForKeyboard();
-                }, 2000);
-            }
-        }
-        waitForKeyboard()
-        function disable_button(x){
-            x.disabled =  true;
-            x.innerHTML= "Printing..";
-        }
-        console.log("ch_length:", {{ ch_length }});  // Log the character limit
+//         function waitForKeyboard() {
+//     if (typeof keyboard !== 'undefined' && keyboard.options) {
+//         // Set maxLength for onscreen keyboard
+//         keyboard.options.maxLength["default"] = {{ch_length}};
+//         return;
+//     } else {
+//         setTimeout(function() {
+//             waitForKeyboard();
+//         }, 2000);
+//     }
+// }
+// console.log("Keyboard options:", keyboard?.options);
 
-    //      // Add event listener to enforce maxLength at runtime
-    // document.getElementById("input20").addEventListener("input", function() {
-    //     var maxLength = {{ch_length}};
-    //     var currentLength = this.value.length;
+//         waitForKeyboard()
+//         function disable_button(x){
+//             x.disabled =  true;
+//             x.innerHTML= "Printing..";
+//         }
+//         console.log("ch_length:", {{ ch_length }});  // Log the character limit
 
-    //     if (currentLength >= maxLength) {
-    //         this.value = this.value.slice(0, maxLength); // Truncate to the allowed length
-    //     }
-    // });
+   // Function to enforce character limit when typing
+function enforceCharacterLimit(inputField, ch_length) {
+    inputField.addEventListener("input", function() {
+        if (inputField.value.length >= ch_length) {
+            inputField.value = inputField.value.substring(0, ch_length);  // Trim to allowed length
+            console.warn("Character limit reached!");
+        }
+    });
+}
+
+// Function to listen for onscreen keyboard input and enforce max length
+function enforceKeyboardCharacterLimit(inputField, ch_length) {
+    if (typeof keyboard !== 'undefined' && keyboard.options) {
+        keyboard.onKeyPress = function() {
+            if (inputField.value.length >= ch_length) {
+                inputField.value = inputField.value.substring(0, ch_length);  // Trim to allowed length
+                console.warn("Onscreen keyboard: Character limit reached!");
+            }
+        };
+    }
+}
+
+// Function to wait for onscreen keyboard and set up max length
+function waitForKeyboard() {
+    const inputField = document.getElementById("input20");
+    const ch_length = {{ ch_length }};  // Character limit from backend
+    
+    // Ensure the input field itself enforces the character limit
+    enforceCharacterLimit(inputField, ch_length);
+
+    // Check if keyboard exists and apply limit enforcement if it's defined
+    if (typeof keyboard !== 'undefined' && keyboard.options) {
+        keyboard.options.maxLength["default"] = ch_length;  // Set maxLength for onscreen keyboard
+        enforceKeyboardCharacterLimit(inputField, ch_length);  // Apply limit to keyboard
+        return;
+    } else {
+        setTimeout(function() {
+            waitForKeyboard();  // Retry after a delay
+        }, 2000);
+    }
+}
+
+// Initial setup: enforce limit regardless of keyboard status
+document.addEventListener("DOMContentLoaded", function() {
+    const inputField = document.getElementById("input20");
+    const ch_length = {{ ch_length }};  // Character limit from backend
+    
+    // Apply input length enforcement
+    enforceCharacterLimit(inputField, ch_length);
+
+    // Initialize the wait for the keyboard logic
+    waitForKeyboard();
+});
+
+// Logging for debugging
+console.log("Keyboard options:", keyboard?.options);
+console.log("ch_length:", {{ ch_length }});  // Log the character limit from backend
 
 
 function handleCheckboxChange() {

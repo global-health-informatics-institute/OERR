@@ -17,14 +17,13 @@ from models.patient import Patient
 from models.user import User
 from utils import misc
 
-
 app = Flask(__name__, template_folder="views", static_folder="assets")
 app.secret_key = os.urandom(25)
 
 # Generate hashed password
-password = "thatgirl"
-hashed_password = generate_password_hash(password)
-print(hashed_password)
+# password = "thatgirl"
+# hashed_password = generate_password_hash(password)
+# print(hashed_password)
 
 # Main application configuration
 global db
@@ -113,7 +112,6 @@ def index():
     records = sorted(records, key=lambda e: e["date"], reverse=True)
     # my_team_recs = sorted(my_team_recs, key=lambda e: e["date"], reverse=True)
     return render_template('main/index.html', orders=records, current_facility=misc.current_facility())
-
 
 # process barcode from the main index page
 @app.route("/process_barcode", methods=["POST"])
@@ -261,6 +259,8 @@ def patient(patient_id):
 
     records = sorted(records, key=lambda e: e["date"], reverse=True)
     permitted_length = 85 - 50 - len(var_patient['name']) - len(var_patient['id'])
+    print(f"Permitted length: {permitted_length}")  # Debugging line
+
     return render_template('patient/show.html', pt_details=var_patient, tests=records, pending_orders=pending_sample,
                            containers=misc.container_options(),
                            collect_samples=draw_sample, doctors=prescribers(), ch_length=permitted_length,
@@ -483,6 +483,7 @@ def create_lab_order():
             new_test['type'] = 'test'
             new_test['test_type'] = test
         db.save(new_test)
+       
         flash("New test ordered.", 'success')
     return redirect(url_for('patient', patient_id=request.form['patient_id'],
                             sample_draw=(request.form["sampleCollection"] == "Collect Now")))
@@ -653,8 +654,6 @@ def reprint_barcode(test_id):
 
     return render_template("download.html", patient_id=var_patient["_id"])
 
-
-
 @app.route("/test/<test_id>/review_ajax")
 @app.route("/test/<test_id>/review")
 def review_test(test_id):
@@ -666,12 +665,10 @@ def review_test(test_id):
     test["reviewed_by"] = session["user"]['username']
     test["reviewed_at"] = int(datetime.now().strftime('%s'))
     db.save(test)
-
     if "review_ajax" in request.path.split("/"):
         return "Success"
     else:
         return redirect(url_for('patient', patient_id=test['patient_id']))
-
 
 @app.route("/get_charge_state")
 def get_charge_state():
@@ -845,7 +842,6 @@ def check_authentication():
 @app.context_processor
 def inject_now():
     return {'now': datetime.now().strftime("%H:%M%p")}
-
 
 @app.context_processor
 def inject_user():

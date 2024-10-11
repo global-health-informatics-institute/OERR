@@ -373,7 +373,7 @@ def lazarous():
 
         source_to_target_cmd = [
             'curl', '-d', json.dumps({
-                "_id": f"base-source-to-target_{suffix}",
+                "_id": f"base-source-to-target{suffix}",
                 "source": source_url,
                 "target": target_url,
                 "create_target": True,
@@ -383,7 +383,7 @@ def lazarous():
         
         target_to_source_cmd_ltp = [
             'curl', '-d', json.dumps({
-                "_id": f"base-target-to-source_{suffix}",
+                "_id": f"base-target-to-source{suffix}",
                 "source": target_url,
                 "target": source_url,
                 "create_target": True,
@@ -406,6 +406,7 @@ if __name__ == "__main__":
     exodus()
     house_keeping_please(f"{database}_active")
     house_keeping_please("_replicator")
+    lazarous()
 
     # Log final messages with document and error counts
     logger.info(f"Documents Updated patient: {patient_update}")
@@ -417,7 +418,6 @@ if __name__ == "__main__":
     logger.error(f"Errors - Misc: {error_misc}")
     logger.info(f"Database_created: {database}")
     print("\n\nSetting up replication now...")
-
     # Print all buffered log messages at the end
     print(log_buffer.getvalue())
     time.sleep(10)

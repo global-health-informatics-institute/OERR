@@ -14,6 +14,7 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/keyboard.css') }}">
     <script src="{{url_for('static', filename='javascript/keyboard.js')}}" defer></script>
     <script src="{{url_for('static', filename='javascript/keyboard_init.js')}}" defer></script>
+    <script src="{{url_for('static', filename='javascript/restriction.js')}}" defer></script>
     <div class="header">
         <table style="width:100%;">
             <tr>
@@ -351,17 +352,29 @@
 {% else %}
 <input type="hidden" name='ordered_by' value={{session["user"]['username']}} >
 {% endif %}
+{% if ch_length is not none %}
+    {% set max_length = ch_length %}
+{% else %}
+    {% set max_length = 10 %}
+{% endif %}
 
                 <div class="tab">
                     <h2>Enter Clinical Information/History</h2>
                     <div style="display: flex; align-items: center; justify-content: space-between;">
-                        <input type="text" placeholder="Clinical history" name="clinical_history" id="input20" class="input" 
-                          value="{{ request.form.clinical_history }}" 
-                          maxlength="{{ ch_length }}" 
-                          required 
-                          style="width: 90%; font-size: 18pt; border-radius:5px; height: 7vh;">
-                        <span style="font-weight:500; font-size: 14pt; white-space: nowrap;">Max Char : {{ ch_length }}</span>
-                      </div>                      
+                        <input type="text" placeholder="Clinical history" name="clinical_history" id="restricted" class="input"  required 
+                          style="width: 100%; font-size: 18pt; border-radius:5px; height: 7vh; pointer-events: none;"
+                          autofocus
+                          onfocus="restriction"
+                          oninput="restriction"
+                          onabort="restriction"
+                          onclick="restriction"
+                          onchange="restriction"
+                          onformchange="restriction"
+                          onforminput="restriction"
+                        >
+                        <input type="number" value="{{max_length}}" hidden id="controll">
+                      </div>
+                    <div style="font-weight:500; font-size: 14pt; padding-top: 10px;">Max Char : {{ max_length }}</div>
                     <div id="antibiotics" style="margin-top: 10px;">
                     <label  style="font-size: 18pt;">Antibiotics:</label>
                     <input type="text"  value="" name="antibiotics" style="width: 45%; font-size: 18pt; border-radius: 5px;

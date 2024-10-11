@@ -14,7 +14,6 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/keyboard.css') }}">
     <script src="{{url_for('static', filename='javascript/keyboard.js')}}" defer></script>
     <script src="{{url_for('static', filename='javascript/keyboard_init.js')}}" defer></script>
-    <script src="{{url_for('static', filename='javascript/restriction.js')}}" defer></script>
     <div class="header">
         <table style="width:100%;">
             <tr>
@@ -279,7 +278,7 @@
     <!-- Container for search input and keyboard -->
     <div id="search-container" style="position: relative;">
         <!-- Search input field -->
-        <input type="text" id="doctor-search" placeholder="Search person..." onfocus="showKeyboard()" onkeyup="filterDoctors()">
+        <input type="text" id="doctor-search" placeholder="Search..." onfocus="showKeyboard()" onkeyup="filterDoctors()">
         <div id="keyboard" style="display: none; position: absolute; top: 100%; left: 0; background: white; padding: 10px; border: 1px solid #ccc; z-index: 1000;">
             <!-- <div id="keyboard" style="display: none;"> -->
             <!-- Number keys -->
@@ -352,29 +351,14 @@
 {% else %}
 <input type="hidden" name='ordered_by' value={{session["user"]['username']}} >
 {% endif %}
-{% if ch_length is not none %}
-    {% set max_length = ch_length %}
-{% else %}
-    {% set max_length = 10 %}
-{% endif %}
 
                 <div class="tab">
                     <h2>Enter Clinical Information/History</h2>
-                    <div style="display: flex; align-items: center; justify-content: space-between;">
-                        <input type="text" placeholder="Clinical history" name="clinical_history" id="restricted" class="input"  required 
-                          style="width: 100%; font-size: 18pt; border-radius:5px; height: 7vh; pointer-events: none;"
-                          autofocus
-                          onfocus="restriction"
-                          oninput="restriction"
-                          onabort="restriction"
-                          onclick="restriction"
-                          onchange="restriction"
-                          onformchange="restriction"
-                          onforminput="restriction"
-                        >
-                        <input type="number" value="{{max_length}}" hidden id="controll">
-                      </div>
-                    <div style="font-weight:500; font-size: 14pt; padding-top: 10px;">Max Char : {{ max_length }}</div>
+                    <div>
+                    <input type="text" placeholder="Clinical history" name="clinical_history" id="input20" class="input" value="{{
+                      request.form.clinical_history }}" maxlength="{{ch_length}}" required style="width: 100%; font-size : 18pt;border-radius:5px;height: 7vh;">
+                        <span style="font-weight:500;font-size:14pt;">Max Char : {{ch_length}}</span>
+                    </div>
                     <div id="antibiotics" style="margin-top: 10px;">
                     <label  style="font-size: 18pt;">Antibiotics:</label>
                     <input type="text"  value="" name="antibiotics" style="width: 45%; font-size: 18pt; border-radius: 5px;
@@ -520,17 +504,6 @@
             x.disabled =  true;
             x.innerHTML= "Printing..";
         }
-        console.log("ch_length:", {{ ch_length }});  // Log the character limit
-
-    //      // Add event listener to enforce maxLength at runtime
-    // document.getElementById("input20").addEventListener("input", function() {
-    //     var maxLength = {{ch_length}};
-    //     var currentLength = this.value.length;
-
-    //     if (currentLength >= maxLength) {
-    //         this.value = this.value.slice(0, maxLength); // Truncate to the allowed length
-    //     }
-    // });
 
 
 function handleCheckboxChange() {

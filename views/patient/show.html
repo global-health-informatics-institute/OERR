@@ -352,24 +352,24 @@
 <input type="hidden" name='ordered_by' value={{session["user"]['username']}} >
 {% endif %}
 
-                <div class="tab">
-                    <h2>Enter Clinical Information/History</h2>
-                    <div style="display: flex; align-items: center; justify-content: space-between;">
-                        <input type="text" placeholder="Clinical history" name="clinical_history" id="input20" class="input" 
-                          value="{{ request.form.clinical_history }}" 
-                          maxlength="{{ ch_length }}" 
-                          required 
-                          style="width: 90%; font-size: 18pt; border-radius:5px; height: 7vh;">
-                        <span style="font-weight:500; font-size: 14pt; white-space: nowrap;">Max Char : {{ ch_length }}</span>
-                      </div>                      
-                    <div id="antibiotics" style="margin-top: 10px;">
-                    <label  style="font-size: 18pt;">Antibiotics:</label>
-                    <input type="text"  value="" name="antibiotics" style="width: 45%; font-size: 18pt; border-radius: 5px;
-                     height: 7vh; display: inline-block; margin-left: 10px;"/>
-                     </div>
-
-                    <div class="simple-keyboard" style="width: 99%; border: 1px solid silver;margin-top: 2vh;"></div>
-                </div>
+<div id="clinical-info-section" class="tab">
+    <h2>Enter Clinical Information/History</h2>
+    <div style="display: flex; align-items: center; justify-content: space-between;">
+      <input type="text" placeholder="Clinical history" name="clinical_history" id="input20" class="input" 
+        value="{{ request.form.clinical_history }}" 
+        maxlength="{{ ch_length }}" 
+        required 
+        style="width: 90%; font-size: 18pt; border-radius:5px; height: 7vh;">
+      <span style="font-weight:500; font-size: 14pt; white-space: nowrap;">Max Char : {{ ch_length }}</span>
+    </div>                      
+    <div id="antibiotics" style="margin-top: 10px;">
+      <label  style="font-size: 18pt;">Antibiotics:</label>
+      <input type="text" value="" name="antibiotics" style="width: 45%; font-size: 18pt; border-radius: 5px;
+      height: 7vh; display: inline-block; margin-left: 10px;"/>
+    </div>
+    <div class="simple-keyboard" style="width: 99%; border: 1px solid silver;margin-top: 2vh;"></div>
+  </div>
+  
                 <div class="tab">
                     <h2>Select priotity for test(s)</h2>
                     <ul>
@@ -491,83 +491,45 @@
             xhr.send();
         }
 
-//         function waitForKeyboard() {
-//     if (typeof keyboard !== 'undefined' && keyboard.options) {
-//         // Set maxLength for onscreen keyboard
-//         keyboard.options.maxLength["default"] = {{ch_length}};
-//         return;
-//     } else {
-//         setTimeout(function() {
-//             waitForKeyboard();
-//         }, 2000);
-//     }
-// }
-// console.log("Keyboard options:", keyboard?.options);
-
-//         waitForKeyboard()
-//         function disable_button(x){
-//             x.disabled =  true;
-//             x.innerHTML= "Printing..";
-//         }
-//         console.log("ch_length:", {{ ch_length }});  // Log the character limit
-
-   // Function to enforce character limit when typing
-function enforceCharacterLimit(inputField, ch_length) {
-    inputField.addEventListener("input", function() {
-        if (inputField.value.length >= ch_length) {
-            inputField.value = inputField.value.substring(0, ch_length);  // Trim to allowed length
-            console.warn("Character limit reached!");
-        }
-    });
-}
-
-// Function to listen for onscreen keyboard input and enforce max length
-function enforceKeyboardCharacterLimit(inputField, ch_length) {
+        function waitForKeyboard() {
     if (typeof keyboard !== 'undefined' && keyboard.options) {
-        keyboard.onKeyPress = function() {
-            if (inputField.value.length >= ch_length) {
-                inputField.value = inputField.value.substring(0, ch_length);  // Trim to allowed length
-                console.warn("Onscreen keyboard: Character limit reached!");
-            }
-        };
-    }
-}
-
-// Function to wait for onscreen keyboard and set up max length
-function waitForKeyboard() {
-    const inputField = document.getElementById("input20");
-    const ch_length = {{ ch_length }};  // Character limit from backend
-    
-    // Ensure the input field itself enforces the character limit
-    enforceCharacterLimit(inputField, ch_length);
-
-    // Check if keyboard exists and apply limit enforcement if it's defined
-    if (typeof keyboard !== 'undefined' && keyboard.options) {
-        keyboard.options.maxLength["default"] = ch_length;  // Set maxLength for onscreen keyboard
-        enforceKeyboardCharacterLimit(inputField, ch_length);  // Apply limit to keyboard
+        // Set maxLength for onscreen keyboard
+        keyboard.options.maxLength["default"] = {{ch_length}};
         return;
     } else {
         setTimeout(function() {
-            waitForKeyboard();  // Retry after a delay
+            waitForKeyboard();
         }, 2000);
     }
 }
+console.log("Keyboard options:", keyboard?.options);
 
-// Initial setup: enforce limit regardless of keyboard status
-document.addEventListener("DOMContentLoaded", function() {
+        waitForKeyboard()
+        function disable_button(x){
+            x.disabled =  true;
+            x.innerHTML= "Printing..";
+        }
+        console.log("ch_length:", {{ ch_length }});  // Log the character limit
+
+        // Ensure to execute this function after the DOM has fully loaded
+document.addEventListener("DOMContentLoaded", function () {
     const inputField = document.getElementById("input20");
-    const ch_length = {{ ch_length }};  // Character limit from backend
-    
-    // Apply input length enforcement
-    enforceCharacterLimit(inputField, ch_length);
+    const maxLength = {{ ch_length }}; // Ensure this variable is available
 
-    // Initialize the wait for the keyboard logic
-    waitForKeyboard();
+    // Function to enforce the character limit
+    function enforceMaxLength() {
+        if (inputField.value.length > maxLength) {
+            inputField.value = inputField.value.substring(0, maxLength); // Truncate to max length
+        }
+    }
+
+    // Add input event listener to enforce max length
+    inputField.addEventListener("input", enforceMaxLength);
+    
+    // Optionally, enforce max length when the input gains focus
+    inputField.addEventListener("focus", enforceMaxLength);
 });
 
-// Logging for debugging
-console.log("Keyboard options:", keyboard?.options);
-console.log("ch_length:", {{ ch_length }});  // Log the character limit from backend
 
 
 function handleCheckboxChange() {

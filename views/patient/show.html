@@ -278,7 +278,7 @@
     <!-- Container for search input and keyboard -->
     <div id="search-container" style="position: relative;">
         <!-- Search input field -->
-        <input type="text" id="doctor-search" placeholder="Search person..." onfocus="showKeyboard()" onkeyup="filterDoctors()">
+        <input type="text" id="doctor-search" placeholder="Search..." onfocus="showKeyboard()" onkeyup="filterDoctors()">
         <div id="keyboard" style="display: none; position: absolute; top: 100%; left: 0; background: white; padding: 10px; border: 1px solid #ccc; z-index: 1000;">
             <!-- <div id="keyboard" style="display: none;"> -->
             <!-- Number keys -->
@@ -352,24 +352,21 @@
 <input type="hidden" name='ordered_by' value={{session["user"]['username']}} >
 {% endif %}
 
-<div id="clinical-info-section" class="tab">
-    <h2>Enter Clinical Information/History</h2>
-    <div style="display: flex; align-items: center; justify-content: space-between;">
-      <input type="text" placeholder="Clinical history" name="clinical_history" id="input20" class="input" 
-        value="{{ request.form.clinical_history }}" 
-        maxlength="{{ ch_length }}" 
-        required 
-        style="width: 90%; font-size: 18pt; border-radius:5px; height: 7vh;">
-      <span style="font-weight:500; font-size: 14pt; white-space: nowrap;">Max Char : {{ ch_length }}</span>
-    </div>                      
-    <div id="antibiotics" style="margin-top: 10px;">
-      <label  style="font-size: 18pt;">Antibiotics:</label>
-      <input type="text" value="" name="antibiotics" style="width: 45%; font-size: 18pt; border-radius: 5px;
-      height: 7vh; display: inline-block; margin-left: 10px;"/>
-    </div>
-    <div class="simple-keyboard" style="width: 99%; border: 1px solid silver;margin-top: 2vh;"></div>
-  </div>
-  
+                <div class="tab">
+                    <h2>Enter Clinical Information/History</h2>
+                    <div>
+                    <input type="text" placeholder="Clinical history" name="clinical_history" id="input20" class="input" value="{{
+                      request.form.clinical_history }}" maxlength="{{ch_length}}" required style="width: 100%; font-size : 18pt;border-radius:5px;height: 7vh;">
+                        <span style="font-weight:500;font-size:14pt;">Max Char : {{ch_length}}</span>
+                    </div>
+                    <div id="antibiotics" style="margin-top: 10px;">
+                    <label  style="font-size: 18pt;">Antibiotics:</label>
+                    <input type="text"  value="" name="antibiotics" style="width: 45%; font-size: 18pt; border-radius: 5px;
+                     height: 7vh; display: inline-block; margin-left: 10px;"/>
+                     </div>
+
+                    <div class="simple-keyboard" style="width: 99%; border: 1px solid silver;margin-top: 2vh;"></div>
+                </div>
                 <div class="tab">
                     <h2>Select priotity for test(s)</h2>
                     <ul>
@@ -492,43 +489,21 @@
         }
 
         function waitForKeyboard() {
-    if (typeof keyboard !== 'undefined' && keyboard.options) {
-        // Set maxLength for onscreen keyboard
-        keyboard.options.maxLength["default"] = {{ch_length}};
-        return;
-    } else {
-        setTimeout(function() {
-            waitForKeyboard();
-        }, 2000);
-    }
-}
-console.log("Keyboard options:", keyboard?.options);
-
+            if(typeof keyboard !== 'undefined' ) {
+                keyboard.options.maxLength["default"] = {{ch_length}}
+                return;
+            }
+            else {
+                setTimeout(function() {
+                    waitForKeyboard();
+                }, 2000);
+            }
+        }
         waitForKeyboard()
         function disable_button(x){
             x.disabled =  true;
             x.innerHTML= "Printing..";
         }
-        console.log("ch_length:", {{ ch_length }});  // Log the character limit
-// Ensure to execute this function after the DOM has fully loaded
-document.addEventListener("DOMContentLoaded", function () {
-    const inputField = document.getElementById("input20");
-    const maxLength = {{ ch_length }}; // Ensure this variable is available
-
-    // Function to enforce the character limit
-    function enforceMaxLength() {
-        if (inputField.value.length > maxLength) {
-            inputField.value = inputField.value.substring(0, maxLength); // Truncate to max length
-        }
-    }
-
-    // Add input event listener to enforce max length
-    inputField.addEventListener("input", enforceMaxLength);
-    
-    // Optionally, enforce max length when the input gains focus
-    inputField.addEventListener("focus", enforceMaxLength);
-});
-
 
 
 function handleCheckboxChange() {

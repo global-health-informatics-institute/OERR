@@ -259,7 +259,7 @@ def patient(patient_id):
 
     records = sorted(records, key=lambda e: e["date"], reverse=True)
     permitted_length = 85 - 50 - len(var_patient['name']) - len(var_patient['id'])
-    print(f"Permitted length: {permitted_length}")  # Debugging line
+    # print(f"Permitted length: {permitted_length}")  # Debugging line
 
     return render_template('patient/show.html', pt_details=var_patient, tests=records, pending_orders=pending_sample,
                            containers=misc.container_options(),

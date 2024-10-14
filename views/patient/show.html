@@ -510,8 +510,7 @@ console.log("Keyboard options:", keyboard?.options);
             x.innerHTML= "Printing..";
         }
         console.log("ch_length:", {{ ch_length }});  // Log the character limit
-
-        // Ensure to execute this function after the DOM has fully loaded
+// Ensure to execute this function after the DOM has fully loaded
 document.addEventListener("DOMContentLoaded", function () {
     const inputField = document.getElementById("input20");
     const maxLength = {{ ch_length }}; // Ensure this variable is available

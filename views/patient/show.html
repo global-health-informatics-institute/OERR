@@ -352,23 +352,16 @@
 <input type="hidden" name='ordered_by' value={{session["user"]['username']}} >
 {% endif %}
 
-{% if ch_length != None %}
-    {% set max_length = ch_length %}
-{% else %}
-    {% set max_length = 10 %}
-{% endif %}
-
-    
                 <div class="tab">
                     <h2>Enter Clinical Information/History</h2>
                     <div>
-                        <input type="text" placeholder="Clinical history" value="" name="clinical_history" id="restrict" class="input" required style="width: 100%; font-size : 18pt;border-radius:5px; height: 7vh; pointer-events: none;" maxlength="{{ch_length}}"/>         
+                    <input type="text" placeholder="Clinical history" name="clinical_history" id="input20" class="input" value="{{
+                      request.form.clinical_history }}" maxlength="{{ch_length}}" required style="width: 100%; font-size : 18pt;border-radius:5px;height: 7vh;">
                         <span style="font-weight:500;font-size:14pt;">Max Char : {{ch_length}}</span>
-                        <input type="number"  id="controll" value="{{max_length}}" >
                     </div>
                     <div id="antibiotics" style="margin-top: 10px;">
                     <label  style="font-size: 18pt;">Antibiotics:</label>
-                    <input type="text"  value="{{request.form.antibiotics}}" name="antibiotics" style="width: 45%; font-size: 18pt; border-radius: 5px;
+                    <input type="text"  value="" name="antibiotics" style="width: 45%; font-size: 18pt; border-radius: 5px;
                      height: 7vh; display: inline-block; margin-left: 10px;"/>
                      </div>
 
@@ -532,9 +525,8 @@ function handleCheckboxChange() {
     } else {
         document.getElementById('antibiotics').style.display = 'none';
     }
+
 }
-
-
 
     </script>
 {% endblock %}

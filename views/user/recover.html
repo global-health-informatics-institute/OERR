@@ -1,0 +1,111 @@
+{% extends 'layout/application.html' %}
+{% block title %}Reset Password{% endblock %}
+{% block content %}
+<div style="margin-left: auto;margin-right: auto;width: 95%; border: 1px solid silver;padding: 1%;margin-top:5vh;">
+      <h1>Please Fill out these feilds</h1>
+      <form action="/reset" name="resetForm" method="post">
+        
+        <h3>Username</h3>
+         <input type="text" placeholder="please enter your username" required name="userName"  id="userName" class="input" style="width: 100%; font-size : 18pt;border-radius:5px;height: 7vh;">
+
+        <h3>Full name</h3>
+        <input type="text" placeholder="Please enter your fullname" name="fullName" id="fullName" class="input" value="{{
+          request.form.fullName }}" required style="width: 100%; font-size : 18pt;border-radius:5px;height: 7vh;">
+          
+      </form>
+        <p class="error" id="errorField" style="font-size: 12pt; {% if status %} color:blue{% endif %}">
+            {% if status %}
+            <strong>Password:</strong> {{ status | safe }}
+            {% endif %}
+            {% if error %}
+            <strong>Error:</strong> {{ error }}
+            {% endif %}
+        </p>
+    </div>
+    <div class="simple-keyboard" style="margin-left: auto;margin-right: auto;width: 95%; border: 1px solid silver;margin-top: 2vh;">
+
+    </div>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/keyboard.css') }}">
+    <script src="{{url_for('static', filename='javascript/keyboard.js')}}" defer></script>
+    <script src="{{url_for('static', filename='javascript/keyboard_init.js')}}" defer></script>
+
+
+    <script>
+        function reset() {
+            var fullname = document.getElementById("fullName");
+            var username = document.getElementById("userName");
+    
+            // Reset error message
+            document.getElementById('errorField').innerHTML = "";
+    
+            // Validation for fullname
+            if (fullname.value.length < 1) {
+                fullname.className += " invalid";
+                document.getElementById('errorField').innerHTML = "Please enter your fullname.";
+                return false; // Stop execution
+            }
+    
+            // Validation for username
+            if (username.value.length < 1) {
+                username.className += " invalid";
+                document.getElementById('errorField').innerHTML = "Please enter your username.";
+                return false; // Stop execution
+            }
+    
+            // Show spinner or execute further logic
+            Spinner.show();
+    
+            // Validation passed, return true to proceed with redirect
+            return true;
+        }
+    
+        // Modify the reset button to run the reset function first, then redirect
+        function submitFormWithRedirect() {
+            if (reset()) {
+                var fullname = document.getElementById("fullName").value;
+                var username = document.getElementById("userName").value;
+                // Redirect with the URL parameters
+                window.location = '/login?switch=2&fullname=' + encodeURIComponent(fullname) + '&username=' + encodeURIComponent(username);
+            }
+        }
+    
+        // Function to get query parameters
+        function getQueryParameter(name) {
+            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+            var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+            var results = regex.exec(location.search);
+            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+        }
+    
+        // Function to pre-populate fields from URL parameters
+        function pre_populate() {
+            var userName = document.getElementById("userName");
+            var fullName = document.getElementById("fullName");
+            var passedUserName = getQueryParameter('username');
+            var passedFullName = getQueryParameter('fullname');
+            if (passedUserName != null && passedUserName != "") {
+                userName.value = passedUserName;
+            }
+            if (passedFullName != null && passedFullName != "") {
+                fullName.value = passedFullName;
+            }
+        }
+    
+        // Navigation buttons
+        navButtons = [
+            "<button class=\"nvButton red\" onmousedown=\"window.location='/login'\" style=\"float: left;\">Go Back</button>",
+            "<button class=\"nvButton blue\" onmousedown=\"submitFormWithRedirect()\" style=\"float: right;\">Reset</button>"
+        ];
+    
+        // // Only run pre_populate once by using localStorage
+        // if (localStorage.getItem('pre_populated') !== 'true') {
+        //     pre_populate(); // Run pre-populate if it hasn't run yet
+        //     // localStorage.setItem('pre_populated', 'true'); // Set the flag to indicate it has run
+        // }else{
+        //     pre_populate()
+        // }
+        pre_populate()
+    </script>
+    
+    
+{% endblock %}

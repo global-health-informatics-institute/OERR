@@ -15,6 +15,8 @@ from models.laboratory_test_type import LaboratoryTestType
 from models.patient import Patient
 from models.user import User
 from utils import misc
+from fuzzywuzzy import fuzz
+
 
 
 app = Flask(__name__, template_folder="views", static_folder="assets")
@@ -296,10 +298,48 @@ def patient(patient_id):
 
 # USER ROUTES
 
-# route to login page
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
     error = None
+    if request.method == 'GET':
+        status = None
+        error = None
+        switch = request.args.get('switch')
+        
+        if switch == "1":
+            return render_template('user/recover.html', error=error, status=status)
+        
+        if switch == "2":
+            fullname = request.args.get('fullname')
+            username = request.args.get('username')
+            user = User.get(username)
+            
+            if user is None:
+                error = "No matching username in the system"
+                return render_template('user/recover.html', fullname=fullname, username=username, error=error, status=status)
+            
+            if check_similarity(user.name.lower(), fullname.lower()) < 70:
+                diff = 100 - check_similarity(user.name.lower(),fullname)
+                error = f"The full name you entered is {diff}% incorrect"
+                return render_template('user/recover.html', fullname=fullname, username=username, error=error, status=status)
+            
+            try:
+                last_name = user.name.split()[-1].lower()  
+            except IndexError:
+                error = "Please provide a valid full name."
+                return render_template('user/recover.html', fullname=fullname, username=username, error=error, status=status)
+            
+            
+            user.password = last_name 
+            user.save()
+            status = f" '{last_name}'<br>Password has been restored to your last name."
+            return render_template('user/recover.html', fullname=fullname, username=username, error=error, status=status)
+
+        return render_template('user/login.html', error=error)
+
+
+
     if request.method == "POST":
         user = User.get(request.form['username'])
         if user is None:
@@ -322,6 +362,12 @@ def login():
         pass
     session["user"] = None
     return render_template('user/login.html', error=error, requires_keyboard=True)
+
+
+def check_similarity(name_fromdb, passed_name):
+    percentage = fuzz.ratio(name_fromdb, passed_name)
+    print (percentage)
+    return percentage
 
 
 # Route to handle logging out

@@ -465,7 +465,7 @@ def create_lab_order():
             'date_ordered': int(datetime.now().strftime('%s')),
             'status': 'Ordered',
             'sample_type': request.form['specimen_type'],
-            'clinical_history': request.form['clinical_history'],
+            'clinical_history': (request.form['clinical_history']).lower(),
             'Priority': request.form['priority'],
             'ward': session["location"],
             'patient_id':

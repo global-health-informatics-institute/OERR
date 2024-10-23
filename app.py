@@ -314,6 +314,11 @@ def login():
             fullname = request.args.get('fullname')
             username = request.args.get('username')
             user = User.get(username)
+
+            def check_similarity(name_fromdb, passed_name):
+                percentage = fuzz.ratio(name_fromdb, passed_name)
+                return percentage
+
             
             if user is None:
                 error = "No matching username in the system"
@@ -364,10 +369,6 @@ def login():
     return render_template('user/login.html', error=error, requires_keyboard=True)
 
 
-def check_similarity(name_fromdb, passed_name):
-    percentage = fuzz.ratio(name_fromdb, passed_name)
-    print (percentage)
-    return percentage
 
 
 # Route to handle logging out

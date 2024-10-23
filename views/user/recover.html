@@ -52,19 +52,15 @@
                 return false; // Stop execution
             }
     
-            // Show spinner or execute further logic
             Spinner.show();
     
-            // Validation passed, return true to proceed with redirect
             return true;
         }
     
-        // Modify the reset button to run the reset function first, then redirect
         function submitFormWithRedirect() {
             if (reset()) {
                 var fullname = document.getElementById("fullName").value;
                 var username = document.getElementById("userName").value;
-                // Redirect with the URL parameters
                 window.location = '/login?switch=2&fullname=' + encodeURIComponent(fullname) + '&username=' + encodeURIComponent(username);
             }
         }
@@ -97,13 +93,6 @@
             "<button class=\"nvButton blue\" onmousedown=\"submitFormWithRedirect()\" style=\"float: right;\">Reset</button>"
         ];
     
-        // // Only run pre_populate once by using localStorage
-        // if (localStorage.getItem('pre_populated') !== 'true') {
-        //     pre_populate(); // Run pre-populate if it hasn't run yet
-        //     // localStorage.setItem('pre_populated', 'true'); // Set the flag to indicate it has run
-        // }else{
-        //     pre_populate()
-        // }
         pre_populate()
     </script>
     

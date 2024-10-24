@@ -524,7 +524,7 @@ def collect_specimens(test_id):
             test_names.append(LaboratoryTestType.find_by_test_type(test["test_type"]).printable_name())
             test_string = [var_patient["name"].replace(" ", "^"), var_patient["_id"], conv_gender,
                            datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%s"),
-                           wards[tests[0]["ward"]], dr, tests[0]["clinical_history"], tests[0]["sample_type"],
+                           wards[tests[0]["ward"]], dr, (tests[0]["clinical_history"]).lower(), tests[0]["sample_type"],
                            datetime.now().strftime("%s"), '^'.join(test_ids), tests[0]["Priority"][0]]
         else:
             panel = LaboratoryTestPanel.get(test["panel_type"])
@@ -533,7 +533,7 @@ def collect_specimens(test_id):
                 test_ids.append(panel.panel_id)
                 test_string = [var_patient["name"].replace(" ", "^"), var_patient["_id"], conv_gender,
                                datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%s"),
-                               wards[tests[0]["ward"]], dr, tests[0]["clinical_history"], tests[0]["sample_type"],
+                               wards[tests[0]["ward"]], dr, (tests[0]["clinical_history"]).lower(), tests[0]["sample_type"],
                                datetime.now().strftime("%s"), '^'.join(test_ids), tests[0]["Priority"][0], "P"]
             else:
                 for test_type in panel.tests:
@@ -542,7 +542,7 @@ def collect_specimens(test_id):
 
                 test_string = [var_patient["name"].replace(" ", "^"), var_patient["_id"], conv_gender,
                                datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%s"),
-                               wards[tests[0]["ward"]], dr, tests[0]["clinical_history"], tests[0]["sample_type"],
+                               wards[tests[0]["ward"]], dr, (tests[0]["clinical_history"]).lower(), tests[0]["sample_type"],
                                datetime.now().strftime("%s"), '^'.join(test_ids), tests[0]["Priority"][0]]
         db.save(test)
 
@@ -611,7 +611,7 @@ def reprint_barcode(test_id):
             test_names.append(LaboratoryTestType.find_by_test_type(test["test_type"]).printable_name())
             test_string = [var_patient["name"].replace(" ", "^"), var_patient["_id"], conv_gender,
                            datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%s"),
-                           wards[tests[0]["ward"]], dr, tests[0]["clinical_history"], tests[0]["sample_type"],
+                           wards[tests[0]["ward"]], dr, (tests[0]["clinical_history"]).lower(), tests[0]["sample_type"],
                            datetime.now().strftime("%s"), "^".join(test_ids), tests[0]["Priority"][0]]
         else:
             print("Point 8")
@@ -621,7 +621,7 @@ def reprint_barcode(test_id):
                 test_ids.append(panel.panel_id)
                 test_string = [var_patient["name"].replace(" ", "^"), var_patient["_id"], conv_gender,
                                datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%s"),
-                               wards[tests[0]["ward"]], dr, tests[0]["clinical_history"], tests[0]["sample_type"],
+                               wards[tests[0]["ward"]], dr, (tests[0]["clinical_history"]).lower(), tests[0]["sample_type"],
                                datetime.now().strftime("%s"), "^".join(test_ids), tests[0]["Priority"][0], "P"]
                 print("Point 9")
                 
@@ -634,7 +634,7 @@ def reprint_barcode(test_id):
 
                 test_string = [var_patient["name"].replace(" ", "^"), var_patient["_id"], conv_gender,
                                datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%s"),
-                               wards[tests[0]["ward"]], dr, tests[0]["clinical_history"], tests[0]["sample_type"],
+                               wards[tests[0]["ward"]], dr, (tests[0]["clinical_history"]).lower(), tests[0]["sample_type"],
                                datetime.now().strftime("%s"), "^".join(test_ids), tests[0]["Priority"][0]]
                 print("Point 12")
                 

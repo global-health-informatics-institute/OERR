@@ -526,7 +526,7 @@ def create_lab_order():
             'date_ordered': int(datetime.now().strftime('%s')),
             'status': 'Ordered',
             'sample_type': request.form['specimen_type'],
-            'clinical_history': request.form['clinical_history'],
+            'clinical_history': (request.form['clinical_history']).lower(),
             'Priority': request.form['priority'],
             'ward': session["location"],
             'patient_id':
@@ -671,7 +671,7 @@ def reprint_barcode(test_id):
             test_names.append(LaboratoryTestType.find_by_test_type(test["test_type"]).printable_name())
             test_string = [var_patient["name"].replace(" ", "^"), var_patient["_id"], conv_gender,
                            datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%s"),
-                           wards[tests[0]["ward"]], dr, tests[0]["clinical_history"], tests[0]["sample_type"],
+                           wards[tests[0]["ward"]], dr, (tests[0]["clinical_history"]).lower(), tests[0]["sample_type"],
                            datetime.now().strftime("%s"), "^".join(test_ids), tests[0]["Priority"][0]]
         else:
             print("Point 8")
@@ -681,7 +681,7 @@ def reprint_barcode(test_id):
                 test_ids.append(panel.panel_id)
                 test_string = [var_patient["name"].replace(" ", "^"), var_patient["_id"], conv_gender,
                                datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%s"),
-                               wards[tests[0]["ward"]], dr, tests[0]["clinical_history"], tests[0]["sample_type"],
+                               wards[tests[0]["ward"]], dr, (tests[0]["clinical_history"]).lower(), tests[0]["sample_type"],
                                datetime.now().strftime("%s"), "^".join(test_ids), tests[0]["Priority"][0], "P"]
                 print("Point 9")
                 
@@ -694,7 +694,7 @@ def reprint_barcode(test_id):
 
                 test_string = [var_patient["name"].replace(" ", "^"), var_patient["_id"], conv_gender,
                                datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%s"),
-                               wards[tests[0]["ward"]], dr, tests[0]["clinical_history"], tests[0]["sample_type"],
+                               wards[tests[0]["ward"]], dr, (tests[0]["clinical_history"]).lower(), tests[0]["sample_type"],
                                datetime.now().strftime("%s"), "^".join(test_ids), tests[0]["Priority"][0]]
                 print("Point 12")
                 
@@ -703,8 +703,7 @@ def reprint_barcode(test_id):
     label_file = open("/tmp/test_order.lbl", "w+")
     label_file.write("N\nq406\nQ203,027\nZT\n")
     label_file.write('A5,10,0,1,1,2,N,"%s"\n' % var_patient["name"])
-    label_file.write('A5,40,0,1,1,2,N,"%s (%s)"\n' % (
-        datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%d-%b-%Y"), var_patient["gender"][0]))
+    label_file.write('A5,40,0,1,1,2,N,"%s (%s)"\n' % (datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%d-%b-%Y"), var_patient["gender"][0]))
     label_file.write('b5,70,P,386,80,"%s$"\n' % "~".join(test_string))
     label_file.write('A20,170,0,1,1,2,N,"%s"\n' % ",".join(test_names))
     label_file.write('A260,170,0,1,1,2,N,"%s" \n' % datetime.now().strftime("%d-%b %H:%M"))
@@ -778,7 +777,7 @@ def get_panel_details(panel):
         details[panel_test]['measures'] = get_test_measures(panel.get("tests")[panel_test], test)
     return details
 
-
+# LOOK AT THIS NEXT TIME
 def get_pending_panel_details(test):
     panel_details = {"test_id": test["_id"], "specimen_type": specimen_type_map(test['sample_type']),
                      "test_name": test["panel_type"]
@@ -974,4 +973,4 @@ def internal_error(error):
     return render_template('main/502.html'), 502
 
 if __name__ == '__main__':
-    app.run(port="8000", debug=True, host='0.0.0.0')
+    app.run(port="8000", debug=False, host='0.0.0.0')

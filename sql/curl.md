@@ -4,7 +4,7 @@
    ```
 1. check dbs
    ```bash
-   curl http://admin:sinthaMW@127.0.0.1:5984/_all_dbs
+   curl http://admin:sinthaMW@127.0.0.1:5984/_all_dbs | jq
    ```
 1. db info
    ```bash
@@ -45,4 +45,11 @@
    ```bash
    curl http://OERRuser:sinthaMW@127.0.0.1:5984/mss_results_new/jiyar | jq
    ```
-
+1. Delete instance
+   ```bash
+   curl -X DELETE http://127.0.0.1:5984/mss_results_new -u admin:root
+   ```
+1. Create instance
+   ```bash
+   curl -X PUT http://127.0.0.1:5984/my_database -u admin:password
+   ```

@@ -304,11 +304,11 @@ def login():
     error = None
     if request.method == 'GET':
         status = None
-        error = None
         switch = request.args.get('switch')
         
+        
         if switch == "1":
-            return render_template('user/recover.html', error=error, status=status)
+            return render_template('user/recover.html',error=error, status=status)
         
         if switch == "2":
             fullname = request.args.get('fullname')
@@ -322,24 +322,24 @@ def login():
             
             if user is None:
                 error = "No matching username in the system"
-                return render_template('user/recover.html', fullname=fullname, username=username, error=error, status=status)
+                return render_template('user/recover.html', usernameV=None, error=error, status=status)
             
-            if check_similarity(user.name.lower(), fullname.lower()) < 70:
+            if check_similarity(user.name.lower(), fullname.lower()) < 80:
                 diff = 100 - check_similarity(user.name.lower(),fullname)
                 error = f"The full name you entered is {diff}% incorrect"
-                return render_template('user/recover.html', fullname=fullname, username=username, error=error, status=status)
+                return render_template('user/recover.html', usernameV=username, error=error, status=status)
             
             try:
                 last_name = user.name.split()[-1].lower()  
             except IndexError:
                 error = "Please provide a valid full name."
-                return render_template('user/recover.html', fullname=fullname, username=username, error=error, status=status)
+                return render_template('user/recover.html', usernameV=username, error=error, status=status)
             
             
             user.password = last_name 
             user.save()
             status = f" '{last_name}'<br>Password has been restored to your last name."
-            return render_template('user/recover.html', fullname=fullname, username=username, error=error, status=status)
+            return render_template('user/recover.html', usernameV=username, status=status)
 
         return render_template('user/login.html', error=error)
 
@@ -584,7 +584,7 @@ def collect_specimens(test_id):
             test_names.append(LaboratoryTestType.find_by_test_type(test["test_type"]).printable_name())
             test_string = [var_patient["name"].replace(" ", "^"), var_patient["_id"], conv_gender,
                            datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%s"),
-                           wards[tests[0]["ward"]], dr, tests[0]["clinical_history"], tests[0]["sample_type"],
+                           wards[tests[0]["ward"]], dr, (tests[0]["clinical_history"]).lower(), tests[0]["sample_type"],
                            datetime.now().strftime("%s"), '^'.join(test_ids), tests[0]["Priority"][0]]
         else:
             panel = LaboratoryTestPanel.get(test["panel_type"])
@@ -593,7 +593,7 @@ def collect_specimens(test_id):
                 test_ids.append(panel.panel_id)
                 test_string = [var_patient["name"].replace(" ", "^"), var_patient["_id"], conv_gender,
                                datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%s"),
-                               wards[tests[0]["ward"]], dr, tests[0]["clinical_history"], tests[0]["sample_type"],
+                               wards[tests[0]["ward"]], dr, (tests[0]["clinical_history"]).lower(), tests[0]["sample_type"],
                                datetime.now().strftime("%s"), '^'.join(test_ids), tests[0]["Priority"][0], "P"]
             else:
                 for test_type in panel.tests:
@@ -602,7 +602,7 @@ def collect_specimens(test_id):
 
                 test_string = [var_patient["name"].replace(" ", "^"), var_patient["_id"], conv_gender,
                                datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%s"),
-                               wards[tests[0]["ward"]], dr, tests[0]["clinical_history"], tests[0]["sample_type"],
+                               wards[tests[0]["ward"]], dr, (tests[0]["clinical_history"]).lower(), tests[0]["sample_type"],
                                datetime.now().strftime("%s"), '^'.join(test_ids), tests[0]["Priority"][0]]
         db.save(test)
 
@@ -973,4 +973,4 @@ def internal_error(error):
     return render_template('main/502.html'), 502
 
 if __name__ == '__main__':
-    app.run(port="8000", debug=False, host='0.0.0.0')
+    app.run(port="8000", debug=False, host='127.0.0.1')

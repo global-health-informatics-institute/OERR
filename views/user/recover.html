@@ -6,7 +6,7 @@
       <form action="/reset" name="resetForm" method="post">
         
         <h3>Username</h3>
-         <input type="text" placeholder="please enter your username" required name="userName"  id="userName" class="input" style="width: 100%; font-size : 18pt;border-radius:5px;height: 7vh;">
+         <input type="text" placeholder="please enter your username" required name="userName" {% if usernameV %} value="{{usernameV}}" {% endif %}  id="userName" class="input" style="width: 100%; font-size : 18pt;border-radius:5px;height: 7vh;">
 
         <h3>Full name</h3>
         <input type="text" placeholder="Please enter your fullname" name="fullName" id="fullName" class="input" value="{{
@@ -65,35 +65,13 @@
             }
         }
     
-        // Function to get query parameters
-        function getQueryParameter(name) {
-            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
-            var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
-            var results = regex.exec(location.search);
-            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
-        }
-    
-        // Function to pre-populate fields from URL parameters
-        function pre_populate() {
-            var userName = document.getElementById("userName");
-            var fullName = document.getElementById("fullName");
-            var passedUserName = getQueryParameter('username');
-            var passedFullName = getQueryParameter('fullname');
-            if (passedUserName != null && passedUserName != "") {
-                userName.value = passedUserName;
-            }
-            if (passedFullName != null && passedFullName != "") {
-                fullName.value = passedFullName;
-            }
-        }
     
         // Navigation buttons
         navButtons = [
             "<button class=\"nvButton red\" onmousedown=\"window.location='/login'\" style=\"float: left;\">Go Back</button>",
             "<button class=\"nvButton blue\" onmousedown=\"submitFormWithRedirect()\" style=\"float: right;\">Reset</button>"
         ];
-    
-        pre_populate()
+
     </script>
     
     

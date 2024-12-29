@@ -129,3 +129,4 @@ logs/*
 config/*
 k.service
 *.config
+! config/applications.config.example

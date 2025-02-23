@@ -46,3 +46,14 @@
    curl http://OERRuser:sinthaMW@127.0.0.1:5984/mss_results_new/jiyar | jq
    ```
 
+1. Query using a selector
+   ```bash
+   curl -X POST http://admin:root@127.0.0.1:5984/local_db/_find 
+   -H "Content-Type: application/json" 
+   -d '{
+    "selector": {
+      "status": "Analysis complete",
+      "test_type": "35"
+    }
+   }' | jq
+   ```

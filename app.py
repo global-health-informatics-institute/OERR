@@ -745,20 +745,14 @@ def low_voltage():
 def get_test_measures(test, test_details):
     results = {}
     for measure in test.get("measures", []):
-        # Get the raw value and convert None to an empty string
-        raw_value = test["measures"][measure]
-        if raw_value is None:
-            raw_value = ""
-        
         if test_details.measures.get(measure) is None:
-            results[measure] = {"range": "", "interpretation": "Normal", "value": raw_value}
+            results[measure] = {"range": "", "interpretation": "Normal", "value": test["measures"][measure]}
         else:
             if test_details.measures[measure].get("minimum") is not None:
                 results[measure] = {
-                    "range": test_details.measures[measure].get("minimum") + " - " +
-                             test_details.measures[measure].get("maximum")
-                }
-                results[measure]["value"] = re.sub(r'[^0-9\.]', '', raw_value)
+                    "range": test_details.measures[measure].get("minimum") + " - " + test_details.measures[
+                        measure].get("maximum")}
+                results[measure]["value"] = re.sub(r'[^0-9\.]', '', test["measures"][measure])
                 if results[measure]["value"] == "":
                     results[measure]["value"] = "Not Done"
                     results[measure]["interpretation"] = "Normal"
@@ -769,9 +763,10 @@ def get_test_measures(test, test_details):
                 else:
                     results[measure]["interpretation"] = "Normal"
             else:
-                results[measure] = {"range": "", "interpretation": "Normal", "value": raw_value}
+                results[measure] = {"range": "", "interpretation": "Normal", "value": test["measures"][measure]}
 
     return results
+
 
 def get_panel_details(panel):
     details = {}
@@ -925,6 +920,11 @@ def inject_power():
         check_charging = CheckChargeState().getState()
         voltage = CheckVoltage().get_voltage()
         raw_voltage = (voltage / 40.0) + 14
+
+        # if raw_voltage < 12:
+        # shutdown
+        # os.system('sudo shutdown now')
+
         if voltage > 70:
             rating = "high"
             if voltage == 100 and check_charging:

@@ -26,9 +26,7 @@ app.secret_key = os.urandom(25)
 
 # Main application configuration
 global db
-global remote_db
 settings = misc.initialize_settings()
-remote_settings =misc.initialize_remote_settings()
 
 # optional configuration when running on rpi
 if settings["using_rpi"] == "True":
@@ -180,10 +178,7 @@ def patient(patient_id):
     draw_sample = False
     pending_sample = []
     records = []
-    details_of_test = {}
     grouped_samples = {}
-    remote_grouped_samples = {}
-    
     if request.args.get("sample_draw") == "True":
         draw_sample = True
 
@@ -231,53 +226,6 @@ def patient(patient_id):
         else:
             samples[0]["test_id"] = str(samples[0]["test_id"])  # Single test case
             pending_sample.append(samples[0])
-
-    # ----------------------------------- Start remote database processing
-
-    # get remote tests for patient
-    if (remote_db is not None ):
-        remote_test_query_result = remote_db.find({"selector": {"patient_id": patient_id}, "limit": 100})
-        for test in remote_test_query_result:
-            record = {"date_ordered": datetime.fromtimestamp(float(test["date_ordered"])).strftime('%d %b %Y %H:%S'),
-                    "id": test.get("_id"), "type": test.get("type"), "status": test.get("status"),
-                    "priority": test.get("Priority"), "date": float(test["date_ordered"]),
-                    "collection_id": test.get("collection_id", ""), "history": test.get("clinical_history"),
-                    "ordered_by": test.get("ordered_by"), "rejection_reason": test.get("rejection_reason"),
-                    "test_type": "test" if test.get("type") == "test" else "test panel"}
-
-            if test.get('panel_type') is not None:
-                record["test_name"] = test.get('panel_type')
-                record["panel_test_details"] = get_panel_details(test)
-                if test["status"] == "Ordered":
-                    pending_sample.append(get_pending_panel_details(test))
-            else:
-                detail = LaboratoryTestType.find_by_test_type(test.get('test_type'))
-                record["test_name"] = detail.test_name
-                record["measures"] = get_test_measures(test, detail)
-                if test["status"] == "Ordered":
-                    pending_details = get_pending_test_details(test, detail)
-                    group_key = (pending_details["department"], pending_details["container"])
-                    remote_grouped_samples.setdefault(group_key, []).append(pending_details)
-
-                elif test["status"] == "Analysis Complete" or test["status"] == "Reviewed":
-                    get_test_measures(test, detail)
-
-            records.append(record)
-
-        # Group and append remote samples
-        for group, remote_samples in remote_grouped_samples.items():
-            if len(remote_samples) > 1:
-                test_names = ", ".join([sample["test_name"] for sample in remote_samples])
-                remote_samples[0]["test_name"] = test_names
-                test_ids = "^".join([sample["test_id"] for sample in remote_samples])
-                remote_samples[0]["test_id"] = test_ids
-                pending_sample.append(remote_samples[0])
-            else:
-                remote_samples[0]["test_id"] = str(remote_samples[0]["test_id"]) 
-                pending_sample.append(remote_samples[0])
-
-    else:
-        misc.update_patient(patient_id)
 
 
     # Sort combined records (local + remote) by date in reverse order
@@ -858,23 +806,11 @@ def initialize_connection():
         db = couchConnection.create(settings["couch"]["database"])
 
 
-def initialize_remote_connection():
-    # Connect to a remote couchdb archive instance 
-    remote_couchConnection = Server("http://%s:%s@%s:%s/" %
-                             (remote_settings["target"]["user"], remote_settings["target"]["password"],
-                              remote_settings["target"]["host"], remote_settings["target"]["port"]))
-    global remote_db
-    # Connect to a database or Create a Database
-    try:
-        remote_db = remote_couchConnection[f"{remote_settings['target_base_db']['database']}_archive"]
-    except:
-        remote_db = None
 
 @app.before_request
 def check_authentication():
     if not re.search("asset", request.path):
         initialize_connection()
-        initialize_remote_connection()
 
         if request.path not in ["/login", "/logout", "/get_charge_state", "/low_voltage"]:
             if session.get("user") is None:

@@ -10,6 +10,7 @@
       A20,170,0,1,1,2,N,"Xmatch"
       A260,170,0,1,1,2,N,"09-Oct 13:36" 
       P1
-      "patient-Name ~ patient-id~  Department ~  ward-id ~  collected-by ~ clinical-history ~ sample-type ~ collectedAT ~ test-type ~R$~"
+      
   ```
 - can only hold 87 characters
+- "patient-Name ~ patient-id~  Department ~  ward-id ~  collected-by ~ clinical-history ~ sample-type ~ collectedAT ~ test-type ~R$~"

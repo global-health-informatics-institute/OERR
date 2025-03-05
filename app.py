@@ -570,9 +570,9 @@ def collect_specimens(test_id):
 
     #Converting gender
     if var_patient["gender"][0] == "m":
-        conv_gender = "0"
-    else:
         conv_gender = "1"
+    else:
+        conv_gender = "0"
 
     for test in tests:
         test["status"] = "Specimen Collected"

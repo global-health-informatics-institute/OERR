@@ -13,4 +13,4 @@
       
   ```
 - can only hold 87 characters
-- "patient-Name ~ patient-id~  Department ~  ward-id ~  collected-by ~ clinical-history ~ sample-type ~ collectedAT ~ test-type ~R$~"
+- "patient-Name ~ patient-id~ gender ~ xx ~ test-type ~ collected-by ~clinical-history ~  ward-id ~  ~ collectedAT ~ sample-type R$~"

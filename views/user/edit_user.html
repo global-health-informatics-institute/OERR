@@ -115,52 +115,52 @@
             <h2>Allocation</h2>
             <ul>
                 <li data-id="medical" name="allocationOptions">
-                    <input type="radio" id="shortStay" value="Short Stay" name="allocation" {% if user.allocation == 'Short Stay' %}checked{% endif %}>
+                    <input type="radio" id="shortStay" value="Short Stay" name="team" {% if user.team == 'Short Stay' %}checked{% endif %}>
                     <label for="shortStay">Short Stay</label>
                     <div class="check"></div>
                 </li>
                 <li data-id="medical" name="allocationOptions">
-                    <input type="radio" id="opd" value="OPD" name="allocation" {% if user.allocation == 'OPD' %}checked{% endif %}>
+                    <input type="radio" id="opd" value="OPD" name="team" {% if user.team == 'OPD' %}checked{% endif %}>
                     <label for="opd">OPD</label>
                     <div class="check"></div>
                 </li>
                 <li data-id="medical" name="allocationOptions">
-                    <input type="radio" id="team_a" value="A" name="allocation" {% if user.allocation == 'A' %}checked{% endif %}>
+                    <input type="radio" id="team_a" value="A" name="team" {% if user.team == 'A' %}checked{% endif %}>
                     <label for="team_a">Team A</label>
                     <div class="check"></div>
                 </li>
                 <li data-id="medical" name="allocationOptions">
-                    <input type="radio" id="team_b" value="B" name="allocation" {% if user.allocation == 'B' %}checked{% endif %}>
+                    <input type="radio" id="team_b" value="B" name="team" {% if user.team == 'B' %}checked{% endif %}>
                     <label for="team_b">Team B</label>
                     <div class="check"></div>
                 </li>
                 <li data-id="medical" name="allocationOptions">
-                    <input type="radio" id="team_c" value="B" name="allocation" {% if user.allocation == 'C' %}checked{% endif %}>
+                    <input type="radio" id="team_c" value="C" name="team" {% if user.team == 'C' %}checked{% endif %}>
                     <label for="team_c">Team C</label>
                     <div class="check"></div>
                 </li>
                 <li data-id="medical" name="allocationOptions">
-                    <input type="radio" id="team_d" value="D" name="allocation" {% if user.allocation == 'D' %}checked{% endif %}>
+                    <input type="radio" id="team_d" value="D" name="team" {% if user.team == 'D' %}checked{% endif %}>
                     <label for="team_d">Team D</label>
                     <div class="check"></div>
                 </li>
                 <li data-id="nursing" name="allocationOptions">
-                    <input type="radio" id="4a" value="4A"  name="allocation" {% if user.allocation == '4A' %}checked{% endif %}>
+                    <input type="radio" id="4a" value="4A"  name="ward" {% if user.ward == '4A' %}checked{% endif %}>
                     <label for="4a">Medical Female Ward</label>
                     <div class="check"></div>
                 </li>
                 <li data-id="nursing" name="allocationOptions">
-                    <input type="radio" id="mhdu" value="MHDU"  name="allocation" {% if user.allocation == 'MHDU' %}checked{% endif %}>
+                    <input type="radio" id="mhdu" value="MHDU"  name="ward" {% if user.ward == 'MHDU' %}checked{% endif %}>
                     <label for="mhdu">Medical HDU</label>
                     <div class="check"></div>
                 </li>
                 <li data-id="nursing" name="allocationOptions">
-                    <input type="radio" id="4b" value="4B"  name="allocation" {% if user.allocation == '4B' %}checked{% endif %}>
+                    <input type="radio" id="4b" value="4B"  name="ward" {% if user.ward == '4B' %}checked{% endif %}>
                     <label for="4b">Medical male Ward</label>
                     <div class="check"></div>
                 </li>
                 <li data-id="nursing" name="allocationOptions">
-                    <input type="radio" id="mss" value="MSS"  name="allocation" {% if user.allocation == 'MSS' %}checked{% endif %}>
+                    <input type="radio" id="mss" value="MSS"  name="ward" {% if user.ward == 'MSS' %}checked{% endif %}>
                     <label for="mss">Medical Short Stay</label>
                     <div class="check"></div>
                 </li>
@@ -257,6 +257,7 @@
        console.log(selectedDesignation.id)  
 
     }
+    
 
     function validateForm() {
        

@@ -389,8 +389,10 @@ def logout():
 # route to main user management page
 @app.route("/users")
 def users():
+    with open("config/department.config", "r") as f:
+        config = json.load(f)
     current_users = User.all()
-    return render_template("user/index.html", requires_keyboard=True, users=current_users)
+    return render_template("user/index.html", requires_keyboard=True, users=current_users, departments=config["departments"]) #for testing purposes
 
 
 @app.route("/user/create", methods=["POST"])
@@ -430,7 +432,7 @@ def edit_user(username=None):
                 user.role = request.form.get('role')
                 user.designation = request.form.get('designation')
                 user.team = request.form.get('team')  # Returns None if missing
-                user.ward = request.form.get('ward')  # Returns None if missing
+                user.ward = request.form.get('wardAllocation')  # Returns None if missing
 
                 user.save()
                 flash("user updated successfully")

@@ -438,7 +438,7 @@ def edit_user(username=None):
                 flash("user updated successfully")
                 return redirect(url_for("users"))
         else:
-            return render_template("user/edit_user.html", requires_keyboard=True, user=user, current_team=user.team, current_ward=user.ward)
+            return render_template("user/edit_user.html", requires_keyboard=True, user=user)
 
 
 

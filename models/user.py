@@ -24,7 +24,7 @@ class User:
         if user is not None:
             user = User(user.get('_id'), user.get('name', "Unknown"), user.get('role'),
                         user.get('designation', 'Unassigned'), "", user.get('status', "Active"),
-                        user.get('department', "Medical"), user.get('ward', "None"), user.get('team', "None"),
+                        user.get('department', "Medical"), user.get('ward', None), user.get('team', None),
                         user.get("password_hash"), user.get("_rev"))
         return user
 
@@ -84,8 +84,8 @@ class User:
                 user_data.get('designation', 'Unassigned'),
                 user_data.get('status', "Active"),
                 user_data.get('department', "Medical"),
-                user_data.get('ward', "None"),
-                user_data.get('team', "None"),
+                user_data.get('ward', None),
+                user_data.get('team', None),
                 user_data.get("password_hash"),
                 user_data.get("_rev")
             )

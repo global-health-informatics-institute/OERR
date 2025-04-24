@@ -431,6 +431,7 @@ def edit_user(username=None):
                 user.username = request.form.get('username')
                 user.role = request.form.get('role')
                 user.designation = request.form.get('designation')
+                user.department = request.form.get('department')
                 user.team = request.form.get('team')  # Returns None if missing
                 user.ward = request.form.get('wardAllocation')  # Returns None if missing
 
@@ -480,6 +481,7 @@ def deactivate_user(user_id=None):
         return redirect(url_for("index"))
     else:
         user.status = "Deactivated"
+        flash("User Deactivated", 'info')
         user.save()
         return redirect(url_for("users"))
 
@@ -492,6 +494,7 @@ def activate_user(user_id=None):
         return redirect(url_for("index"))
     else:
         user.status = "Active"
+        flash("User Activated", 'success')
         user.save()
         return redirect(url_for("users"))
 

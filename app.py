@@ -130,6 +130,7 @@ def barcode():
             flash("New patient record created", 'success')
             return redirect(url_for('patient', patient_id=npid))
 
+
         else:
             # Extract and store the new name from the QR code
             updated_name = barcode_segments[0].replace(npid, "").strip()
@@ -168,6 +169,7 @@ def barcode():
     else:
             flash("Wrong format for patient identifier. Please use the National patient Identifier", "error")
             return redirect(url_for("index"))
+
 
 
 ###### PATIENT ROUTES ##########
@@ -304,11 +306,11 @@ def login():
     error = None
     if request.method == 'GET':
         status = None
-        error = None
         switch = request.args.get('switch')
         
+        
         if switch == "1":
-            return render_template('user/recover.html', error=error, status=status)
+            return render_template('user/recover.html',error=error, status=status)
         
         if switch == "2":
             fullname = request.args.get('fullname')
@@ -322,24 +324,24 @@ def login():
             
             if user is None:
                 error = "No matching username in the system"
-                return render_template('user/recover.html', fullname=fullname, username=username, error=error, status=status)
+                return render_template('user/recover.html', usernameV=None, error=error, status=status)
             
-            if check_similarity(user.name.lower(), fullname.lower()) < 70:
+            if check_similarity(user.name.lower(), fullname.lower()) < 80:
                 diff = 100 - check_similarity(user.name.lower(),fullname)
                 error = f"The full name you entered is {diff}% incorrect"
-                return render_template('user/recover.html', fullname=fullname, username=username, error=error, status=status)
+                return render_template('user/recover.html', usernameV=username, error=error, status=status)
             
             try:
                 last_name = user.name.split()[-1].lower()  
             except IndexError:
                 error = "Please provide a valid full name."
-                return render_template('user/recover.html', fullname=fullname, username=username, error=error, status=status)
+                return render_template('user/recover.html', usernameV=username, error=error, status=status)
             
             
             user.password = last_name 
             user.save()
             status = f" '{last_name}'<br>Password has been restored to your last name."
-            return render_template('user/recover.html', fullname=fullname, username=username, error=error, status=status)
+            return render_template('user/recover.html', usernameV=username, status=status)
 
         return render_template('user/login.html', error=error)
 
@@ -383,11 +385,14 @@ def logout():
     return render_template('user/login.html', requires_keyboard=True)
 
 
+
 # route to main user management page
 @app.route("/users")
 def users():
+    with open("config/department.config", "r") as f:
+        config = json.load(f)
     current_users = User.all()
-    return render_template("user/index.html", requires_keyboard=True, users=current_users)
+    return render_template("user/index.html", requires_keyboard=True, users=current_users, departments=config["departments"]) #for testing purposes
 
 
 @app.route("/user/create", methods=["POST"])
@@ -399,15 +404,15 @@ def create_user():
 
         if request.form['designation'] in ['Consultant', 'Intern', 'Registrar', 'Medical Student',
                                            'Student Clinical Officer', "Clinical Officer", "Visiting Doctor"]:
-            provider.team = request.form["team"]
+            provider.team = request.form.get("team")
         else:
-            provider.ward = request.form["wardAllocation"]
+            provider.ward = request.form.get("wardAllocation")
         provider.save()
+        flash("user added successfully", 'success')
     else:
         current_users = User.all()
         flash("Username already exists", 'error')
         return render_template("user/index.html", requires_keyboard=True, users=current_users)
-    flash("New user created", "success")
     return redirect(url_for("users"))
 
 
@@ -422,10 +427,14 @@ def edit_user(username=None):
     else:
 
         if request.method == 'POST':
-                user.name = request.form['name']
-                user.username = request.form['username']
-                user.role = request.form['role']
-                user.designation = request.form['designation']
+                user.name = request.form.get('name')
+                user.username = request.form.get('username')
+                user.role = request.form.get('role')
+                user.designation = request.form.get('designation')
+                user.department = request.form.get('department')
+                user.team = request.form.get('team')  # Returns None if missing
+                user.ward = request.form.get('wardAllocation')  # Returns None if missing
+
                 user.save()
                 flash("user updated successfully")
                 return redirect(url_for("users"))
@@ -472,6 +481,7 @@ def deactivate_user(user_id=None):
         return redirect(url_for("index"))
     else:
         user.status = "Deactivated"
+        flash("User Deactivated", 'info')
         user.save()
         return redirect(url_for("users"))
 
@@ -484,6 +494,7 @@ def activate_user(user_id=None):
         return redirect(url_for("index"))
     else:
         user.status = "Active"
+        flash("User Activated", 'success')
         user.save()
         return redirect(url_for("users"))
 
@@ -505,16 +516,20 @@ def select_location():
     if request.method == "POST":
         selected_department = request.form.get('department')
         selected_ward = request.form.get('ward')
+       
+
 
         if selected_department == '' or selected_ward == '':
             flash("Please select both department and ward.", 'error')
             error = "Please select both department and ward."
         else:
             session["location"] = selected_ward
+            
             return redirect(url_for('index'))
 
     session["ward"] = None
     return render_template('user/select_location.html', error=error, departments=departments)
+
 
 ###### LAB ORDER ROUTES ###########
 # create a new lab test order
@@ -578,13 +593,14 @@ def collect_specimens(test_id):
         test["status"] = "Specimen Collected"
         test["collected_by"] = session["user"]['username']
         test["collected_at"] = collected_at
+        print(collected_at)
         test["collection_id"] = collection_id
         if test["type"] == "test":
             test_ids.append(test["test_type"])
             test_names.append(LaboratoryTestType.find_by_test_type(test["test_type"]).printable_name())
             test_string = [var_patient["name"].replace(" ", "^"), var_patient["_id"], conv_gender,
                            datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%s"),
-                           wards[tests[0]["ward"]], dr, tests[0]["clinical_history"], tests[0]["sample_type"],
+                           wards[tests[0]["ward"]], dr, (tests[0]["clinical_history"]).lower(), tests[0]["sample_type"],
                            str(collected_at), '^'.join(test_ids), tests[0]["Priority"][0]]
         else:
             panel = LaboratoryTestPanel.get(test["panel_type"])
@@ -593,7 +609,7 @@ def collect_specimens(test_id):
                 test_ids.append(panel.panel_id)
                 test_string = [var_patient["name"].replace(" ", "^"), var_patient["_id"], conv_gender,
                                datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%s"),
-                               wards[tests[0]["ward"]], dr, tests[0]["clinical_history"], tests[0]["sample_type"],
+                               wards[tests[0]["ward"]], dr, (tests[0]["clinical_history"]).lower(), tests[0]["sample_type"],
                                str(collected_at), '^'.join(test_ids), tests[0]["Priority"][0], "P"]
             else:
                 for test_type in panel.tests:
@@ -602,7 +618,7 @@ def collect_specimens(test_id):
 
                 test_string = [var_patient["name"].replace(" ", "^"), var_patient["_id"], conv_gender,
                                datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%s"),
-                               wards[tests[0]["ward"]], dr, tests[0]["clinical_history"], tests[0]["sample_type"],
+                               wards[tests[0]["ward"]], dr, (tests[0]["clinical_history"]).lower(), tests[0]["sample_type"],
                                str(collected_at), '^'.join(test_ids), tests[0]["Priority"][0]]
         db.save(test)
 
@@ -636,83 +652,74 @@ def download_file():
 # update lab test orders to specimen ++collected
 @app.route("/test/<test_id>/reprint")
 def reprint_barcode(test_id):
+    print(test_id)
+    print("Point 0")
     tests = list(db.find({"selector": {"type": {"$in": ["test", "test panel"]}, "_id": {"$in": test_id.split("^")}}}))
+    print(tests)
     if tests is None or tests == []:
+        print("Point 1")
         tests = list(db.find({"selector": {"collection_id": test_id}}))
+        # tests = db.find({"selector": {"_id": test_id}})
+        print(tests)
+
     test_ids = []
     test_names = []
     if tests is None or tests == []:
+        print("Point 2")
         return redirect(url_for("index", error="Tests not found"))
     var_patient = Patient.get(tests[0]["patient_id"])
     dr = tests[0]["ordered_by"]
     wards = wards_mapping
+    print("Point 3")
 
     if var_patient["gender"][0] == "m":
-        conv_gender = "0"
-    else:
+        print("Point 4")
         conv_gender = "1"
+    else:
+        print("Point 5")
+        conv_gender = "0"
 
     for test in tests:
+        print("Point 6")
         if test["type"] == "test":
+            print("Point 7")
             test_ids.append(test["test_type"])
             test_names.append(LaboratoryTestType.find_by_test_type(test["test_type"]).printable_name())
-            test_string = [
-                var_patient["name"].replace(" ", "^"),
-                var_patient["_id"],
-                conv_gender,
-                datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%s"),
-                wards[tests[0]["ward"]],
-                dr,
-                (tests[0]["clinical_history"]).lower(),
-                tests[0]["sample_type"],
-                str(test.get("collected_at")),
-                "^".join(test_ids),
-                tests[0]["Priority"][0]
-            ]
+            test_string = [var_patient["name"].replace(" ", "^"), var_patient["_id"], conv_gender,
+                           datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%s"),
+                           wards[tests[0]["ward"]], dr, (tests[0]["clinical_history"]).lower(), tests[0]["sample_type"],
+                           datetime.now().strftime("%s"), "^".join(test_ids), tests[0]["Priority"][0]]
         else:
+            print("Point 8")
             panel = LaboratoryTestPanel.get(test["panel_type"])
             test_names.append(panel.short_name)
             if panel.orderable:
                 test_ids.append(panel.panel_id)
-                test_string = [
-                    var_patient["name"].replace(" ", "^"),
-                    var_patient["_id"],
-                    conv_gender,
-                    datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%s"),
-                    wards[tests[0]["ward"]],
-                    dr,
-                    (tests[0]["clinical_history"]).lower(),
-                    tests[0]["sample_type"],
-                    str(test.get("collected_at")),
-                    "^".join(test_ids),
-                    tests[0]["Priority"][0],
-                    "P"
-                ]
+                test_string = [var_patient["name"].replace(" ", "^"), var_patient["_id"], conv_gender,
+                               datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%s"),
+                               wards[tests[0]["ward"]], dr, (tests[0]["clinical_history"]).lower(), tests[0]["sample_type"],
+                               datetime.now().strftime("%s"), "^".join(test_ids), tests[0]["Priority"][0], "P"]
+                print("Point 9")
+                
             else:
+                print("Point 10")
                 for test_type in panel.tests:
-                    test_id_val = LaboratoryTestType.get(test_type).test_type_id
-                    test_ids.append(test_id_val)
+                    print("Point 11")
+                    test_id = LaboratoryTestType.get(test_type).test_type_id
+                    test_ids.append(test_id)
 
-                test_string = [
-                    var_patient["name"].replace(" ", "^"),
-                    var_patient["_id"],
-                    conv_gender,
-                    datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%s"),
-                    wards[tests[0]["ward"]],
-                    dr,
-                    (tests[0]["clinical_history"]).lower(),
-                    tests[0]["sample_type"],
-                    str(test.get("collected_at")),
-                    "^".join(test_ids),
-                    tests[0]["Priority"][0]
-                ]
+                test_string = [var_patient["name"].replace(" ", "^"), var_patient["_id"], conv_gender,
+                               datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%s"),
+                               wards[tests[0]["ward"]], dr, (tests[0]["clinical_history"]).lower(), tests[0]["sample_type"],
+                               datetime.now().strftime("%s"), "^".join(test_ids), tests[0]["Priority"][0]]
+                print("Point 12")
+                
+
 
     label_file = open("/tmp/test_order.lbl", "w+")
     label_file.write("N\nq406\nQ203,027\nZT\n")
     label_file.write('A5,10,0,1,1,2,N,"%s"\n' % var_patient["name"])
-    label_file.write('A5,40,0,1,1,2,N,"%s (%s)"\n' %
-                     (datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%d-%b-%Y"),
-                      var_patient["gender"][0]))
+    label_file.write('A5,40,0,1,1,2,N,"%s (%s)"\n' % (datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%d-%b-%Y"), var_patient["gender"][0]))
     label_file.write('b5,70,P,386,80,"%s$"\n' % "~".join(test_string))
     label_file.write('A20,170,0,1,1,2,N,"%s"\n' % ",".join(test_names))
     label_file.write('A260,170,0,1,1,2,N,"%s" \n' % datetime.now().strftime("%d-%b %H:%M"))
@@ -754,19 +761,14 @@ def low_voltage():
 def get_test_measures(test, test_details):
     results = {}
     for measure in test.get("measures", []):
-        raw_value = test["measures"][measure]
-        if raw_value is None:
-            raw_value = ""
-        
         if test_details.measures.get(measure) is None:
-            results[measure] = {"range": "", "interpretation": "Normal", "value": raw_value}
+            results[measure] = {"range": "", "interpretation": "Normal", "value": test["measures"][measure]}
         else:
             if test_details.measures[measure].get("minimum") is not None:
                 results[measure] = {
-                    "range": test_details.measures[measure].get("minimum") + " - " +
-                             test_details.measures[measure].get("maximum")
-                }
-                results[measure]["value"] = re.sub(r'[^0-9\.]', '', raw_value)
+                    "range": test_details.measures[measure].get("minimum") + " - " + test_details.measures[
+                        measure].get("maximum")}
+                results[measure]["value"] = re.sub(r'[^0-9\.]', '', test["measures"][measure])
                 if results[measure]["value"] == "":
                     results[measure]["value"] = "Not Done"
                     results[measure]["interpretation"] = "Normal"
@@ -777,9 +779,10 @@ def get_test_measures(test, test_details):
                 else:
                     results[measure]["interpretation"] = "Normal"
             else:
-                results[measure] = {"range": "", "interpretation": "Normal", "value": raw_value}
+                results[measure] = {"range": "", "interpretation": "Normal", "value": test["measures"][measure]}
 
     return results
+
 
 def get_panel_details(panel):
     details = {}
@@ -933,6 +936,11 @@ def inject_power():
         check_charging = CheckChargeState().getState()
         voltage = CheckVoltage().get_voltage()
         raw_voltage = (voltage / 40.0) + 14
+
+        # if raw_voltage < 12:
+        # shutdown
+        # os.system('sudo shutdown now')
+
         if voltage > 70:
             rating = "high"
             if voltage == 100 and check_charging:
@@ -981,4 +989,4 @@ def internal_error(error):
     return render_template('main/502.html'), 502
 
 if __name__ == '__main__':
-    app.run(port="8000", debug=False, host='0.0.0.0')
+    app.run(port="8000", debug=True, host='127.0.0.1')

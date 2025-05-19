@@ -209,10 +209,12 @@ def update_patient_records(archive_documents):
     return patient_update
 
 
-
+error_count = 0
+saved_count = 0
 # Save active documents and increment error count on failures
 def save_active_entries(active_documents):
-    global error_misc
+    global error_misc, error_count, saved_count
+    
     if not active_documents:
         logger.info("No active documents to save.")
         return
@@ -240,7 +242,8 @@ def save_active_entries(active_documents):
             response = requests.put(save_url, json=doc, auth=HTTPBasicAuth(username, password))
 
             if response.status_code in [200, 201]:
-                logger.info(f"Document '{doc_id}' saved successfully.")
+                #logger.info(f"Document '{doc_id}' saved successfully.")
+                saved_count += 1 
             else:
                 logger.error(f"Failed to save document '{doc_id}': {response.status_code} - {response.text}")
                 error_count += 1
@@ -248,6 +251,8 @@ def save_active_entries(active_documents):
         except requests.exceptions.RequestException as e:
             logger.error(f"Error occurred while saving document '{doc_id}': {str(e)}")
             error_misc += 1
+    return saved_count
+
 
 # Housekeeping function to delete databases
 def house_keeping_please(db_name):
@@ -339,7 +344,7 @@ def enable_internet():
 '''  
 
 
-# satrt replication
+# start replication
 def lazarous():
     import json
     import subprocess
@@ -467,9 +472,10 @@ def lazarous():
 from datetime import datetime, time as dtime
 import time
 
-def run_archive_with_delay():
-    start_time = dtime(hour=1, minute=0)   
-    end_time = dtime(hour=2, minute=0)    
+def run_archive():
+   
+    start_time = dtime(hour=15, minute=3)   
+    end_time = dtime(hour=15, minute=35)    
 
     now = datetime.now().time()
     while now < start_time:
@@ -482,13 +488,21 @@ def run_archive_with_delay():
         logger.info("Starting archive phase and halting replication.")
         #disable_internet()
 
-        house_keeping_please("_replicator")#just testing this out
+        house_keeping_please("_replicator")
 
         initialize_setup()
         active_docs, archive_docs = filter_entries()
+        
         patient_update = update_patient_records(archive_docs)
         logger.info(f"Updated patient records: {patient_update}")
-        save_active_entries(active_docs)
+
+        old_docs = get_archive_documents()
+        
+        archive_documents = filter_entries()
+
+        saved_count = save_active_entries(active_docs)
+        logger.info(f"Documents successfully saved: {saved_count}")
+
         house_keeping_please(f"{database}")
         ensure_database_exists(f"{database}")
         exodus()
@@ -496,11 +510,12 @@ def run_archive_with_delay():
         #house_keeping_please("_replicator")
 
         # Log final messages with document and error counts
-        logger.info(f"archive_documents: {len(archive_docs)}")
+      
         logger.info(f"Total Updated patient documents : {patient_update}")
         logger.warning(f"Error: None" if patient_update else f"Error: No updates")
+        logger.info(f"Archive_documents: {len(archive_documents)}")
         logger.info(f"Active Documents count: {len(active_docs)}")
-        logger.info(f"Old Documents count: {len(archive_docs)}")
+        logger.info(f"Old Documents count: {len(old_docs)}")
         logger.error(f"Errors Fetching docs: {error_fetch}")
         logger.error(f"Errors Updating docs: {error_update}")
         logger.error(f"Errors - Misc: {error_misc}")
@@ -524,7 +539,7 @@ def run_archive_with_delay():
 
 # Main
 if __name__ == "__main__":
-    run_archive_with_delay()
+    run_archive()
     
 
    

@@ -196,7 +196,7 @@ def save_active_entries(active_documents):
         except requests.exceptions.RequestException as e:
             logger.error(f"Error occurred while saving document '{doc_id}': {str(e)}")
             error_misc += 1
-
+        
 # Housekeeping function to delete databases
 def house_keeping_please(db_name):
     global error_misc

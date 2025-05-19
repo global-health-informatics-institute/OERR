@@ -37,7 +37,7 @@ body,html{
     display:inline-block;
     flex-grow:1;
     cursor:pointer;
-    font-size:15pt;
+    font-size:20pt;
     font-weight: 500;
 }
 .simple-keyboard .hg-button span{

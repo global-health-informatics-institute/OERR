@@ -212,10 +212,25 @@ def patient(patient_id):
             record["test_name"] = detail.test_name
             record["measures"] = get_test_measures(test, detail)
             if test["status"] == "Ordered":
-                pending_details = get_pending_test_details(test, detail)
+
+                # print((detail))
+                # print(test)
+                print("sample_type:", test.get("sample_type"))
+                print("available specimen keys:", detail.specimen_requirements.keys())
+
+                #pending_details = get_pending_test_details(test, detail)
                 # Group tests by department, container (local)
-                group_key = (pending_details["department"], pending_details["container"])
-                grouped_samples.setdefault(group_key, []).append(pending_details)
+                #group_key = (pending_details["department"], pending_details["container"])
+                #grouped_samples.setdefault(group_key, []).append(pending_details)
+                '''testing this'''
+                sample_type = str(test.get("sample_type"))
+                if detail.specimen_requirements and sample_type in detail.specimen_requirements:
+                    pending_details = get_pending_test_details(test, detail)
+                    group_key = (pending_details["department"], pending_details["container"])
+                    grouped_samples.setdefault(group_key, []).append(pending_details)
+                else:
+                    print(f"[ERROR] sample_type '{sample_type}' not found in specimen_requirements for test_type '{test.get('test_type')}'", flush=True)
+                    print("Available specimen keys:", list(detail.specimen_requirements.keys()) if detail.specimen_requirements else "None", flush=True)
 
             elif test["status"] == "Analysis Complete" or test["status"] == "Reviewed":
                 get_test_measures(test, detail)
@@ -650,6 +665,7 @@ def download_file():
     return send_file("/tmp/test_order.lbl",as_attachment = True)
 
 # update lab test orders to specimen ++collected
+# Use the original specimen collection time to preserve traceability on reprint
 @app.route("/test/<test_id>/reprint")
 def reprint_barcode(test_id):
     print(test_id)
@@ -688,7 +704,7 @@ def reprint_barcode(test_id):
             test_string = [var_patient["name"].replace(" ", "^"), var_patient["_id"], conv_gender,
                            datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%s"),
                            wards[tests[0]["ward"]], dr, (tests[0]["clinical_history"]).lower(), tests[0]["sample_type"],
-                           datetime.now().strftime("%s"), "^".join(test_ids), tests[0]["Priority"][0]]
+                         str(test.get("collected_at")), "^".join(test_ids), tests[0]["Priority"][0]] #pulling time from collected_at (Specimen Collected)
         else:
             print("Point 8")
             panel = LaboratoryTestPanel.get(test["panel_type"])
@@ -698,7 +714,7 @@ def reprint_barcode(test_id):
                 test_string = [var_patient["name"].replace(" ", "^"), var_patient["_id"], conv_gender,
                                datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%s"),
                                wards[tests[0]["ward"]], dr, (tests[0]["clinical_history"]).lower(), tests[0]["sample_type"],
-                               datetime.now().strftime("%s"), "^".join(test_ids), tests[0]["Priority"][0], "P"]
+                                str(test.get("collected_at")), "^".join(test_ids), tests[0]["Priority"][0], "P"] #pulling time from collected_at (Specimen Collected)
                 print("Point 9")
                 
             else:
@@ -711,7 +727,7 @@ def reprint_barcode(test_id):
                 test_string = [var_patient["name"].replace(" ", "^"), var_patient["_id"], conv_gender,
                                datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%s"),
                                wards[tests[0]["ward"]], dr, (tests[0]["clinical_history"]).lower(), tests[0]["sample_type"],
-                               datetime.now().strftime("%s"), "^".join(test_ids), tests[0]["Priority"][0]]
+                                  str(test.get("collected_at")),"^".join(test_ids), tests[0]["Priority"][0]] #pulling time from collected_at (Specimen Collected)
                 print("Point 12")
                 
 
@@ -722,7 +738,7 @@ def reprint_barcode(test_id):
     label_file.write('A5,40,0,1,1,2,N,"%s (%s)"\n' % (datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%d-%b-%Y"), var_patient["gender"][0]))
     label_file.write('b5,70,P,386,80,"%s$"\n' % "~".join(test_string))
     label_file.write('A20,170,0,1,1,2,N,"%s"\n' % ",".join(test_names))
-    label_file.write('A260,170,0,1,1,2,N,"%s" \n' % datetime.now().strftime("%d-%b %H:%M"))
+    label_file.write('A260,170,0,1,1,2,N,"%s" \n' % datetime.fromtimestamp(test.get("collected_at")).strftime("%d-%b %H:%M")) #pulling time from collected_at (Specimen Collected)
     label_file.write("P1\n")
     label_file.close()
     #os.system('sudo sh ~/print.sh /tmp/test_order.lbl')

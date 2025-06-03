@@ -1,3 +1,4 @@
+
 # Written by Timothy Mtonga
 # This is the main thread for the application
 # !/usr/bin/python

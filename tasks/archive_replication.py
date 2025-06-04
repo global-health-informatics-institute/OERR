@@ -5,6 +5,7 @@ from requests.auth import HTTPBasicAuth
 from datetime import datetime, timedelta
 import time
 import logging
+import subprocess
 from tqdm import tqdm
 
 # Global error counter
@@ -26,6 +27,33 @@ database = f"{basis_settings['couch']['database']}"
 DB_BASE = f"{url}/"
 DB = f"{url}/{database}"
 
+import subprocess
+import logging
+import platform
+
+logger = logging.getLogger(__name__)
+
+'''  
+# The Wi-Fi interface to control (adjust to match your system setup)
+wifi_interface = "wlp2s0"
+
+def disable_internet():
+    try:
+        subprocess.run(f"sudo /usr/sbin/ifconfig {wifi_interface} down", shell=True, check=True)
+        logger.info(f"Wi-Fi ({wifi_interface}) disabled.")
+    except subprocess.CalledProcessError as e:
+        logger.error(f"Failed to disable Wi-Fi: {e}")
+
+
+def is_internet_connected():
+    try:
+        requests.get("http://localhost:5984/_utils/#", timeout=5)
+        logger.info("Internet is connected.")
+        return True
+    except requests.ConnectionError:
+        logger.warning("Internet is not connected.")
+        return False
+'''  
 # Function to ensure the database exists
 def ensure_database_exists(database_name):
     if database_name != f"{database}":
@@ -51,9 +79,8 @@ def ensure_database_exists(database_name):
     except requests.exceptions.RequestException as e:
         logger.error(f"An error occurred while connecting to '{database_name}': {str(e)}")
         return False
-    
-    return True
 
+    return True
 # Initialize setup
 def initialize_setup():
     db_list = [f"{database}", "active"]
@@ -113,15 +140,38 @@ def filter_entries():
 
     return active_documents, archive_documents
 
+#for testing
+def get_archive_documents():
+    url = f"{DB_BASE}mss_archive/_all_docs?include_docs=true"
+    try:
+        response = requests.get(url, auth=HTTPBasicAuth(username, password))
+        if response.status_code == 200:
+            rows = response.json().get("rows", [])
+            archive_docs = [row["doc"] for row in rows if "patient_id" in row.get("doc", {})]
+            logger.info(f"Retrieved {len(archive_docs)} archive documents with patient_id.")
+            return archive_docs
+        else:
+            logger.error(f"Failed to fetch archive documents: {response.status_code} - {response.text}")
+            return []
+    except requests.exceptions.RequestException as e:
+        logger.error(f"Exception while fetching archive documents: {str(e)}")
+        return []
+
+
+patient_update = 0
+error_update = 0
+error_fetch = 0
+error_misc = 0
 # Update patient records and increment error count on failures
 def update_patient_records(archive_documents):
+
+    archive_documents = get_archive_documents()
+   
+
     global error_misc, error_fetch, error_update, patient_update
     patient_db_base_url = f"{DB_BASE}{database}_patients/"
 
-    patient_update = 0
-    error_update = 0
-    error_fetch = 0
-    error_misc = 0
+    
 
     for doc in tqdm(archive_documents, desc="Updating patient status", unit="doc"):
         patient_id = doc.get('patient_id')
@@ -142,25 +192,29 @@ def update_patient_records(archive_documents):
                 save_response = requests.put(patient_url, json=patient_doc, auth=HTTPBasicAuth(username, password))
 
                 if save_response.status_code in [200, 201]:
-                    logger.info(f"Patient '{patient_id}' updated successfully.")
+                    #logger.info(f"Patient '{patient_id}' updated successfully.")
                     patient_update += 1
                 else:
                     logger.error(f"Failed to update patient '{patient_id}': {save_response.status_code} - {save_response.text}")
                     error_update += 1
 
             else:
-                # logger.error(f"Failed to fetch patient '{patient_id}': {response.status_code} - {response.text}")
+                #logger.error(f"Failed to fetch patient '{patient_id}': {response.status_code} - {response.text}")
                 error_fetch += 1
 
         except requests.exceptions.RequestException as e:
-            logger.error(f"Error occurred while updating patient '{patient_id}': {str(e)}")
+            #logger.error(f"Error occurred while updating patient '{patient_id}': {str(e)}")
             error_update += 1
 
     return patient_update
 
+
+error_count = 0
+saved_count = 0
 # Save active documents and increment error count on failures
 def save_active_entries(active_documents):
-    global error_misc
+    global error_misc, error_count, saved_count
+    
     if not active_documents:
         logger.info("No active documents to save.")
         return
@@ -188,7 +242,8 @@ def save_active_entries(active_documents):
             response = requests.put(save_url, json=doc, auth=HTTPBasicAuth(username, password))
 
             if response.status_code in [200, 201]:
-                logger.info(f"Document '{doc_id}' saved successfully.")
+                #logger.info(f"Document '{doc_id}' saved successfully.")
+                saved_count += 1 
             else:
                 logger.error(f"Failed to save document '{doc_id}': {response.status_code} - {response.text}")
                 error_count += 1
@@ -196,6 +251,8 @@ def save_active_entries(active_documents):
         except requests.exceptions.RequestException as e:
             logger.error(f"Error occurred while saving document '{doc_id}': {str(e)}")
             error_misc += 1
+    return saved_count
+
 
 # Housekeeping function to delete databases
 def house_keeping_please(db_name):
@@ -271,8 +328,23 @@ def exodus():
         last_key = f'"{rows[-1]["id"]}"' if rows else None
         if len(rows) < batch_size:
             break
-    
-# satrt replication
+
+       #enable internet here 
+'''
+def enable_internet():
+    if platform.system() != "Linux":
+        logger.warning("This function is only for Linux systems.")
+        return
+
+    try:
+        subprocess.run(f"sudo /usr/sbin/ifconfig {wifi_interface} up", shell=True, check=True)
+        logger.info(f"Wi-Fi ({wifi_interface}) disabled.")
+    except subprocess.CalledProcessError as e:
+        logger.error(f"Failed to disable Wi-Fi: {e}")
+'''  
+
+
+# start replication
 def lazarous():
     import json
     import subprocess
@@ -322,7 +394,7 @@ def lazarous():
     try:
         result = subprocess.run(create_design_doc_cmd, check=True, capture_output=True, text=True)
         with open(log_file, 'a') as log:
-            log.write(f"Design document created successfully on the target database\n")
+            log.write(f"{result}Design document created successfully on the target database\n")
 
     except subprocess.CalledProcessError as e:
         with open(log_file, 'a') as log:
@@ -395,29 +467,82 @@ def lazarous():
         execute_replication(target_to_source_cmd_ltp, f"Replication setup from target to source for {suffix}")
 
 
-# Log final results
-if __name__ == "__main__":
-    initialize_setup()
-    active_docs, archive_docs = filter_entries()
-    patient_update = update_patient_records(archive_docs)
-    save_active_entries(active_docs)
-    house_keeping_please(f"{database}")
-    ensure_database_exists(f"{database}")
-    exodus()
-    house_keeping_please(f"{database}_active")
-    house_keeping_please("_replicator")
-    lazarous()
 
-    # Log final messages with document and error counts
-    logger.info(f"Documents Updated patient: {patient_update}")
-    logger.warning(f"Error: None" if patient_update else f"Error: No updates")
-    logger.info(f"Active Documents count: {len(active_docs)}")
-    logger.info(f"Old Documents count: {len(archive_docs)}")
-    logger.error(f"Errors Fetching docs: {error_fetch}")
-    logger.error(f"Errors Updating docs: {error_update}")
-    logger.error(f"Errors - Misc: {error_misc}")
-    logger.info(f"Database_created: {database}")
-    print("\n\nSetting up replication now...")
+
+from datetime import datetime, time as dtime
+import time
+
+def run_archive():
+   
+    start_time = dtime(hour=15, minute=3)   
+    end_time = dtime(hour=15, minute=35)    
+
+    now = datetime.now().time()
+    while now < start_time:
+        wait_minutes = int((datetime.combine(datetime.today(), start_time) - datetime.now()).seconds / 60)
+        logger.info(f"Waiting until archive start time ({start_time})... ({wait_minutes} mins left)")
+        time.sleep(60)
+        now = datetime.now().time()
+
+    if start_time <= now <= end_time:
+        logger.info("Starting archive phase and halting replication.")
+        #disable_internet()
+
+        house_keeping_please("_replicator")
+
+        initialize_setup()
+        active_docs, archive_docs = filter_entries()
+        
+        patient_update = update_patient_records(archive_docs)
+        logger.info(f"Updated patient records: {patient_update}")
+
+        old_docs = get_archive_documents()
+        
+        archive_documents = filter_entries()
+
+        saved_count = save_active_entries(active_docs)
+        logger.info(f"Documents successfully saved: {saved_count}")
+
+        house_keeping_please(f"{database}")
+        ensure_database_exists(f"{database}")
+        exodus()
+        house_keeping_please(f"{database}_active")
+        #house_keeping_please("_replicator")
+
+        # Log final messages with document and error counts
+      
+        logger.info(f"Total Updated patient documents : {patient_update}")
+        logger.warning(f"Error: None" if patient_update else f"Error: No updates")
+        logger.info(f"Archive_documents: {len(archive_documents)}")
+        logger.info(f"Active Documents count: {len(active_docs)}")
+        logger.info(f"Old Documents count: {len(old_docs)}")
+        logger.error(f"Errors Fetching docs: {error_fetch}")
+        logger.error(f"Errors Updating docs: {error_update}")
+        logger.error(f"Errors - Misc: {error_misc}")
+        logger.info(f"Database_created: {database}")
+        print("\n\nSetting up replication now...")
+
+        logger.info("Archive complete.")
+        while datetime.now().time() < end_time:
+            #logger.info("Waiting for archive window to finish before enabling internet...")
+            time.sleep(60)
+
+        #logger.info("Re-enabling internet.")
+        #enable_internet()
+'''  
+        if is_internet_connected():
+            logger.info("Internet confirmed ON. Triggering replication restart.")
+            lazarous()
+        else:
+            logger.warning("Internet still down. Replication not restarted.")
+'''  
+
+# Main
+if __name__ == "__main__":
+    run_archive()
+    
+
+   
     # Print all buffered log messages at the end
     print(log_buffer.getvalue())
     time.sleep(10)

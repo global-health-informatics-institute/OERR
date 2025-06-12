@@ -716,7 +716,7 @@ def reprint_barcode(test_id):
                       var_patient["gender"][0]))
     label_file.write('b5,70,P,386,80,"%s$"\n' % "~".join(test_string))
     label_file.write('A20,170,0,1,1,2,N,"%s"\n' % ",".join(test_names))
-    label_file.write('A260,170,0,1,1,2,N,"%s" \n' % datetime.now().strftime("%d-%b %H:%M"))
+    label_file.write('A260,170,0,1,1,2,N,"%s" \n' % datetime.fromtimestamp(test.get("collected_at")).strftime("%d-%b %H:%M"))
     label_file.write("P1\n")
     label_file.close()
     #os.system('sudo sh ~/print.sh /tmp/test_order.lbl')

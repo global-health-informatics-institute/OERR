@@ -142,7 +142,7 @@ def filter_entries():
 
 #for testing
 def get_archive_documents():
-    url = f"{DB_BASE}mss_archive/_all_docs?include_docs=true"
+    url = f"{DB_BASE}mss_results_new_archive/_all_docs?include_docs=true"
     try:
         response = requests.get(url, auth=HTTPBasicAuth(username, password))
         if response.status_code == 200:

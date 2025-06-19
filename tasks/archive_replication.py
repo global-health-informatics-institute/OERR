@@ -473,19 +473,6 @@ from datetime import datetime, time as dtime
 import time
 
 def run_archive():
-   
-    start_time = dtime(hour=15, minute=3)   
-    end_time = dtime(hour=15, minute=35)    
-
-    now = datetime.now().time()
-    while now < start_time:
-        wait_minutes = int((datetime.combine(datetime.today(), start_time) - datetime.now()).seconds / 60)
-        logger.info(f"Waiting until archive start time ({start_time})... ({wait_minutes} mins left)")
-        time.sleep(60)
-        now = datetime.now().time()
-
-    if start_time <= now <= end_time:
-        logger.info("Starting archive phase and halting replication.")
         #disable_internet()
 
         house_keeping_please("_replicator")
@@ -513,7 +500,7 @@ def run_archive():
       
         logger.info(f"Total Updated patient documents : {patient_update}")
         logger.warning(f"Error: None" if patient_update else f"Error: No updates")
-        logger.info(f"Archive_documents: {len(archive_documents)}")
+        logger.info(f"Archived documents: {len(archive_documents)}")
         logger.info(f"Active Documents count: {len(active_docs)}")
         logger.info(f"Old Documents count: {len(old_docs)}")
         logger.error(f"Errors Fetching docs: {error_fetch}")
@@ -523,9 +510,7 @@ def run_archive():
         print("\n\nSetting up replication now...")
 
         logger.info("Archive complete.")
-        while datetime.now().time() < end_time:
-            #logger.info("Waiting for archive window to finish before enabling internet...")
-            time.sleep(60)
+        
 
         #logger.info("Re-enabling internet.")
         #enable_internet()
@@ -546,4 +531,4 @@ if __name__ == "__main__":
     # Print all buffered log messages at the end
     print(log_buffer.getvalue())
     time.sleep(10)
-    lazarous()
+    # lazarous()

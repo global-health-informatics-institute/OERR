@@ -27,33 +27,13 @@ database = f"{basis_settings['couch']['database']}"
 DB_BASE = f"{url}/"
 DB = f"{url}/{database}"
 
-import subprocess
+
 import logging
 import platform
 
 logger = logging.getLogger(__name__)
 
-'''  
-# The Wi-Fi interface to control (adjust to match your system setup)
-wifi_interface = "wlp2s0"
 
-def disable_internet():
-    try:
-        subprocess.run(f"sudo /usr/sbin/ifconfig {wifi_interface} down", shell=True, check=True)
-        logger.info(f"Wi-Fi ({wifi_interface}) disabled.")
-    except subprocess.CalledProcessError as e:
-        logger.error(f"Failed to disable Wi-Fi: {e}")
-
-
-def is_internet_connected():
-    try:
-        requests.get("http://localhost:5984/_utils/#", timeout=5)
-        logger.info("Internet is connected.")
-        return True
-    except requests.ConnectionError:
-        logger.warning("Internet is not connected.")
-        return False
-'''  
 # Function to ensure the database exists
 def ensure_database_exists(database_name):
     if database_name != f"{database}":
@@ -140,7 +120,7 @@ def filter_entries():
 
     return active_documents, archive_documents
 
-#for testing
+
 def get_archive_documents():
     url = f"{DB_BASE}mss_results_new_archive/_all_docs?include_docs=true"
     try:
@@ -329,21 +309,6 @@ def exodus():
         if len(rows) < batch_size:
             break
 
-       #enable internet here 
-'''
-def enable_internet():
-    if platform.system() != "Linux":
-        logger.warning("This function is only for Linux systems.")
-        return
-
-    try:
-        subprocess.run(f"sudo /usr/sbin/ifconfig {wifi_interface} up", shell=True, check=True)
-        logger.info(f"Wi-Fi ({wifi_interface}) disabled.")
-    except subprocess.CalledProcessError as e:
-        logger.error(f"Failed to disable Wi-Fi: {e}")
-'''  
-
-
 # start replication
 def lazarous():
     import json
@@ -473,7 +438,7 @@ from datetime import datetime, time as dtime
 import time
 
 def run_archive():
-        #disable_internet()
+        
 
         house_keeping_please("_replicator")
 
@@ -494,7 +459,7 @@ def run_archive():
         ensure_database_exists(f"{database}")
         exodus()
         house_keeping_please(f"{database}_active")
-        #house_keeping_please("_replicator")
+       
 
         # Log final messages with document and error counts
       
@@ -512,16 +477,6 @@ def run_archive():
         logger.info("Archive complete.")
         
 
-        #logger.info("Re-enabling internet.")
-        #enable_internet()
-'''  
-        if is_internet_connected():
-            logger.info("Internet confirmed ON. Triggering replication restart.")
-            lazarous()
-        else:
-            logger.warning("Internet still down. Replication not restarted.")
-'''  
-
 # Main
 if __name__ == "__main__":
     run_archive()
@@ -531,4 +486,4 @@ if __name__ == "__main__":
     # Print all buffered log messages at the end
     print(log_buffer.getvalue())
     time.sleep(10)
-    # lazarous()
+    

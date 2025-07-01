@@ -432,54 +432,44 @@ def lazarous():
         execute_replication(target_to_source_cmd_ltp, f"Replication setup from target to source for {suffix}")
 
 
+# Main
+if __name__ == "__main__":
+    house_keeping_please("_replicator")
 
-
-from datetime import datetime, time as dtime
-import time
-
-def run_archive():
+    initialize_setup()
+    active_docs, archive_docs = filter_entries()
         
+    patient_update = update_patient_records(archive_docs)
+    logger.info(f"Updated patient records: {patient_update}")
 
-        house_keeping_please("_replicator")
-
-        initialize_setup()
-        active_docs, archive_docs = filter_entries()
+    old_docs = get_archive_documents()
         
-        patient_update = update_patient_records(archive_docs)
-        logger.info(f"Updated patient records: {patient_update}")
+    archive_documents = filter_entries()
 
-        old_docs = get_archive_documents()
-        
-        archive_documents = filter_entries()
+    saved_count = save_active_entries(active_docs)
+    logger.info(f"Documents successfully saved: {saved_count}")
 
-        saved_count = save_active_entries(active_docs)
-        logger.info(f"Documents successfully saved: {saved_count}")
-
-        house_keeping_please(f"{database}")
-        ensure_database_exists(f"{database}")
-        exodus()
-        house_keeping_please(f"{database}_active")
+    house_keeping_please(f"{database}")
+    ensure_database_exists(f"{database}")
+    exodus()
+    house_keeping_please(f"{database}_active")
        
 
         # Log final messages with document and error counts
       
-        logger.info(f"Total Updated patient documents : {patient_update}")
-        logger.warning(f"Error: None" if patient_update else f"Error: No updates")
-        logger.info(f"Archived documents: {len(archive_documents)}")
-        logger.info(f"Active Documents count: {len(active_docs)}")
-        logger.info(f"Old Documents count: {len(old_docs)}")
-        logger.error(f"Errors Fetching docs: {error_fetch}")
-        logger.error(f"Errors Updating docs: {error_update}")
-        logger.error(f"Errors - Misc: {error_misc}")
-        logger.info(f"Database_created: {database}")
-        print("\n\nSetting up replication now...")
+    logger.info(f"Total Updated patient documents : {patient_update}")
+    logger.warning(f"Error: None" if patient_update else f"Error: No updates")
+    logger.info(f"Archived documents: {len(archive_documents)}")
+    logger.info(f"Active Documents count: {len(active_docs)}")
+    logger.info(f"Old Documents count: {len(old_docs)}")
+    logger.error(f"Errors Fetching docs: {error_fetch}")
+    logger.error(f"Errors Updating docs: {error_update}")
+    logger.error(f"Errors - Misc: {error_misc}")
+    logger.info(f"Database_created: {database}")
+    print("\n\nSetting up replication now...")
 
-        logger.info("Archive complete.")
+    logger.info("Archive complete.")
         
-
-# Main
-if __name__ == "__main__":
-    run_archive()
     
 
    

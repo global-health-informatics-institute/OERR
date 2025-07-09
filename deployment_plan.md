@@ -1,19 +1,20 @@
 For Laptop
 1. get ip address
    ```bash
-   ifconfig
+      hostname -I
    ```
 
-1. create central git repo
+2. create central git repo
    ```bash
    mkdir -p /home/ghii/Desktop/GHII/OERR_Reference/OERR_Central_repo.git
    cd /home/ghii/Desktop/GHII/OERR_Reference/OERR_Central_repo.git
    git init --bare
    ```
 
-1. set origin
+3. set origin
    ```bash
       cd ~/Desktop/GHII/OERR_Reference/OERR_Central_repo  <! -- the dirs are different, one ends with .git-->
+      git remote remove origin 
       git remote add central ghii@192.168.1.42:/home/ghii/Desktop/GHII/OERR_Reference/OERR_Central_repo.git
       git push --all central
       git push --tags central
@@ -26,7 +27,7 @@ For Laptop
 For cartop
 1. Resolve changes and switch branch
    ```bash
-      git commit -m "resolve uncommited" && git switch -c lan_workflow
+      git add . && git commit -m "resolve uncommited" && git switch -c lan_workflow
    ```
 
 

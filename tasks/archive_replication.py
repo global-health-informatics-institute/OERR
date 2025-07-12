@@ -312,7 +312,6 @@ def exodus():
 # start replication
 def lazarous():
     import json
-    import subprocess
 
     replications_file = "config/replications.config"
     ward_file = "config/department.config"

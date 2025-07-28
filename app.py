@@ -17,6 +17,9 @@ from models.user import User
 from utils import misc
 from fuzzywuzzy import fuzz
 
+GENDER_COV_MALE = "1"
+GENDER_COV_FEMALE = "0"
+
 
 
 app = Flask(__name__, template_folder="views", static_folder="assets")
@@ -570,9 +573,9 @@ def collect_specimens(test_id):
 
     #Converting gender
     if var_patient["gender"][0] == "m":
-        conv_gender = "1"
+        conv_gender = GENDER_COV_MALE
     else:
-        conv_gender = "0"
+        conv_gender = GENDER_COV_FEMALE
 
     for test in tests:
         test["status"] = "Specimen Collected"
@@ -618,6 +621,7 @@ def collect_specimens(test_id):
     label_file.write('b5,70,P,386,80,"%s$"\n' % '~'.join(test_string))
     label_file.write('A20,170,0,1,1,2,N,"%s"\n' % ','.join(test_names))
     label_file.write('A260,170,0,1,1,2,N,"%s" \n' % datetime.now().strftime("%d-%b %H:%M"))
+    label_file.write('A260,170,0,1,1,2,N,"%s" \n' % datetime.fromtimestamp(collected_at).strftime("%d-%b %H:%M"))
     label_file.write("P1\n")
     label_file.close()
     #os.system('sudo sh ~/print.sh /tmp/test_order.lbl')
@@ -648,9 +652,9 @@ def reprint_barcode(test_id):
     wards = wards_mapping
 
     if var_patient["gender"][0] == "m":
-        conv_gender = "0"
+        conv_gender = GENDER_COV_MALE
     else:
-        conv_gender = "1"
+        conv_gender = GENDER_COV_FEMALE
 
     for test in tests:
         if test["type"] == "test":
@@ -715,7 +719,7 @@ def reprint_barcode(test_id):
                       var_patient["gender"][0]))
     label_file.write('b5,70,P,386,80,"%s$"\n' % "~".join(test_string))
     label_file.write('A20,170,0,1,1,2,N,"%s"\n' % ",".join(test_names))
-    label_file.write('A260,170,0,1,1,2,N,"%s" \n' % datetime.now().strftime("%d-%b %H:%M"))
+    label_file.write('A260,170,0,1,1,2,N,"%s" \n' % datetime.fromtimestamp(test.get("collected_at")).strftime("%d-%b %H:%M"))
     label_file.write("P1\n")
     label_file.close()
     #os.system('sudo sh ~/print.sh /tmp/test_order.lbl')
@@ -981,4 +985,4 @@ def internal_error(error):
     return render_template('main/502.html'), 502
 
 if __name__ == '__main__':
-    app.run(port="8000", debug=False, host='0.0.0.0')
+    app.run(port="4500", debug=False, host='0.0.0.0')

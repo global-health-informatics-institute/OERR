@@ -5,8 +5,8 @@ import sys
 
 now = datetime.datetime.now()
 
-start_time = now.replace(hour=7, minute=45, second=0, microsecond=0)
-end_time = now.replace(hour=8, minute=15, second=0, microsecond=0)
+start_time = now.replace(hour=1, minute=0, second=0, microsecond=0)
+end_time = now.replace(hour=3, minute=0, second=0, microsecond=0)
 
 if start_time <= now <= end_time:
     sys.exit(0)

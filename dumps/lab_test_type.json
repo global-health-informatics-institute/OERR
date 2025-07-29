@@ -1,0 +1,4695 @@
+{
+  "docs": [
+    {
+      "_id": "50:50 Mix F-IX Deficient",
+      "measures": {
+        "50:50 Mix F-IX Deficient": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "0.000"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "EDTA",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "",
+      "department": "Haematology",
+      "test_type_id": "58",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "50:50 Mix FVIII Deficient",
+      "measures": {
+        "50:50 Mix FVIII Deficient": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "0.000"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "EDTA",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "",
+      "department": "Haematology",
+      "test_type_id": "57",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "50:50 Normal Plasma",
+      "measures": {
+        "50:50 Normal Plasma": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "0.000"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "EDTA",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "",
+      "department": "Haematology",
+      "test_type_id": "56",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "ABO Blood Grouping",
+      "measures": {
+        "Grouping": {
+          "type": "Categorical",
+          "options": [
+            "A RhD Positive",
+            "B RhD Positive",
+            "AB RhD Positive",
+            "O RhD Positive",
+            "A RhD Negative",
+            "B RhD Negative",
+            "AB RhD Negative",
+            "O RhD Negative"
+          ]
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "ABO",
+      "department": "Blood Bank",
+      "test_type_id": "29",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "APTT",
+      "measures": {
+        "APTT": {
+          "minimum": "25.000",
+          "type": "Numeric",
+          "maximum": "41.000"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "EDTA",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "APTT",
+      "department": "Haematology",
+      "test_type_id": "40",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "APTT Ratio",
+      "measures": {
+        "APTT Ratio": {
+          "minimum": "0.820",
+          "type": "Numeric",
+          "maximum": "1.090"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "EDTA",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "APTT Ratio",
+      "department": "Haematology",
+      "test_type_id": "54",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "Beta Human Chorionic Gonatropin",
+      "measures": {
+        "B-HCG": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "5.000"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "EDTA",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "B-HCG",
+      "department": "Immunochemistry",
+      "test_type_id": "102",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "BioMarkers",
+      "measures": {
+        "Antistreptolysin O (ASO)": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "200.000"
+        },
+        "C-reactive Protein (CRP)": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "1.000"
+        },
+        "Rheumatoid Factor (RF)": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "20.000"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "",
+      "department": "Biochemistry",
+      "test_type_id": "65",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "C-reactive protein",
+      "measures": {
+        "CRP": {
+          "type": "Categorical",
+          "options": [
+            "Positive",
+            "Negative"
+          ]
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "CRP",
+      "department": "Serology",
+      "test_type_id": "25",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "CD4",
+      "measures": {
+        "CD3 Count": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "1000000.000"
+        },
+        "CD4 %": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "1000000.000"
+        },
+        "CD8 Count": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "1000000.000"
+        },
+        "Lymphocyte Count": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "1000000.000"
+        },
+        "CD4 Count": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "100.000"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "EDTA",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "CD4",
+      "department": "Flow Cytometry",
+      "test_type_id": "28",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "Calcium",
+      "measures": {
+        "Ca": {
+          "minimum": "8.400",
+          "type": "Numeric",
+          "maximum": "10.400"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "Ca",
+      "department": "Biochemistry",
+      "test_type_id": "48",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "Cancer Antigen 125",
+      "measures": {
+        "CA125": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "35.000"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "EDTA",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "CA125",
+      "department": "Immunochemistry",
+      "test_type_id": "98",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "Cancer Antigen 15-3",
+      "measures": {
+        "CA15-3": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "22.000"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "EDTA",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "CA15-3",
+      "department": "Immunochemistry",
+      "test_type_id": "96",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "Cancer Antigen 19-9",
+      "measures": {
+        "CA19-9": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "37.000"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "EDTA",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "CA19-9",
+      "department": "Immunochemistry",
+      "test_type_id": "97",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "Carcinoembryonic Antigen",
+      "measures": {
+        "CEA": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "5.000"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "EDTA",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "CEA",
+      "department": "Immunochemistry",
+      "test_type_id": "95",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "Cardiac Function Tests",
+      "measures": {
+        "Creatine Kinase(CKN)": {
+          "minimum": "46.000",
+          "type": "Numeric",
+          "maximum": "171.000"
+        },
+        "Lactatedehydrogenase(LDH)": {
+          "minimum": "225.000",
+          "type": "Numeric",
+          "maximum": "450.000"
+        },
+        "Creatine Kinase MB(CKMB)": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "25.000"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "EDTA",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "CFT",
+      "department": "Biochemistry",
+      "test_type_id": "63",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "Cell Count",
+      "measures": {
+        "RBC": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "1000000.000"
+        },
+        "WBC": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "1000000.000"
+        }
+      },
+      "requirements": {
+        "2": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "CSF"
+        },
+        "4": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Pleural Fluid"
+        },
+        "5": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Ascitic Fluid"
+        },
+        "6": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Pericardial Fluid"
+        },
+        "7": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Peritoneal Fluid"
+        },
+        "13": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Other"
+        },
+        "17": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Synovial Fluid"
+        }
+      },
+      "short_name": "ClCt",
+      "department": "Microbiology",
+      "test_type_id": "5",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "2": "CSF",
+        "4": "Pleural Fluid",
+        "5": "Ascitic Fluid",
+        "6": "Pericardial Fluid",
+        "7": "Peritoneal Fluid",
+        "13": "Other",
+        "17": "Synovial Fluid"
+      }
+    },
+    {
+      "_id": "Cell Count (Paeds)",
+      "measures": {
+        "RBC": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "1000000.000"
+        },
+        "WBC": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "0.000"
+        }
+      },
+      "requirements": {
+        "2": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "CSF"
+        },
+        "4": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Pleural Fluid"
+        },
+        "5": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Ascitic Fluid"
+        },
+        "6": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Pericardial Fluid"
+        },
+        "7": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Peritoneal Fluid"
+        },
+        "13": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Other"
+        },
+        "17": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Synovial Fluid"
+        }
+      },
+      "short_name": "ClCt (Paeds)",
+      "department": "Paediatric Lab ",
+      "test_type_id": "131",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "2": "CSF",
+        "4": "Pleural Fluid",
+        "5": "Ascitic Fluid",
+        "6": "Pericardial Fluid",
+        "7": "Peritoneal Fluid",
+        "13": "Other",
+        "17": "Synovial Fluid"
+      }
+    },
+    {
+      "_id": "Coagulation Assay",
+      "measures": {
+        "APTT Ratio": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "0.000"
+        },
+        "50:50 Mix F-IX Deficient": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "0.000"
+        },
+        "50:50 Mix Normal Plasma": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "0.000"
+        },
+        "50:50 Mix FVIII Deficient": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "0.000"
+        },
+        "PT": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "0.000"
+        },
+        "Fibronogen": {
+          "minimum": "2.610",
+          "type": "Numeric",
+          "maximum": "3.810"
+        },
+        "TT": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "0.000"
+        },
+        "INR": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "0.000"
+        },
+        "Factor IX Assay": {
+          "minimum": "95.000",
+          "type": "Numeric",
+          "maximum": "135.000"
+        },
+        "APTT": {
+          "minimum": "25.000",
+          "type": "Numeric",
+          "maximum": "41.000"
+        },
+        "Factor VIII Assay": {
+          "minimum": "77.000",
+          "type": "Numeric",
+          "maximum": "117.000"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "EDTA",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "",
+      "department": "Haematology",
+      "test_type_id": "62",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "Creatinine Kinase",
+      "measures": {
+        "CK": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "170.000"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "CK",
+      "department": "Biochemistry",
+      "test_type_id": "51",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "Cross-match",
+      "measures": {
+        "Pack ABO Group": {
+          "type": "Categorical",
+          "options": [
+            "A RhD Positive",
+            "B RhD Positive",
+            "AB RhD Positive",
+            "O RhD Positive",
+            "A RhD Negative",
+            "B RhD Negative",
+            "AB RhD Negative",
+            "O RhD Negative"
+          ]
+        },
+        "Cross-match Method": {
+          "type": "Categorical",
+          "options": [
+            "Saline",
+            "Coombs"
+          ]
+        },
+        "Product Type": {
+          "type": "Categorical",
+          "options": [
+            "Whole Blood",
+            "Packed Red Cells",
+            "Platelets",
+            "FFPs",
+            "Cryoprecipitate"
+          ]
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "Xmatch",
+      "department": "Blood Bank",
+      "test_type_id": "30",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "Culture & Sensitivity",
+      "measures": {
+        "Culture": {
+          "type": "Categorical",
+          "options": [
+            "Growth",
+            "No growth",
+            "Mixed growth; no predominant organism",
+            "Growth of normal flora; no pathogens isolated",
+            "Growth of contaminants"
+          ]
+        }
+      },
+      "requirements": {
+        "1": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Sterile container",
+          "type_of_specimen": "Sputum"
+        },
+        "2": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "CSF"
+        },
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Baktech",
+          "type_of_specimen": "Blood"
+        },
+        "4": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Pleural Fluid"
+        },
+        "5": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Ascitic Fluid"
+        },
+        "6": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Pericardial Fluid"
+        },
+        "7": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Peritoneal Fluid"
+        },
+        "8": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Swab",
+          "type_of_specimen": "HVS"
+        },
+        "9": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Swab",
+          "type_of_specimen": "Swabs"
+        },
+        "10": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Swab",
+          "type_of_specimen": "Pus"
+        },
+        "11": {
+          "volume": "3",
+          "units": "g",
+          "container": "Sterile container",
+          "type_of_specimen": "Stool"
+        },
+        "12": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Sterile container",
+          "type_of_specimen": "Urine"
+        },
+        "13": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Sterile container",
+          "type_of_specimen": "Other"
+        },
+        "15": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Conical container",
+          "type_of_specimen": "Semen"
+        },
+        "17": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Sterile container",
+          "type_of_specimen": "Synovial Fluid"
+        },
+        "22": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Sterile container",
+          "type_of_specimen": " tissue biopsy"
+        }
+      },
+      "short_name": "C&S",
+      "department": "Microbiology",
+      "test_type_id": "4",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "1": "Sputum",
+        "2": "CSF",
+        "3": "Blood",
+        "4": "Pleural Fluid",
+        "5": "Ascitic Fluid",
+        "6": "Pericardial Fluid",
+        "7": "Peritoneal Fluid",
+        "8": "HVS",
+        "9": "Swabs",
+        "10": "Pus",
+        "11": "Stool",
+        "12": "Urine",
+        "13": "Other",
+        "15": "Semen",
+        "17": "Synovial Fluid",
+        "22": " tissue biopsy"
+      }
+    },
+    {
+      "_id": "Culture & Sensitivity (Paeds)",
+      "measures": {
+        "Culture": {
+          "type": "Categorical",
+          "options": [
+            "Growth",
+            "No growth",
+            "Mixed growth; no predominant organism",
+            "Growth of normal flora; no pathogens isolated",
+            "Growth of contaminants"
+          ]
+        }
+      },
+      "requirements": {
+        "1": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Sterile container",
+          "type_of_specimen": "Sputum"
+        },
+        "2": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "CSF"
+        },
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Baktech",
+          "type_of_specimen": "Blood"
+        },
+        "4": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Conical container",
+          "type_of_specimen": "Pleural Fluid"
+        },
+        "5": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Conical container",
+          "type_of_specimen": "Ascitic Fluid"
+        },
+        "6": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Conical container",
+          "type_of_specimen": "Pericardial Fluid"
+        },
+        "7": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Conical container",
+          "type_of_specimen": "Peritoneal Fluid"
+        },
+        "8": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Swab",
+          "type_of_specimen": "HVS"
+        },
+        "9": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Swab",
+          "type_of_specimen": "Swabs"
+        },
+        "10": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Swab",
+          "type_of_specimen": "Pus"
+        },
+        "11": {
+          "volume": "3",
+          "units": "g",
+          "container": "Sterile container",
+          "type_of_specimen": "Stool"
+        },
+        "12": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Conical container",
+          "type_of_specimen": "Urine"
+        },
+        "13": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Sterile container",
+          "type_of_specimen": "Other"
+        },
+        "15": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Conical container",
+          "type_of_specimen": "Semen"
+        },
+        "17": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Conical container",
+          "type_of_specimen": "Synovial Fluid"
+        },
+        "22": {
+          "volume": "3",
+          "units": "g",
+          "container": "Conical container",
+          "type_of_specimen": " tissue biopsy"
+        }
+      },
+      "short_name": "C&S (Paeds)",
+      "department": "Paediatric Lab ",
+      "test_type_id": "135",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "1": "Sputum",
+        "2": "CSF",
+        "3": "Blood",
+        "4": "Pleural Fluid",
+        "5": "Ascitic Fluid",
+        "6": "Pericardial Fluid",
+        "7": "Peritoneal Fluid",
+        "8": "HVS",
+        "9": "Swabs",
+        "10": "Pus",
+        "11": "Stool",
+        "12": "Urine",
+        "13": "Other",
+        "15": "Semen",
+        "17": "Synovial Fluid",
+        "22": " tissue biopsy"
+      }
+    },
+    {
+      "_id": "Differential",
+      "measures": {
+        "Lymphocytes": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "100.000"
+        },
+        "Polymorphs": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "100.000"
+        },
+        "Diff remarks": {
+          "type": "Categorical",
+          "options": [
+            "Mainly lymphocytes",
+            "Mainly polymorphs",
+            "Not enough cells for differential count",
+            "No cells seen"
+          ]
+        }
+      },
+      "requirements": {
+        "1": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Sterile container",
+          "type_of_specimen": "Sputum"
+        },
+        "2": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "CSF"
+        },
+        "4": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Pleural Fluid"
+        },
+        "5": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Ascitic Fluid"
+        },
+        "6": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Pericardial Fluid"
+        },
+        "7": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Peritoneal Fluid"
+        }
+      },
+      "short_name": "Diff",
+      "department": "Microbiology",
+      "test_type_id": "7",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "1": "Sputum",
+        "2": "CSF",
+        "4": "Pleural Fluid",
+        "5": "Ascitic Fluid",
+        "6": "Pericardial Fluid",
+        "7": "Peritoneal Fluid"
+      }
+    },
+    {
+      "_id": "Differential (Paeds)",
+      "measures": {
+        "Lymphocytes": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "100.000"
+        },
+        "Polymorphs": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "100.000"
+        },
+        "Diff Remarks": {
+          "type": "Categorical",
+          "options": [
+            "Mainly lymphocytes",
+            "Mainly polymorphs",
+            "Not enough cells for differential count",
+            "No cells seen"
+          ]
+        }
+      },
+      "requirements": {
+        "1": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Sterile container",
+          "type_of_specimen": "Sputum"
+        },
+        "2": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "CSF"
+        },
+        "4": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Pleural Fluid"
+        },
+        "5": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Ascitic Fluid"
+        },
+        "6": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Pericardial Fluid"
+        },
+        "7": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Peritoneal Fluid"
+        }
+      },
+      "short_name": "Diff (Paeds)",
+      "department": "Paediatric Lab ",
+      "test_type_id": "134",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "1": "Sputum",
+        "2": "CSF",
+        "4": "Pleural Fluid",
+        "5": "Ascitic Fluid",
+        "6": "Pericardial Fluid",
+        "7": "Peritoneal Fluid"
+      }
+    },
+    {
+      "_id": "Direct Coombs Test",
+      "measures": {
+        "Direct Coombs Test": {
+          "type": "Categorical",
+          "options": [
+            "Positive",
+            "Negative"
+          ]
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "EDTA",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "",
+      "department": "Blood Bank",
+      "test_type_id": "47",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "ESBL Test",
+      "measures": {
+        "Cefotaxime": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "0.000"
+        },
+        "Ceftazidime": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "0.000"
+        },
+        "ESBL": {
+          "type": "Categorical",
+          "options": [
+            "Positive",
+            "Negative"
+          ]
+        },
+        "Ceftazidime + Clavulanate": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "0.000"
+        },
+        "Cefepime": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "0.000"
+        },
+        "Cefotaxime + Clavulanate": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "0.000"
+        },
+        "Cefepime + clavulanate": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "0.000"
+        }
+      },
+      "requirements": {
+        "2": {
+          "volume": "3",
+          "units": "ml",
+          "container": "EDTA",
+          "type_of_specimen": "CSF"
+        },
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "EDTA",
+          "type_of_specimen": "Blood"
+        },
+        "4": {
+          "volume": "3",
+          "units": "ml",
+          "container": "EDTA",
+          "type_of_specimen": "Pleural Fluid"
+        },
+        "5": {
+          "volume": "3",
+          "units": "ml",
+          "container": "EDTA",
+          "type_of_specimen": "Ascitic Fluid"
+        },
+        "6": {
+          "volume": "3",
+          "units": "ml",
+          "container": "EDTA",
+          "type_of_specimen": "Pericardial Fluid"
+        },
+        "7": {
+          "volume": "3",
+          "units": "ml",
+          "container": "EDTA",
+          "type_of_specimen": "Peritoneal Fluid"
+        },
+        "8": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Swab",
+          "type_of_specimen": "HVS"
+        },
+        "9": {
+          "volume": "3",
+          "units": "ml",
+          "container": "EDTA",
+          "type_of_specimen": "Swabs"
+        },
+        "10": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Swab",
+          "type_of_specimen": "Pus"
+        },
+        "12": {
+          "volume": "3",
+          "units": "ml",
+          "container": "EDTA",
+          "type_of_specimen": "Urine"
+        }
+      },
+      "short_name": "ESBL",
+      "department": "Microbiology",
+      "test_type_id": "53",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "2": "CSF",
+        "3": "Blood",
+        "4": "Pleural Fluid",
+        "5": "Ascitic Fluid",
+        "6": "Pericardial Fluid",
+        "7": "Peritoneal Fluid",
+        "8": "HVS",
+        "9": "Swabs",
+        "10": "Pus",
+        "12": "Urine"
+      }
+    },
+    {
+      "_id": "ESR",
+      "measures": {
+        "ESR": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "15.000"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "EDTA",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "ESR",
+      "department": "Haematology",
+      "test_type_id": "42",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "Electrolytes",
+      "measures": {
+        "Na": {
+          "minimum": "135.000",
+          "type": "Numeric",
+          "maximum": "145.000"
+        },
+        "K": {
+          "minimum": "3.500",
+          "type": "Numeric",
+          "maximum": "5.500"
+        },
+        "Cl": {
+          "minimum": "98.000",
+          "type": "Numeric",
+          "maximum": "108.000"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "E",
+      "department": "Biochemistry",
+      "test_type_id": "36",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "Electrolytes (Paeds)",
+      "measures": {
+        "Na": {
+          "minimum": "135.000",
+          "type": "Numeric",
+          "maximum": "145.000"
+        },
+        "K": {
+          "minimum": "3.500",
+          "type": "Numeric",
+          "maximum": "5.500"
+        },
+        "Cl": {
+          "minimum": "95.000",
+          "type": "Numeric",
+          "maximum": "105.000"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "Electrolytes (Paeds)",
+      "department": "Paediatric Lab ",
+      "test_type_id": "116",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "Enzymes",
+      "measures": {
+        "ALP-H": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "1000000.000"
+        },
+        "UREA-H": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "1000000.000"
+        },
+        "DBIL-DSA-H": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "1000000.000"
+        },
+        "UA-H": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "1000000.000"
+        },
+        "TBIL-DSA-H": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "1000000.000"
+        },
+        "ALB-H": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "1000000.000"
+        },
+        "AST-H": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "1000000.000"
+        },
+        "TG-H": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "1000000.000"
+        },
+        "GLU-O-H": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "1000000.000"
+        },
+        "TP-H": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "1000000.000"
+        },
+        "a-AMYLASE-H": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "1000000.000"
+        },
+        "TC-H": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "1000000.000"
+        },
+        "ALT-H": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "1000000.000"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "",
+      "department": "Biochemistry",
+      "test_type_id": "37",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "Estradiol",
+      "measures": {
+        "ESTRADIOL": {
+          "minimum": "10.000",
+          "type": "Numeric",
+          "maximum": "60.000"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "EDTA",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "ESTRADIOL",
+      "department": "Immunochemistry",
+      "test_type_id": "108",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "Estrogen",
+      "measures": {
+        "E2": {
+          "minimum": "40.000",
+          "type": "Numeric",
+          "maximum": "115.000"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "EDTA",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "E2",
+      "department": "Immunochemistry",
+      "test_type_id": "105",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "FBC",
+      "measures": {
+        "RDW-SD": {
+          "minimum": "37.000",
+          "type": "Numeric",
+          "maximum": "54.000"
+        },
+        "PCT": {
+          "minimum": "0.170",
+          "type": "Numeric",
+          "maximum": "0.350"
+        },
+        "WBC": {
+          "minimum": "4.000",
+          "type": "Numeric",
+          "maximum": "10.000"
+        },
+        "P-LCR": {
+          "minimum": "11.000",
+          "type": "Numeric",
+          "maximum": "45.000"
+        },
+        "HGB": {
+          "minimum": "11.000",
+          "type": "Numeric",
+          "maximum": "16.000"
+        },
+        "P-LCC": {
+          "minimum": "30.000",
+          "type": "Numeric",
+          "maximum": "90.000"
+        },
+        "LYMPH#": {
+          "minimum": "1.260",
+          "type": "Numeric",
+          "maximum": "3.620"
+        },
+        "LYMPH%": {
+          "minimum": "20.000",
+          "type": "Numeric",
+          "maximum": "40.000"
+        },
+        "HCT": {
+          "minimum": "37.000",
+          "type": "Numeric",
+          "maximum": "54.000"
+        },
+        "PDW": {
+          "minimum": "9.000",
+          "type": "Numeric",
+          "maximum": "17.000"
+        },
+        "RDW-CV": {
+          "minimum": "10.000",
+          "type": "Numeric",
+          "maximum": "16.000"
+        },
+        "RBC": {
+          "minimum": "3.500",
+          "type": "Numeric",
+          "maximum": "5.500"
+        },
+        "EO#": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "0.780"
+        },
+        "MONO#": {
+          "minimum": "0.120",
+          "type": "Numeric",
+          "maximum": "0.560"
+        },
+        "PLT": {
+          "minimum": "122.000",
+          "type": "Numeric",
+          "maximum": "330.000"
+        },
+        "EO%": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "12.000"
+        },
+        "MONO%": {
+          "minimum": "2.000",
+          "type": "Numeric",
+          "maximum": "10.000"
+        },
+        "MCHC": {
+          "minimum": "33.000",
+          "type": "Numeric",
+          "maximum": "36.000"
+        },
+        "MPV": {
+          "minimum": "6.000",
+          "type": "Numeric",
+          "maximum": "10.000"
+        },
+        "BASO#": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "0.070"
+        },
+        "NEUT#": {
+          "minimum": "0.820",
+          "type": "Numeric",
+          "maximum": "4.100"
+        },
+        "NEUT%": {
+          "minimum": "27.000",
+          "type": "Numeric",
+          "maximum": "60.000"
+        },
+        "MCH": {
+          "minimum": "23.000",
+          "type": "Numeric",
+          "maximum": "34.000"
+        },
+        "MCV": {
+          "minimum": "80.000",
+          "type": "Numeric",
+          "maximum": "100.000"
+        },
+        "BASO%": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "1.000"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "EDTA",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "FBC",
+      "department": "Haematology",
+      "test_type_id": "35",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "FBC (Paeds)",
+      "measures": {
+        "RDW-SD": {
+          "minimum": "37.000",
+          "type": "Numeric",
+          "maximum": "54.000"
+        },
+        "PCT": {
+          "minimum": "0.170",
+          "type": "Numeric",
+          "maximum": "0.350"
+        },
+        "WBC": {
+          "minimum": "4.000",
+          "type": "Numeric",
+          "maximum": "10.000"
+        },
+        "P-LCR": {
+          "minimum": "11.000",
+          "type": "Numeric",
+          "maximum": "45.000"
+        },
+        "HGB": {
+          "minimum": "10.900",
+          "type": "Numeric",
+          "maximum": "17.300"
+        },
+        "P-LCC": {
+          "minimum": "30.000",
+          "type": "Numeric",
+          "maximum": "90.000"
+        },
+        "LYMPH#": {
+          "minimum": "1.260",
+          "type": "Numeric",
+          "maximum": "3.620"
+        },
+        "LYMPH%": {
+          "minimum": "29.000",
+          "type": "Numeric",
+          "maximum": "59.000"
+        },
+        "HCT": {
+          "minimum": "32.000",
+          "type": "Numeric",
+          "maximum": "50.000"
+        },
+        "PDW": {
+          "minimum": "9.000",
+          "type": "Numeric",
+          "maximum": "17.000"
+        },
+        "RDW-CV": {
+          "minimum": "10.000",
+          "type": "Numeric",
+          "maximum": "16.000"
+        },
+        "RBC": {
+          "minimum": "4.000",
+          "type": "Numeric",
+          "maximum": "6.000"
+        },
+        "EO#": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "0.780"
+        },
+        "MONO#": {
+          "minimum": "0.120",
+          "type": "Numeric",
+          "maximum": "0.560"
+        },
+        "PLT": {
+          "minimum": "122.000",
+          "type": "Numeric",
+          "maximum": "330.000"
+        },
+        "EO%": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "12.000"
+        },
+        "MONO%": {
+          "minimum": "2.000",
+          "type": "Numeric",
+          "maximum": "10.000"
+        },
+        "MCHC": {
+          "minimum": "33.000",
+          "type": "Numeric",
+          "maximum": "36.000"
+        },
+        "MPV": {
+          "minimum": "6.000",
+          "type": "Numeric",
+          "maximum": "10.000"
+        },
+        "BASO#": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "0.070"
+        },
+        "NEUT#": {
+          "minimum": "0.820",
+          "type": "Numeric",
+          "maximum": "4.100"
+        },
+        "NEUT%": {
+          "minimum": "27.000",
+          "type": "Numeric",
+          "maximum": "60.000"
+        },
+        "MCH": {
+          "minimum": "23.000",
+          "type": "Numeric",
+          "maximum": "34.000"
+        },
+        "MCV": {
+          "minimum": "71.000",
+          "type": "Numeric",
+          "maximum": "95.000"
+        },
+        "BASO%": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "1.000"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "EDTA",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "FBC (Paeds)",
+      "department": "Paediatric Lab ",
+      "test_type_id": "115",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "Factor IX Assay",
+      "measures": {
+        "Factor IX Assay": {
+          "minimum": "95.000",
+          "type": "Numeric",
+          "maximum": "135.000"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "EDTA",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "",
+      "department": "Haematology",
+      "test_type_id": "60",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "Factor VIII Assay",
+      "measures": {
+        "Factor VIII Assay": {
+          "minimum": "77.000",
+          "type": "Numeric",
+          "maximum": "117.000"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "EDTA",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "",
+      "department": "Haematology",
+      "test_type_id": "59",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "Fibronogen",
+      "measures": {
+        "Fibronogen": {
+          "minimum": "2.610",
+          "type": "Numeric",
+          "maximum": "3.810"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "EDTA",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "PF",
+      "department": "Haematology",
+      "test_type_id": "55",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "Follicle Stimulating Hormone",
+      "measures": {
+        "FSH": {
+          "minimum": "3.030",
+          "type": "Numeric",
+          "maximum": "8.080"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "EDTA",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "FSH",
+      "department": "Immunochemistry",
+      "test_type_id": "103",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "Free Prostrate Specific Antigen",
+      "measures": {
+        "FPSA": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "4.000"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "EDTA",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "FPSA",
+      "department": "Immunochemistry",
+      "test_type_id": "100",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "Free Thyroxine",
+      "measures": {
+        "FT4": {
+          "minimum": "0.700",
+          "type": "Numeric",
+          "maximum": "1.480"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "EDTA",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "FT4",
+      "department": "Immunochemistry",
+      "test_type_id": "91",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "Free Triiodothyronine",
+      "measures": {
+        "FT3": {
+          "minimum": "1.710",
+          "type": "Numeric",
+          "maximum": "3.710"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "EDTA",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "FT3",
+      "department": "Immunochemistry",
+      "test_type_id": "89",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "Glucose",
+      "measures": {
+        "Glucose": {
+          "minimum": "70.000",
+          "type": "Numeric",
+          "maximum": "110.000"
+        }
+      },
+      "requirements": {
+        "2": {
+          "volume": "3",
+          "units": "ml",
+          "container": "yellow top",
+          "type_of_specimen": "CSF"
+        },
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "yellow top",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "GLU",
+      "department": "Biochemistry",
+      "test_type_id": "38",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "2": "CSF",
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "Glucose (Paeds)",
+      "measures": {
+        "Glu": {
+          "minimum": "70.000",
+          "type": "Numeric",
+          "maximum": "110.000"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "yellow top",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "Glucose (Paeds)",
+      "department": "Paediatric Lab ",
+      "test_type_id": "120",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "Gram Stain",
+      "measures": {
+        "Gram": {
+          "type": "Categorical",
+          "options": [
+            "No organism seen",
+            "Gram positive cocci (clusters)",
+            "Gram positive cocci (chains)",
+            "Gram positive diplococci",
+            "Gram positive bacilli",
+            "Gram positive cocco-bacilli",
+            "Gram negative cocci",
+            "Gram negative bacilli",
+            "Gram negative cocco-bacilli",
+            "Gram negative diplococci",
+            "Gram variable cocci",
+            "Gram variable  bacilli",
+            "Gram variable cocco-bacilli",
+            "Yeast cells seen"
+          ]
+        }
+      },
+      "requirements": {
+        "1": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Sterile container",
+          "type_of_specimen": "Sputum"
+        },
+        "2": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "CSF"
+        },
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Baktech",
+          "type_of_specimen": "Blood"
+        },
+        "4": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Sterile container",
+          "type_of_specimen": "Pleural Fluid"
+        },
+        "5": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Sterile container",
+          "type_of_specimen": "Ascitic Fluid"
+        },
+        "6": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Sterile container",
+          "type_of_specimen": "Pericardial Fluid"
+        },
+        "7": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Sterile container",
+          "type_of_specimen": "Peritoneal Fluid"
+        },
+        "8": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Swab",
+          "type_of_specimen": "HVS"
+        },
+        "9": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Swab",
+          "type_of_specimen": "Swabs"
+        },
+        "10": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Swab",
+          "type_of_specimen": "Pus"
+        },
+        "11": {
+          "volume": "3",
+          "units": "g",
+          "container": "Conical container",
+          "type_of_specimen": "Stool"
+        },
+        "12": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Conical container",
+          "type_of_specimen": "Urine"
+        },
+        "13": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Conical container",
+          "type_of_specimen": "Other"
+        },
+        "17": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Conical container",
+          "type_of_specimen": "Synovial Fluid"
+        }
+      },
+      "short_name": "GS",
+      "department": "Microbiology",
+      "test_type_id": "3",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "1": "Sputum",
+        "2": "CSF",
+        "3": "Blood",
+        "4": "Pleural Fluid",
+        "5": "Ascitic Fluid",
+        "6": "Pericardial Fluid",
+        "7": "Peritoneal Fluid",
+        "8": "HVS",
+        "9": "Swabs",
+        "10": "Pus",
+        "11": "Stool",
+        "12": "Urine",
+        "13": "Other",
+        "17": "Synovial Fluid"
+      }
+    },
+    {
+      "_id": "Gram Stain (Paeds)",
+      "measures": {
+        "Gram": {
+          "type": "Categorical",
+          "options": [
+            "No Organism seen",
+            "Gram positive cocci (clusters)",
+            "Gram positive cocci (chains)",
+            "Gram positive diplococci)",
+            "Gram positive bacilli",
+            "Gram positive cocco-bacilli",
+            "Gram negative cocci",
+            "Gram negative bacilli",
+            "Gram negative cocco-bacilli",
+            "Gram variable diplococci",
+            "Gram variable cocci",
+            "Gram variable bacilli",
+            "Gram variable cocco-bacilli",
+            "Yeast cells"
+          ]
+        }
+      },
+      "requirements": {
+        "1": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Sterile container",
+          "type_of_specimen": "Sputum"
+        },
+        "2": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "CSF"
+        },
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Baktech",
+          "type_of_specimen": "Blood"
+        },
+        "4": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Pleural Fluid"
+        },
+        "5": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Ascitic Fluid"
+        },
+        "6": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Pericardial Fluid"
+        },
+        "7": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Peritoneal Fluid"
+        },
+        "8": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Swab",
+          "type_of_specimen": "HVS"
+        },
+        "9": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Swab",
+          "type_of_specimen": "Swabs"
+        },
+        "10": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Swab",
+          "type_of_specimen": "Pus"
+        },
+        "11": {
+          "volume": "3",
+          "units": "g",
+          "container": "Sterile container",
+          "type_of_specimen": "Stool"
+        },
+        "12": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Sterile container",
+          "type_of_specimen": "Urine"
+        },
+        "13": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Sterile container",
+          "type_of_specimen": "Other"
+        },
+        "17": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Synovial Fluid"
+        }
+      },
+      "short_name": "GS (Paeds)",
+      "department": "Paediatric Lab ",
+      "test_type_id": "132",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "1": "Sputum",
+        "2": "CSF",
+        "3": "Blood",
+        "4": "Pleural Fluid",
+        "5": "Ascitic Fluid",
+        "6": "Pericardial Fluid",
+        "7": "Peritoneal Fluid",
+        "8": "HVS",
+        "9": "Swabs",
+        "10": "Pus",
+        "11": "Stool",
+        "12": "Urine",
+        "13": "Other",
+        "17": "Synovial Fluid"
+      }
+    },
+    {
+      "_id": "HVS analysis",
+      "measures": {
+        "Epithelial cells": {
+          "type": "Categorical",
+          "options": [
+            "+",
+            "++",
+            "+++"
+          ]
+        },
+        "Spermatozoa": {
+          "type": "Categorical",
+          "options": [
+            "Seen",
+            "Not seen"
+          ]
+        },
+        "WBC": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "1000000.000"
+        },
+        "Macroscopy": {
+          "type": "Categorical",
+          "options": [
+            "blood stained",
+            "clear"
+          ]
+        }
+      },
+      "requirements": {
+        "8": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Swab",
+          "type_of_specimen": "HVS"
+        }
+      },
+      "short_name": "HVS",
+      "department": "Parasitology",
+      "test_type_id": "18",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "8": "HVS"
+      }
+    },
+    {
+      "_id": "HbA1c",
+      "measures": {
+        "HbA1c": {
+          "minimum": "4.000",
+          "type": "Numeric",
+          "maximum": "6.000"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "EDTA",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "HbA1c",
+      "department": "Biochemistry",
+      "test_type_id": "67",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "HbA1c (Paeds)",
+      "measures": {
+        "HbA1c": {
+          "minimum": "4.000",
+          "type": "Numeric",
+          "maximum": "6.000"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "EDTA",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "HbA1c",
+      "department": "Paediatric Lab ",
+      "test_type_id": "121",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "Hepatitis B Test",
+      "measures": {
+        "Hepatitis B": {
+          "type": "Categorical",
+          "options": [
+            "Positive",
+            "Negative",
+            "Invalid"
+          ]
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "HBsAg",
+      "department": "Serology",
+      "test_type_id": "20",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "Hepatitis B test (Paeds)",
+      "measures": {
+        "HepB": {
+          "type": "Categorical",
+          "options": [
+            "Reactive",
+            "Non-reactive"
+          ]
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "HepB",
+      "department": "Paediatric Lab ",
+      "test_type_id": "124",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "Hepatitis C Test",
+      "measures": {
+        "Hepatitis C": {
+          "type": "Categorical",
+          "options": [
+            "Positive",
+            "Negative",
+            "Invalid"
+          ]
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "HCVAB",
+      "department": "Serology",
+      "test_type_id": "21",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "Hormone Binding Globulin",
+      "measures": {
+        "SHBG": {
+          "minimum": "18.000",
+          "type": "Numeric",
+          "maximum": "144.000"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "EDTA",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "SHBG",
+      "department": "Immunochemistry",
+      "test_type_id": "110",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "INR",
+      "measures": {
+        "INR": {
+          "minimum": "0.900",
+          "type": "Numeric",
+          "maximum": "1.400"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "EDTA",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "INR",
+      "department": "Haematology",
+      "test_type_id": "41",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "India Ink",
+      "measures": {
+        "India ink": {
+          "type": "Categorical",
+          "options": [
+            "Positive",
+            "Negative"
+          ]
+        }
+      },
+      "requirements": {
+        "2": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "CSF"
+        }
+      },
+      "short_name": "II",
+      "department": "Microbiology",
+      "test_type_id": "6",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "2": "CSF"
+      }
+    },
+    {
+      "_id": "India Ink (Paeds)",
+      "measures": {
+        "India Ink": {
+          "type": "Categorical",
+          "options": [
+            "Positive",
+            "Negative"
+          ]
+        }
+      },
+      "requirements": {
+        "2": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "CSF"
+        }
+      },
+      "short_name": "II (Paeds)",
+      "department": "Paediatric Lab ",
+      "test_type_id": "133",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "2": "CSF"
+      }
+    },
+    {
+      "_id": "Iron Studies",
+      "measures": {
+        "Iron": {
+          "minimum": "65.000",
+          "type": "Numeric",
+          "maximum": "175.000"
+        },
+        "UIBC": {
+          "minimum": "110.000",
+          "type": "Numeric",
+          "maximum": "370.000"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "EDTA",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "",
+      "department": "Biochemistry",
+      "test_type_id": "66",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "Lipogram",
+      "measures": {
+        "HDL Direct (HDL-C)": {
+          "minimum": "42.000",
+          "type": "Numeric",
+          "maximum": "88.000"
+        },
+        "Triglycerides(TG)": {
+          "minimum": "35.000",
+          "type": "Numeric",
+          "maximum": "135.000"
+        },
+        "LDL Direct (LDL-C)": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "130.000"
+        },
+        "Cholestero l(CHOL)": {
+          "minimum": "110.000",
+          "type": "Numeric",
+          "maximum": "230.000"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "LIPO",
+      "department": "Biochemistry",
+      "test_type_id": "34",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "Lipogram (Paeds)",
+      "measures": {
+        "HDL Direct (HDL-C)": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "79.500"
+        },
+        "Triglycerides(TG)": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "150.000"
+        },
+        "LDL Direct (LDL-C)": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "130.000"
+        },
+        "Cholestero l(CHOL)": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "200.000"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "Lipogram (Paeds)",
+      "department": "Paediatric Lab ",
+      "test_type_id": "119",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "Liver Function Tests",
+      "measures": {
+        "ALT/GPT": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "32.000"
+        },
+        "Bilirubin Total(BIT))": {
+          "minimum": "0.300",
+          "type": "Numeric",
+          "maximum": "1.200"
+        },
+        "ALPU": {
+          "minimum": "64.000",
+          "type": "Numeric",
+          "maximum": "306.000"
+        },
+        "GGT/r-GT": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "32.000"
+        },
+        "Albumin(ALB)": {
+          "minimum": "3.200",
+          "type": "Numeric",
+          "maximum": "5.000"
+        },
+        "Bilirubin Direct(BID)": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "0.200"
+        },
+        "AST/GOT": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "37.000"
+        },
+        "Total Protein(PRO)": {
+          "minimum": "6.000",
+          "type": "Numeric",
+          "maximum": "8.300"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "LFT",
+      "department": "Biochemistry",
+      "test_type_id": "32",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "Liver Function Tests (Paeds)",
+      "measures": {
+        "ALT/GPT": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "45.000"
+        },
+        "ALPU": {
+          "minimum": "64.000",
+          "type": "Numeric",
+          "maximum": "306.000"
+        },
+        "AST/GOT": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "35.000"
+        },
+        "GGT/r-GT": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "55.000"
+        },
+        "Albumin(ALB)": {
+          "minimum": "3.500",
+          "type": "Numeric",
+          "maximum": "5.200"
+        },
+        "Bilirubin Direct(BID)": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "0.200"
+        },
+        "Bilirubin Total(BIT)": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "2.000"
+        },
+        "Total Protein(PRO)": {
+          "minimum": "6.800",
+          "type": "Numeric",
+          "maximum": "8.300"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "LFTs",
+      "department": "Paediatric Lab ",
+      "test_type_id": "117",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "Luteinising Hormone",
+      "measures": {
+        "LH": {
+          "minimum": "0.570",
+          "type": "Numeric",
+          "maximum": "12.700"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "EDTA",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "LH",
+      "department": "Immunochemistry",
+      "test_type_id": "104",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "Magnesium",
+      "measures": {
+        "Mg": {
+          "minimum": "1.600",
+          "type": "Numeric",
+          "maximum": "2.600"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "Mg",
+      "department": "Biochemistry",
+      "test_type_id": "50",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "Malaria Screening",
+      "measures": {
+        "Blood film": {
+          "type": "Categorical",
+          "options": [
+            "No parasite seen",
+            "+ (1-10 parasites/100 fields)",
+            "++ (11-99 parasites/100 field)",
+            "+++ (1-10 parasites /field)",
+            "++++ (>10 parasites/field)"
+          ]
+        },
+        "Malaria Species": {
+          "type": "Categorical",
+          "options": [
+            "Plasmodium falciparum",
+            "Plasmodium ovale",
+            "Plasmodium vivax",
+            "Plasmodium malariae",
+            "Plasmodium knowlesi"
+          ]
+        },
+        "MRDT": {
+          "type": "Categorical",
+          "options": [
+            "Positive",
+            "Negative",
+            "Invalid"
+          ]
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "EDTA",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "MalScr",
+      "department": "Parasitology",
+      "test_type_id": "15",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "Malaria Screening (Paeds)",
+      "measures": {
+        "Blood film": {
+          "type": "Categorical",
+          "options": [
+            "No parasite",
+            "+ (1-10 parasites/100 field",
+            "++ (11-99 parasites/100 fields",
+            "+++ (1-10 parasites/field)",
+            "++++ (>10 parasites/field)"
+          ]
+        },
+        "Malaria species": {
+          "type": "Categorical",
+          "options": [
+            "Plasmodium falciparum",
+            "Plasmodium ovale",
+            "Plasmodium vivax",
+            "Plasmodium malariae",
+            "Plasmodium knowlesi"
+          ]
+        },
+        "MRDT": {
+          "type": "Categorical",
+          "options": [
+            "Positive",
+            "Negative",
+            "Invalid"
+          ]
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Sterile container",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "MalScr",
+      "department": "Paediatric Lab ",
+      "test_type_id": "129",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "Manual Differential & Cell Morphology",
+      "measures": {
+        "Further Tests": {
+          "type": "Free Text"
+        },
+        "Attempted/ Differential Diagnosis": {
+          "type": "Free Text"
+        },
+        "Interpretative Comments": {
+          "type": "Free Text"
+        },
+        "WBC Comments": {
+          "type": "Free Text"
+        },
+        "RBC Comments": {
+          "type": "Free Text"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "EDTA",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "PRSM",
+      "department": "Haematology",
+      "test_type_id": "45",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "Measles",
+      "measures": {
+        "Measles IgM ELISA-Behring enzygnost": {
+          "type": "Categorical",
+          "options": [
+            "Positive (OD>0.2)",
+            "Negative(OD<0.1)",
+            "Equivocal"
+          ]
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "Meas",
+      "department": "Serology",
+      "test_type_id": "26",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "Microalbumin",
+      "measures": {
+        "MAL": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "2.500"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "MAL",
+      "department": "Biochemistry",
+      "test_type_id": "68",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "Microprotein",
+      "measures": {
+        "MPR": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "15.000"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "MPR",
+      "department": "Biochemistry",
+      "test_type_id": "69",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "Minerals",
+      "measures": {
+        "Phosphorus (PHOS)": {
+          "minimum": "2.500",
+          "type": "Numeric",
+          "maximum": "4.500"
+        },
+        "Magnesium (MGXB)": {
+          "minimum": "1.800",
+          "type": "Numeric",
+          "maximum": "2.600"
+        },
+        "Calcium (CA)": {
+          "minimum": "8.600",
+          "type": "Numeric",
+          "maximum": "10.200"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "",
+      "department": "Biochemistry",
+      "test_type_id": "64",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "Minerals (Paeds)",
+      "measures": {
+        "Phosphorus (PHOS)": {
+          "minimum": "2.500",
+          "type": "Numeric",
+          "maximum": "4.500"
+        },
+        "Magnesium (MGXB)": {
+          "minimum": "1.800",
+          "type": "Numeric",
+          "maximum": "2.600"
+        },
+        "Calcium (CA)": {
+          "minimum": "8.600",
+          "type": "Numeric",
+          "maximum": "10.200"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "Minerals (Paeds)",
+      "department": "Paediatric Lab ",
+      "test_type_id": "122",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "PSA",
+      "measures": {
+        "PSA-Hyb": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "4.000"
+        },
+        "freePSA": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "0.400"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "PSA",
+      "department": "Biochemistry",
+      "test_type_id": "87",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "Pancreatic Function Test",
+      "measures": {
+        "Amylase": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "80.000"
+        },
+        "Lipase": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "60.000"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "PFT",
+      "department": "Biochemistry",
+      "test_type_id": "46",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "Parathyroid Hormone",
+      "measures": {
+        "PTH": {
+          "minimum": "15.000",
+          "type": "Numeric",
+          "maximum": "65.000"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "EDTA",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "PTH",
+      "department": "Immunochemistry",
+      "test_type_id": "93",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "Phosphorus",
+      "measures": {
+        "P": {
+          "minimum": "2.500",
+          "type": "Numeric",
+          "maximum": "4.500"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "PHO",
+      "department": "Biochemistry",
+      "test_type_id": "49",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "Pregnancy Test",
+      "measures": {
+        "Pregnancy Test": {
+          "type": "Categorical",
+          "options": [
+            "Positive",
+            "Negative"
+          ]
+        }
+      },
+      "requirements": {
+        "12": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Sterile container",
+          "type_of_specimen": "Urine"
+        }
+      },
+      "short_name": "PT(ßHCG)",
+      "department": "Serology",
+      "test_type_id": "44",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "12": "Urine"
+      }
+    },
+    {
+      "_id": "Progesterone",
+      "measures": {
+        "PROGEST": {
+          "minimum": "27.000",
+          "type": "Numeric",
+          "maximum": "200.000"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "EDTA",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "PROGEST",
+      "department": "Immunochemistry",
+      "test_type_id": "106",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "Prolactin",
+      "measures": {
+        "PROLACTIN": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "14.000"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "EDTA",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "PROLACTIN",
+      "department": "Immunochemistry",
+      "test_type_id": "109",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "Prothrombin Time",
+      "measures": {
+        "PT": {
+          "minimum": "12.900",
+          "type": "Numeric",
+          "maximum": "16.900"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "EDTA",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "PT",
+      "department": "Haematology",
+      "test_type_id": "39",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "Renal Function Test",
+      "measures": {
+        "Creatinine": {
+          "minimum": "0.600",
+          "type": "Numeric",
+          "maximum": "1.100"
+        },
+        "Urea": {
+          "minimum": "18.000",
+          "type": "Numeric",
+          "maximum": "55.000"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "RFT",
+      "department": "Biochemistry",
+      "test_type_id": "33",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "Renal Function Tests (Paeds)",
+      "measures": {
+        "Creatinine": {
+          "minimum": "0.700",
+          "type": "Numeric",
+          "maximum": "1.300"
+        },
+        "Urea/Bun": {
+          "minimum": "18.000",
+          "type": "Numeric",
+          "maximum": "55.000"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "Renal Function Tests (Paeds)",
+      "department": "Paediatric Lab ",
+      "test_type_id": "118",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "Rubella",
+      "measures": {
+        "Rubella IgM ELISA-Behring enzynost": {
+          "type": "Categorical",
+          "options": [
+            "Positive (OD>0.2)",
+            "Negative (OD<0.1)",
+            "Equivocal"
+          ]
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "Rub",
+      "department": "Serology",
+      "test_type_id": "27",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "Semen Analysis",
+      "measures": {
+        "Appearance": {
+          "type": "Categorical",
+          "options": [
+            "Grey",
+            "Opaque",
+            "Red-brown",
+            "Opalescent"
+          ]
+        },
+        "Sperm count": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "1000000.000"
+        },
+        "volume": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "1000.000"
+        },
+        "Progressive motility": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "0.000"
+        },
+        "Non-progressive motility": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "0.000"
+        },
+        "pH": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "100.000",
+          "options": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "13",
+            "14"
+          ]
+        },
+        "Immotility": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "0.000"
+        }
+      },
+      "requirements": {
+        "15": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Sterile container",
+          "type_of_specimen": "Semen"
+        }
+      },
+      "short_name": "SA",
+      "department": "Parasitology",
+      "test_type_id": "17",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "15": "Semen"
+      }
+    },
+    {
+      "_id": "Sickling Test",
+      "measures": {
+        "Sickling Screen": {
+          "type": "Categorical",
+          "options": [
+            "Positive",
+            "Negative"
+          ]
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "EDTA",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "NULL",
+      "department": "Haematology",
+      "test_type_id": "43",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "Stool Analysis",
+      "measures": {
+        "Consistency": {
+          "type": "Categorical",
+          "options": [
+            "Formed",
+            "Semi-formed",
+            "Unformed",
+            "Watery",
+            "Rice appearance"
+          ]
+        }
+      },
+      "requirements": {
+        "11": {
+          "volume": "3",
+          "units": "g",
+          "container": "Sterile container",
+          "type_of_specimen": "Stool"
+        }
+      },
+      "short_name": "StoA",
+      "department": "Parasitology",
+      "test_type_id": "14",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "11": "Stool"
+      }
+    },
+    {
+      "_id": "Stool Analysis (Paeds)",
+      "measures": {
+        "Consistency": {
+          "type": "Categorical",
+          "options": [
+            "Formed",
+            "Semi- formed",
+            "Unformed",
+            "Waterly",
+            "Rice appearance"
+          ]
+        }
+      },
+      "requirements": {
+        "11": {
+          "volume": "3",
+          "units": "g",
+          "container": "Sterile container",
+          "type_of_specimen": "Stool"
+        }
+      },
+      "short_name": "StoA",
+      "department": "Paediatric Lab ",
+      "test_type_id": "130",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "11": "Stool"
+      }
+    },
+    {
+      "_id": "Syphilis (Paeds)",
+      "measures": {
+        "Syphilis": {
+          "type": "Categorical",
+          "options": [
+            "Reactive",
+            "Non-reactive"
+          ]
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "STS (Paeds)",
+      "department": "Paediatric Lab ",
+      "test_type_id": "123",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "Syphilis Test",
+      "measures": {
+        "VDRL": {
+          "type": "Categorical",
+          "options": [
+            "Reactive",
+            "Non-reactive"
+          ]
+        },
+        "TPHA": {
+          "type": "Categorical",
+          "options": [
+            "Reactive",
+            "Non-reactive"
+          ]
+        },
+        "RPR": {
+          "type": "Categorical",
+          "options": [
+            "Reactive",
+            "Non-reactive"
+          ]
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "STS",
+      "department": "Serology",
+      "test_type_id": "19",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "TB Tests",
+      "measures": {
+        "Smear microscopy result": {
+          "type": "Categorical",
+          "options": [
+            "Negative",
+            "+++",
+            "++",
+            "+",
+            "Scanty (1-3) per 100",
+            "Scanty (4-6) per 100",
+            "Scanty (7-9) per 100",
+            "Scanty (1-5) per 40",
+            "Scanty (6-9) per 40",
+            "Scanty (10-14) per 40",
+            "Scanty (15-19) per 40"
+          ]
+        },
+        "HIV Status": {
+          "type": "Categorical",
+          "options": [
+            "Reactive",
+            "Non-Reactive",
+            "Not known"
+          ]
+        },
+        "Gene Xpert MTB": {
+          "type": "Categorical",
+          "options": [
+            "MTB Detected High",
+            "MTB Detected Medium",
+            "MTB Detected Low",
+            "MTB Not Detected"
+          ]
+        },
+        "Indication for GeneXpert Test": {
+          "type": "Categorical",
+          "options": [
+            "New presumptive TB-smear Neg.HIV Pos",
+            "Presumptive MDR TB",
+            "Hospitalised",
+            "Others",
+            "not indicated"
+          ]
+        },
+        "Gene Xpert RIF Resistance": {
+          "type": "Categorical",
+          "options": [
+            "RIF Resistant detected",
+            "RIF Resistant not detected",
+            "RIF Resistant indeterminate"
+          ]
+        },
+        "Reason For Testing": {
+          "type": "Categorical",
+          "options": [
+            "Diagnosis",
+            "Follow-up"
+          ]
+        },
+        "Macro exam": {
+          "type": "Categorical",
+          "options": [
+            "Clear/colourless",
+            "Slightly Cloudy",
+            "Purulent",
+            "Clotted",
+            "Turbid",
+            "Blood stained"
+          ]
+        }
+      },
+      "requirements": {
+        "1": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Sterile container",
+          "type_of_specimen": "Sputum"
+        },
+        "2": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "CSF"
+        },
+        "4": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Pleural Fluid"
+        },
+        "5": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Ascitic Fluid"
+        },
+        "6": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Pericardial Fluid"
+        },
+        "7": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Peritoneal Fluid"
+        },
+        "10": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Swab",
+          "type_of_specimen": "Pus"
+        },
+        "22": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Sterile container",
+          "type_of_specimen": " tissue biopsy"
+        }
+      },
+      "short_name": "TB",
+      "department": "Microbiology",
+      "test_type_id": "10",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "1": "Sputum",
+        "2": "CSF",
+        "4": "Pleural Fluid",
+        "5": "Ascitic Fluid",
+        "6": "Pericardial Fluid",
+        "7": "Peritoneal Fluid",
+        "10": "Pus",
+        "22": " tissue biopsy"
+      }
+    },
+    {
+      "_id": "TT",
+      "measures": {
+        "TT": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "0.000"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "EDTA",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "TT",
+      "department": "Haematology",
+      "test_type_id": "61",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "Testosterone",
+      "measures": {
+        "TESTO": {
+          "minimum": "3.000",
+          "type": "Numeric",
+          "maximum": "10.000"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "EDTA",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "TESTO",
+      "department": "Immunochemistry",
+      "test_type_id": "107",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "Thyroid Stimulating Hormone",
+      "measures": {
+        "TSH": {
+          "minimum": "0.350",
+          "type": "Numeric",
+          "maximum": "4.940"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "EDTA",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "TSH",
+      "department": "Immunochemistry",
+      "test_type_id": "92",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "Total Prostrate Specific Antigen",
+      "measures": {
+        "TPSA": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "4.000"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "EDTA",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "TPSA",
+      "department": "Immunochemistry",
+      "test_type_id": "101",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "Total Thyroxine",
+      "measures": {
+        "TT4": {
+          "minimum": "4.600",
+          "type": "Numeric",
+          "maximum": "10.500"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "EDTA",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "TT4",
+      "department": "Immunochemistry",
+      "test_type_id": "90",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "Total Triiodothyronine",
+      "measures": {
+        "TT3": {
+          "minimum": "0.580",
+          "type": "Numeric",
+          "maximum": "1.590"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "EDTA",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "TT3",
+      "department": "Immunochemistry",
+      "test_type_id": "88",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "Uric Acid",
+      "measures": {
+        "UA": {
+          "minimum": "3.400",
+          "type": "Numeric",
+          "maximum": "7.000"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "UASR",
+      "department": "Biochemistry",
+      "test_type_id": "52",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "Urine Chemistries",
+      "measures": {
+        "Leucocytes": {
+          "minimum": "1.000",
+          "type": "Numeric",
+          "maximum": "1000000.000",
+          "options": [
+            "+ (25)",
+            "++ (75)",
+            "+++ (500)",
+            "Negative"
+          ]
+        },
+        "Ketones": {
+          "type": "Categorical",
+          "options": [
+            "Negative",
+            "+/-",
+            "Positive",
+            "+",
+            "++",
+            "+++",
+            "++++"
+          ]
+        },
+        "Bilirubin": {
+          "type": "Categorical",
+          "options": [
+            "Negative",
+            "+",
+            "++",
+            "+++"
+          ]
+        },
+        "Urobilinogen": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "1000000.000"
+        },
+        "Specific gravity": {
+          "minimum": "1.000",
+          "type": "Numeric",
+          "maximum": "100000.000",
+          "options": [
+            "1.000",
+            "1.005",
+            "1.010",
+            "1.015",
+            "1.020",
+            "1.025",
+            "1.030"
+          ]
+        },
+        "Blood": {
+          "type": "Categorical",
+          "options": [
+            "Negative",
+            "Heamolysis + (10) RBC/ul",
+            "Heamolysis ++ (50) RBC/ul",
+            "Heamolysis+++ (250) RBC/ul",
+            "Non- Heamolysis +10 RBC/ul",
+            "Non- Heamolysis ++50 RBC/ul",
+            "Haemolysis +/-",
+            "Negative",
+            "+/- (trace)",
+            "+ (25)",
+            "++ (75)",
+            "+++ (500)"
+          ]
+        },
+        "Nitrate": {
+          "type": "Categorical",
+          "options": [
+            "Negative",
+            "Trace",
+            "Positive"
+          ]
+        },
+        "Protein": {
+          "minimum": "1.000",
+          "type": "Numeric",
+          "maximum": "1000000.000",
+          "options": [
+            "Negative",
+            "+/-",
+            "+",
+            "++",
+            "+++",
+            "++++"
+          ]
+        },
+        "pH": {
+          "type": "Categorical",
+          "options": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "13",
+            "14"
+          ]
+        },
+        "Glucose": {
+          "minimum": "1.000",
+          "type": "Numeric",
+          "maximum": "1000000.000",
+          "options": [
+            "Negative",
+            "+/- (100)",
+            "+ (250)",
+            "++ (500)",
+            "+++ (1000)",
+            "++++ (2000)"
+          ]
+        }
+      },
+      "requirements": {
+        "12": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Sterile container",
+          "type_of_specimen": "Urine"
+        }
+      },
+      "short_name": "UA",
+      "department": "Parasitology",
+      "test_type_id": "13",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "12": "Urine"
+      }
+    },
+    {
+      "_id": "Urine Macroscopy",
+      "measures": {
+        "Colour": {
+          "type": "Categorical",
+          "options": [
+            "Brown",
+            "Red",
+            "Pale",
+            "Yellow",
+            "Light yellow",
+            "Amber"
+          ]
+        },
+        "Appearance": {
+          "type": "Categorical",
+          "options": [
+            "Cloudy",
+            "Blood Stained",
+            "Clear"
+          ]
+        }
+      },
+      "requirements": {
+        "12": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Sterile container",
+          "type_of_specimen": "Urine"
+        }
+      },
+      "short_name": "UA",
+      "department": "Parasitology",
+      "test_type_id": "11",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "12": "Urine"
+      }
+    },
+    {
+      "_id": "Urine Macroscopy (Paeds)",
+      "measures": {
+        "Colour": {
+          "type": "Categorical",
+          "options": [
+            "Brown",
+            "Red",
+            "Pale",
+            "Yellow",
+            "Light yellow",
+            "Amber"
+          ]
+        },
+        "Appearance": {
+          "type": "Categorical",
+          "options": [
+            "Cloudy",
+            "Blood-stained",
+            "Clear"
+          ]
+        }
+      },
+      "requirements": {
+        "12": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Sterile container",
+          "type_of_specimen": "Urine"
+        }
+      },
+      "short_name": "",
+      "department": "Paediatric Lab ",
+      "test_type_id": "126",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "12": "Urine"
+      }
+    },
+    {
+      "_id": "Urine Microscopy",
+      "measures": {
+        "Epithelial cells": {
+          "type": "Categorical",
+          "options": [
+            "+",
+            "++",
+            "+++",
+            "no cells seen"
+          ]
+        },
+        "Yeast cells": {
+          "type": "Categorical",
+          "options": [
+            "Yeast cells +",
+            "Not seen",
+            "Yeast cells ++",
+            "Yeast cells +++",
+            "Not seen"
+          ]
+        },
+        "RBC": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "1000000.000"
+        },
+        "WBC": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "1000000.000"
+        }
+      },
+      "requirements": {
+        "12": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Sterile container",
+          "type_of_specimen": "Urine"
+        }
+      },
+      "short_name": "UA",
+      "department": "Parasitology",
+      "test_type_id": "12",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "12": "Urine"
+      }
+    },
+    {
+      "_id": "Urine Microscopy (Paeds)",
+      "measures": {
+        "Yeast cell": {
+          "type": "Categorical",
+          "options": [
+            "+",
+            "++",
+            "+++",
+            "Not seen"
+          ]
+        },
+        "RBC": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "1000000.000"
+        },
+        "WBC": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "1000000.000"
+        },
+        "Epithelial cell": {
+          "type": "Categorical",
+          "options": [
+            "+",
+            "++",
+            "+++",
+            "No cell seen"
+          ]
+        }
+      },
+      "requirements": {
+        "12": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Sterile container",
+          "type_of_specimen": "Urine"
+        }
+      },
+      "short_name": "",
+      "department": "Paediatric Lab ",
+      "test_type_id": "128",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "12": "Urine"
+      }
+    },
+    {
+      "_id": "Urine chemistry (paeds)",
+      "measures": {
+        "Leucocytes": {
+          "type": "Categorical",
+          "options": [
+            "+ (25)",
+            "++ (75)",
+            "+++ (500)",
+            "Negative"
+          ]
+        },
+        "Ketones": {
+          "type": "Categorical",
+          "options": [
+            "Negative",
+            "+/-",
+            "+",
+            "++",
+            "+++",
+            "++++"
+          ]
+        },
+        "Bilirubin": {
+          "type": "Categorical",
+          "options": [
+            "Negative",
+            "+",
+            "++",
+            "+++"
+          ]
+        },
+        "Urobilinogen": {
+          "type": "Categorical",
+          "options": [
+            "Negative",
+            "+",
+            "++",
+            "+++"
+          ]
+        },
+        "Specific Gravity": {
+          "type": "Categorical",
+          "options": [
+            "1.00",
+            "1.005",
+            "1.010",
+            "1.015",
+            "1.020",
+            "1.025",
+            "1.030"
+          ]
+        },
+        "Blood": {
+          "type": "Categorical",
+          "options": [
+            "Heamolysis +(10) RBC/ul",
+            "Heamolysis ++(50) RBC/ul",
+            "Heamolysis+++(250) RBC/ul",
+            "Heamolysis +/-",
+            "Negative",
+            "+/- (Trace)",
+            "+ (25)",
+            "++ (75)",
+            "+++ (500)"
+          ]
+        },
+        "Nitrate": {
+          "type": "Categorical",
+          "options": [
+            "Negative",
+            "Trace",
+            "Positive"
+          ]
+        },
+        "Protein": {
+          "type": "Categorical",
+          "options": [
+            "Negative",
+            "+/-",
+            "+",
+            "++",
+            "+++",
+            "++++"
+          ]
+        },
+        "Glucose": {
+          "type": "Categorical",
+          "options": [
+            "Negative",
+            "+/- (100)",
+            "+ (250)",
+            "++ (500)",
+            "+++ (1000)",
+            "++++ (2000)"
+          ]
+        }
+      },
+      "requirements": {
+        "12": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Sterile container",
+          "type_of_specimen": "Urine"
+        }
+      },
+      "short_name": "",
+      "department": "Paediatric Lab ",
+      "test_type_id": "127",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "12": "Urine"
+      }
+    },
+    {
+      "_id": "Von Willebrand Factor",
+      "measures": {
+        "Von Willebrand (Antigen)": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "0.000"
+        },
+        "Von Willebrand (Activity)": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "0.000"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "EDTA",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "vWf",
+      "department": "Haematology",
+      "test_type_id": "70",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    },
+    {
+      "_id": "ZN Stain",
+      "measures": {
+        "ZN": {
+          "type": "Categorical",
+          "options": [
+            "Scanty AAFB seen",
+            "1+ AAFB seen",
+            "2+ AAFB seen",
+            "3+ AAFB seen",
+            "No AAFB seen"
+          ]
+        }
+      },
+      "requirements": {
+        "2": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "CSF"
+        },
+        "4": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Pleural Fluid"
+        },
+        "5": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Ascitic Fluid"
+        },
+        "6": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Pericardial Fluid"
+        },
+        "7": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Peritoneal Fluid"
+        },
+        "13": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Other"
+        },
+        "17": {
+          "volume": "3",
+          "units": "ml",
+          "container": "Red top",
+          "type_of_specimen": "Synovial Fluid"
+        }
+      },
+      "short_name": "ZN",
+      "department": "Microbiology",
+      "test_type_id": "8",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "2": "CSF",
+        "4": "Pleural Fluid",
+        "5": "Ascitic Fluid",
+        "6": "Pericardial Fluid",
+        "7": "Peritoneal Fluid",
+        "13": "Other",
+        "17": "Synovial Fluid"
+      }
+    },
+    {
+      "_id": "_design/3b549a42ec027361031fd31a2f0bfb3f4c3b2fa8",
+      "language": "query",
+      "views": {
+        "test_type": {
+          "map": {
+            "fields": {
+              "test_type_id": "asc"
+            },
+            "partial_filter_selector": {}
+          },
+          "reduce": "_count",
+          "options": {
+            "def": {
+              "fields": [
+                "test_type_id"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "_id": "alpha fetoprotein",
+      "measures": {
+        "AFP": {
+          "minimum": "0.000",
+          "type": "Numeric",
+          "maximum": "40.000"
+        }
+      },
+      "requirements": {
+        "3": {
+          "volume": "3",
+          "units": "ml",
+          "container": "EDTA",
+          "type_of_specimen": "Blood"
+        }
+      },
+      "short_name": "AFP",
+      "department": "Immunochemistry",
+      "test_type_id": "99",
+      "type": "Laboratory Test",
+      "availability": true,
+      "specimen_types": {
+        "3": "Blood"
+      }
+    }
+  ]
+}

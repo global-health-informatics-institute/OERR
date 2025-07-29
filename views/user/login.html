@@ -45,8 +45,11 @@
         Spinner.show()
         document.loginForm.submit()
     }
-    navButtons = ["<button class=\"nvButton red\" onmousedown=\"window.location='/login'\" style=\"float: left;\">Cancel</button>",
-        "<button class=\"nvButton green\" onmousedown='validateLogin()' style=\"float: right;\">Login</button>"]
+    navButtons =[
+        "<button class=\"nvButton red\" onmousedown=\"window.location='/login'\" style=\"float: left;\">Cancel</button>",
+        "<button class=\"nvButton blue\" onmousedown=\"window.location='/login?switch=1'\" style=\"float: left;\">Reset</button>",
+        "<button class=\"nvButton green\" onmousedown='validateLogin()' style=\"float: right;\">Login</button>"
+    ]
 
 </script>
 

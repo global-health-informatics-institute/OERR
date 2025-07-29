@@ -57,13 +57,10 @@
         }
         document.getElementById(tabName).style.display = "block";
         evt.currentTarget.className += " active";
+        document.getElementById('btnBack').style.display = "block";
+
     }
 
-    function nextTab() {
-        document.getElementById('ward').style.display = "block";
-        document.getElementById('location').style.display = "none";
-        document.getElementsByClassName('tablinks')[1].classList.add('active');
-    }
 
     function logout() {
         window.location = '/logout';
@@ -72,40 +69,47 @@
     var departments = {{ departments | tojson }};
 
     function showWards(departmentName) {
-        var wardsList = document.getElementById("wardsList");
-        wardsList.innerHTML = ""; // Clear existing wards list
+    var wardsList = document.getElementById("wardsList");
+    wardsList.innerHTML = ""; // Clear existing wards list
 
-        // Find the department in the JSON data
-        var department = departments.find(dep => dep.name === departmentName);
+    var department = departments.find(dep => dep.name === departmentName);
     if (department) {
-            // Populate the list of wards for the selected department
-            department.wards.forEach(ward => {
-                var li = document.createElement("li");
-                var divCell = document.createElement("div");
-                divCell.style.display = "table-cell";
-                divCell.style.verticalAlign = "center";
-                var input = document.createElement("input");
-                input.type = "radio";
-                input.id = ward;
-                input.name = "ward";
-                input.value = ward;
-                var label = document.createElement("label");
-                label.setAttribute("for", ward);
-                label.textContent = ward;
-                var divCheck = document.createElement("div");
-                divCheck.className = "check";
-                divCell.appendChild(input);
-                divCell.appendChild(label);
-                divCell.appendChild(divCheck);
-                li.appendChild(divCell);
-                wardsList.appendChild(li);
-            });
-        }
-
-         document.getElementById('ward').style.display = "block";
-        document.getElementById('location').style.display = "none";
-        document.getElementsByClassName('tablinks')[1].classList.add('active');
+        department.wards.forEach(ward => {
+            var li = document.createElement("li");
+            var divCell = document.createElement("div");
+            divCell.style.display = "table-cell";
+            divCell.style.verticalAlign = "center";
+            var input = document.createElement("input");
+            input.type = "radio";
+            input.id = ward;
+            input.name = "ward";
+            input.value = ward;
+            var label = document.createElement("label");
+            label.setAttribute("for", ward);
+            label.textContent = ward;
+            var divCheck = document.createElement("div");
+            divCheck.className = "check";
+            divCell.appendChild(input);
+            divCell.appendChild(label);
+            divCell.appendChild(divCheck);
+            li.appendChild(divCell);
+            wardsList.appendChild(li);
+        });
     }
+
+    document.getElementById('ward').style.display = "block";
+    document.getElementById('location').style.display = "none";
+    document.getElementsByClassName('tablinks')[1].classList.add('active');
+    document.getElementById('btnBack').style.display = "block";
+}
+
+function nextTab() {
+    document.getElementById('ward').style.display = "block";
+    document.getElementById('location').style.display = "none";
+    document.getElementsByClassName('tablinks')[1].classList.add('active');
+    document.getElementById('btnBack').style.display = "block";
+}
+
 
     function onSubmit() {
         var selectedWard = document.querySelector('input[name="ward"]:checked');
@@ -120,9 +124,24 @@
              document.getElementById("errorField").innerText = "Please select one ward from the list."
         }
     }
+    var back_button = "<button class=\"nvButton red\" onmousedown=\"window.location='/login'\" style=\"float: left;\">logout</button>";
 
-    navButtons = ["<button class=\"nvButton red\" onmousedown=\"window.location='/login'\" style=\"float: left;\">logout</button>",
-        "<button class=\"nvButton green\" id='btnSubmit' onmousedown='onSubmit()' style=\"float: right;\">Finish</button>"]
+    navButtons = [
+        "<button class=\"nvButton red\" onmousedown=\"window.location='/login'\" style=\"float: left;\">logout</button>",
+        "<button class=\"nvButton green\" id='btnBack' onclick='prevTab()' style=\"float: left; display:none;\">Back</button>",
+        "<button class=\"nvButton blue\" id='btnSubmit' onmousedown='onSubmit()' style=\"float: right;\">Finish</button>"
+    ];
+
+
+    function prevTab() {
+    document.getElementById('ward').style.display = "none";
+    document.getElementById('location').style.display = "block";
+    document.getElementsByClassName('tablinks')[0].classList.add('active');
+    document.getElementsByClassName('tablinks')[1].classList.remove('active');
+    document.getElementById('btnBack').style.display = "none";
+}
+
+
 
 </script>
 

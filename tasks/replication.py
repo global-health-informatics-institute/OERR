@@ -97,7 +97,7 @@ for suffix in sub_directories:
 
     source_to_target_cmd = [
         'curl', '-d', json.dumps({
-            "_id": f"base-source-to-target_{suffix}",
+            "_id": f"base-source-to-target{suffix}",
             "source": source_url,
             "target": target_url,
             "create_target": True,
@@ -107,7 +107,7 @@ for suffix in sub_directories:
     
     target_to_source_cmd_ltp = [
         'curl', '-d', json.dumps({
-            "_id": f"base-target-to-source_{suffix}",
+            "_id": f"base-target-to-source{suffix}",
             "source": target_url,
             "target": source_url,
             "create_target": True,

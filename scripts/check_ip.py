@@ -2,81 +2,59 @@ import json
 from couchdb import Server
 import requests
 
-# Load the configuration files
+# Load the replication configuration
 replications_file = "config/replications.config"
 config_file = "config/application.config"
 
-# Read the CouchDB settings from the config file
+with open(replications_file) as json_file:
+    replication_settings = json.load(json_file)
+
+# Load application settings
 with open(config_file) as json_file:
     settings = json.load(json_file)
 
-# Connect to the CouchDB server
-couchConnection = Server("http://%s:%s@%s:%s/" %
-                         (settings["couch"]["user"], settings["couch"]["passwd"],
-                          settings["couch"]["host"], settings["couch"]["port"]))
+# Create source and target connection strings
+source_url = "http://%s:%s@%s:%s/oerr" % (
+    replication_settings["source"]["user"],
+    replication_settings["source"]["passwd"],
+    replication_settings["source"]["host"],
+    replication_settings["source"]["port"]
+)
 
-# Define the replicator URL
-replicator_url = "http://%s:%s@%s:%s/_replicator" % (
-    settings["couch"]["user"], settings["couch"]["passwd"],
-    settings["couch"]["host"], settings["couch"]["port"])
+target_url = "http://%s:%s@%s:%s/oerr" % (
+    replication_settings["target"]["user"],
+    replication_settings["target"]["password"],
+    replication_settings["target"]["host"],
+    replication_settings["target"]["port"]
+)
 
-# Read the replication URLs from the file
-with open(replications_file, "r") as replications:
-    db_urls = [url.strip() for url in replications]
+replicator_db_url = "http://%s:%s@%s:%s/_replicator" % (
+    replication_settings["source"]["user"],
+    replication_settings["source"]["passwd"],
+    replication_settings["source"]["host"],
+    replication_settings["source"]["port"]
+)
 
-# List of subdirectories to be included in the replication
 sub_directories = ["", "_lab_test_panels", "_lab_test_type", "_patients", "_users"]
 
-# Function to check if a replication document already exists
-def replication_exists(source_db, target_db):
-    query = {
-        "selector": {
-            "source": source_db,
-            "target": target_db
-        }
-    }
-    response = requests.post(f"{replicator_url}/_find", json=query)
-    result = response.json()
-    return len(result['docs']) > 0
+# Ensure the _replicator database exists (no need to delete/recreate each time)
+os.system('curl -X PUT %s' % replicator_db_url)
 
-# Loop through each pair of databases and subdirectories and set up bidirectional replication
-for i in range(len(db_urls)):
-    for j in range(len(db_urls)):
-        if i != j:
-            for sub_dir in sub_directories:
-                source_db = db_urls[i] + sub_dir
-                target_db = db_urls[j] + sub_dir
+for sub_dir in sub_directories:
+    # Replicate from source to target (master)
+    source_to_target = 'curl -d \'{"source":"%s", "target":"%s", "create_target":true, "continuous":true}\' -H "Content-Type: application/json" -X POST %s' % (
+        source_url.strip() + sub_dir,
+        target_url.strip() + sub_dir,
+        replicator_db_url
+    )
+    
+    # Replicate from target (master) to source
+    target_to_source = 'curl -d \'{"source":"%s", "target":"%s", "create_target":true, "continuous":true}\' -H "Content-Type: application/json" -X POST %s' % (
+        target_url.strip() + sub_dir,
+        source_url.strip() + sub_dir,
+        replicator_db_url
+    )
 
-                # Check if the first replication already exists: source -> target
-                if not replication_exists(source_db, target_db):
-                    replication_doc_1 = {
-                        "source": source_db,
-                        "target": target_db,
-                        "create_target": True,
-                        "continuous": True
-                    }
-                    response_1 = requests.post(
-                        replicator_url,
-                        json=replication_doc_1,
-                        headers={"Content-Type": "application/json"}
-                    )
-                    print(f"Replication from {source_db} to {target_db}: {response_1.json()}")
-                else:
-                    print(f"Replication from {source_db} to {target_db} already exists.")
-
-                # Check if the second replication already exists: target -> source
-                if not replication_exists(target_db, source_db):
-                    replication_doc_2 = {
-                        "source": target_db,
-                        "target": source_db,
-                        "create_target": True,
-                        "continuous": True
-                    }
-                    response_2 = requests.post(
-                        replicator_url,
-                        json=replication_doc_2,
-                        headers={"Content-Type": "application/json"}
-                    )
-                    print(f"Replication from {target_db} to {source_db}: {response_2.json()}")
-                else:
-                    print(f"Replication from {target_db} to {source_db} already exists.")
+    # Execute the replication commands
+    os.system(source_to_target)
+    os.system(target_to_source)

@@ -1,0 +1,17 @@
+{
+    "couch":{
+        "host":"localhost",
+        "user":"admin",
+	    "port": "5984",
+        "passwd":"sinthaMW",
+        "database":"mss_results_new"
+    },
+    "iblis": {
+        "host": "localhost",
+        "user":"root",
+        "password":"password",
+        "database":"iblis"
+    },
+    "facility":"My Test Facility",
+    "using_rpi": "False"
+}

@@ -16,6 +16,12 @@ from models.laboratory_test_type import LaboratoryTestType
 from models.patient import Patient
 from models.user import User
 from utils import misc
+from fuzzywuzzy import fuzz
+
+GENDER_COV_MALE = "1"
+GENDER_COV_FEMALE = "0"
+
+
 
 app = Flask(__name__, template_folder="views", static_folder="assets")
 app.secret_key = os.urandom(25)
@@ -27,7 +33,9 @@ app.secret_key = os.urandom(25)
 
 # Main application configuration
 global db
+global remote_db
 settings = misc.initialize_settings()
+remote_settings =misc.initialize_remote_settings()
 
 # optional configuration when running on rpi
 if settings["using_rpi"] == "True":
@@ -64,32 +72,7 @@ def index():
                 "status": {"$in": ["Ordered", "Specimen Collected", "Analysis Complete", "Rejected"]}
             }, "limit": 100
         }
-        '''
-        # Get my team members and then all tests requested by members of my team
-        my_team = User.get_team_members(session.get('user').get('team'))
-
-        # Get all records for my team that require attention
-        team_records_query = {
-            "selector": {
-                "ordered_by": {"$in": my_team},
-                "status": {"$in": ["Ordered", "Specimen Collected", "Analysis Complete", "Rejected"]}
-            }, "limit": 100
-        }
-        team_query_results = db.find(team_records_query)
-        for item in team_query_results:
-            team_test_detail = {'status': item.get('status'), 'date': float(item.get('date_ordered')),
-                                'name': Patient.get(item.get('patient_id')).get('name').title(),
-                                'ordered_by': User.get(item.get("ordered_by")).name.title(),
-                                'ordered_on': datetime.fromtimestamp(float(item.get('date_ordered'))).strftime(
-                                    '%d %b %Y %H:%S'),
-                                "id": item["_id"], 'patient_id': item.get('patient_id')}
-
-            if item.get("type") == "test":
-                team_test_detail['test'] = LaboratoryTestType.find_by_test_type(item.get('test_type')).test_name
-            else:
-                team_test_detail['test'] = item.get('panel_type')
-            my_team_recs.append(team_test_detail)
-    '''
+ 
     # query for records to display on the main page
     main_results = db.find(main_index_query)
     for item in main_results:
@@ -205,13 +188,15 @@ def patient(patient_id):
     records = []
     details_of_test = {}
     grouped_samples = {}
+    remote_grouped_samples = {}
+    
     if request.args.get("sample_draw") == "True":
         draw_sample = True
 
     # get patient details and arrange them in a way that is needed
     var_patient = Patient.get(patient_id)
 
-    # get tests for patient
+    # get tests for patient (local)
     test_query_result = db.find({"selector": {"patient_id": patient_id}, "limit": 100})
     for test in test_query_result:
         record = {"date_ordered": datetime.fromtimestamp(float(test["date_ordered"])).strftime('%d %b %Y %H:%M'),
@@ -232,9 +217,7 @@ def patient(patient_id):
             record["measures"] = get_test_measures(test, detail)
             if test["status"] == "Ordered":
                 pending_details = get_pending_test_details(test, detail)
-                # pending_sample.append( get_pending_test_details(test, detail))
-
-                # Group tests by department, container
+                # Group tests by department, container (local)
                 group_key = (pending_details["department"], pending_details["container"])
                 grouped_samples.setdefault(group_key, []).append(pending_details)
 
@@ -243,24 +226,73 @@ def patient(patient_id):
 
         records.append(record)
 
+    # Group and append local samples
     for group, samples in grouped_samples.items():
         if len(samples) > 1:
             test_names = ", ".join([sample["test_name"] for sample in samples])
             samples[0]["test_name"] = test_names
             test_ids = "^".join([sample["test_id"] for sample in samples])
             samples[0]["test_id"] = test_ids  # Store concatenated IDs
-
             pending_sample.append(samples[0])
         else:
             samples[0]["test_id"] = str(samples[0]["test_id"])  # Single test case
             pending_sample.append(samples[0])
-            # For single tests, use the existing ID as the grouped ID
+
+    # ----------------------------------- Start remote database processing
+
+    # get remote tests for patient
+    if (remote_db is not None ):
+        remote_test_query_result = remote_db.find({"selector": {"patient_id": patient_id}, "limit": 100})
+        for test in remote_test_query_result:
+            record = {"date_ordered": datetime.fromtimestamp(float(test["date_ordered"])).strftime('%d %b %Y %H:%S'),
+                    "id": test.get("_id"), "type": test.get("type"), "status": test.get("status"),
+                    "priority": test.get("Priority"), "date": float(test["date_ordered"]),
+                    "collection_id": test.get("collection_id", ""), "history": test.get("clinical_history"),
+                    "ordered_by": test.get("ordered_by"), "rejection_reason": test.get("rejection_reason"),
+                    "test_type": "test" if test.get("type") == "test" else "test panel"}
+
+            if test.get('panel_type') is not None:
+                record["test_name"] = test.get('panel_type')
+                record["panel_test_details"] = get_panel_details(test)
+                if test["status"] == "Ordered":
+                    pending_sample.append(get_pending_panel_details(test))
+            else:
+                detail = LaboratoryTestType.find_by_test_type(test.get('test_type'))
+                record["test_name"] = detail.test_name
+                record["measures"] = get_test_measures(test, detail)
+                if test["status"] == "Ordered":
+                    pending_details = get_pending_test_details(test, detail)
+                    group_key = (pending_details["department"], pending_details["container"])
+                    remote_grouped_samples.setdefault(group_key, []).append(pending_details)
+
+                elif test["status"] == "Analysis Complete" or test["status"] == "Reviewed":
+                    get_test_measures(test, detail)
+
+            records.append(record)
+
+        # Group and append remote samples
+        for group, remote_samples in remote_grouped_samples.items():
+            if len(remote_samples) > 1:
+                test_names = ", ".join([sample["test_name"] for sample in remote_samples])
+                remote_samples[0]["test_name"] = test_names
+                test_ids = "^".join([sample["test_id"] for sample in remote_samples])
+                remote_samples[0]["test_id"] = test_ids
+                pending_sample.append(remote_samples[0])
+            else:
+                remote_samples[0]["test_id"] = str(remote_samples[0]["test_id"]) 
+                pending_sample.append(remote_samples[0])
+
+    else:
+        misc.update_patient(patient_id)
 
 
+    # Sort combined records (local + remote) by date in reverse order
     records = sorted(records, key=lambda e: e["date"], reverse=True)
-    permitted_length = 85 - 50 - len(var_patient['name']) - len(var_patient['id'])
-    # print(f"Permitted length: {permitted_length}")  # Debugging line
 
+    # Calculate permitted length
+    permitted_length = 85 - 50 - len(var_patient['name']) - len(var_patient['id'])
+
+    # Render the template with both local and remote test data
     return render_template('patient/show.html', pt_details=var_patient, tests=records, pending_orders=pending_sample,
                            containers=misc.container_options(),
                            collect_samples=draw_sample, doctors=prescribers(), ch_length=permitted_length,
@@ -272,10 +304,53 @@ def patient(patient_id):
 
 # USER ROUTES
 
-# route to login page
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
     error = None
+    if request.method == 'GET':
+        status = None
+        error = None
+        switch = request.args.get('switch')
+        
+        if switch == "1":
+            return render_template('user/recover.html', error=error, status=status)
+        
+        if switch == "2":
+            fullname = request.args.get('fullname')
+            username = request.args.get('username')
+            user = User.get(username)
+
+            def check_similarity(name_fromdb, passed_name):
+                percentage = fuzz.ratio(name_fromdb, passed_name)
+                return percentage
+
+            
+            if user is None:
+                error = "No matching username in the system"
+                return render_template('user/recover.html', fullname=fullname, username=username, error=error, status=status)
+            
+            if check_similarity(user.name.lower(), fullname.lower()) < 70:
+                diff = 100 - check_similarity(user.name.lower(),fullname)
+                error = f"The full name you entered is {diff}% incorrect"
+                return render_template('user/recover.html', fullname=fullname, username=username, error=error, status=status)
+            
+            try:
+                last_name = user.name.split()[-1].lower()  
+            except IndexError:
+                error = "Please provide a valid full name."
+                return render_template('user/recover.html', fullname=fullname, username=username, error=error, status=status)
+            
+            
+            user.password = last_name 
+            user.save()
+            status = f" '{last_name}'<br>Password has been restored to your last name."
+            return render_template('user/recover.html', fullname=fullname, username=username, error=error, status=status)
+
+        return render_template('user/login.html', error=error)
+
+
+
     if request.method == "POST":
         # username = request.form.get('username')
         # password = request.form.get('password')
@@ -308,6 +383,8 @@ def login():
         pass
     session["user"] = None
     return render_template('user/login.html', error=error, requires_keyboard=True)
+
+
 
 
 # Route to handle logging out
@@ -510,9 +587,9 @@ def collect_specimens(test_id):
 
     #Converting gender
     if var_patient["gender"][0] == "m":
-        conv_gender = "0"
+        conv_gender = GENDER_COV_MALE
     else:
-        conv_gender = "1"
+        conv_gender = GENDER_COV_FEMALE
 
     for test in tests:
         test["status"] = "Specimen Collected"
@@ -524,8 +601,8 @@ def collect_specimens(test_id):
             test_names.append(LaboratoryTestType.find_by_test_type(test["test_type"]).printable_name())
             test_string = [var_patient["name"].replace(" ", "^"), var_patient["_id"], conv_gender,
                            datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%s"),
-                           wards[tests[0]["ward"]], dr, (tests[0]["clinical_history"]).lower(), tests[0]["sample_type"],
-                           datetime.now().strftime("%s"), '^'.join(test_ids), tests[0]["Priority"][0]]
+                           wards[tests[0]["ward"]], dr, tests[0]["clinical_history"], tests[0]["sample_type"],
+                           str(collected_at), '^'.join(test_ids), tests[0]["Priority"][0]]
         else:
             panel = LaboratoryTestPanel.get(test["panel_type"])
             test_names.append(panel.short_name)
@@ -533,8 +610,8 @@ def collect_specimens(test_id):
                 test_ids.append(panel.panel_id)
                 test_string = [var_patient["name"].replace(" ", "^"), var_patient["_id"], conv_gender,
                                datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%s"),
-                               wards[tests[0]["ward"]], dr, (tests[0]["clinical_history"]).lower(), tests[0]["sample_type"],
-                               datetime.now().strftime("%s"), '^'.join(test_ids), tests[0]["Priority"][0], "P"]
+                               wards[tests[0]["ward"]], dr, tests[0]["clinical_history"], tests[0]["sample_type"],
+                               str(collected_at), '^'.join(test_ids), tests[0]["Priority"][0], "P"]
             else:
                 for test_type in panel.tests:
                     test_id = LaboratoryTestType.get(test_type).test_type_id
@@ -542,8 +619,8 @@ def collect_specimens(test_id):
 
                 test_string = [var_patient["name"].replace(" ", "^"), var_patient["_id"], conv_gender,
                                datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%s"),
-                               wards[tests[0]["ward"]], dr, (tests[0]["clinical_history"]).lower(), tests[0]["sample_type"],
-                               datetime.now().strftime("%s"), '^'.join(test_ids), tests[0]["Priority"][0]]
+                               wards[tests[0]["ward"]], dr, tests[0]["clinical_history"], tests[0]["sample_type"],
+                               str(collected_at), '^'.join(test_ids), tests[0]["Priority"][0]]
         db.save(test)
 
     if len('~'.join(test_string)) > 86:
@@ -558,6 +635,7 @@ def collect_specimens(test_id):
     label_file.write('b5,70,P,386,80,"%s$"\n' % '~'.join(test_string))
     label_file.write('A20,170,0,1,1,2,N,"%s"\n' % ','.join(test_names))
     label_file.write('A260,170,0,1,1,2,N,"%s" \n' % datetime.now().strftime("%d-%b %H:%M"))
+    label_file.write('A260,170,0,1,1,2,N,"%s" \n' % datetime.fromtimestamp(collected_at).strftime("%d-%b %H:%M"))
     label_file.write("P1\n")
     label_file.close()
     #os.system('sudo sh ~/print.sh /tmp/test_order.lbl')
@@ -581,11 +659,7 @@ def reprint_barcode(test_id):
     tests = list(db.find({"selector": {"type": {"$in": ["test", "test panel"]}, "_id": {"$in": test_id.split("^")}}}))
     print(tests)
     if tests is None or tests == []:
-        print("Point 1")
         tests = list(db.find({"selector": {"collection_id": test_id}}))
-        # tests = db.find({"selector": {"_id": test_id}})
-        print(tests)
-
     test_ids = []
     test_names = []
     if tests is None or tests == []:
@@ -597,11 +671,9 @@ def reprint_barcode(test_id):
     print("Point 3")
 
     if var_patient["gender"][0] == "m":
-        print("Point 4")
-        conv_gender = "0"
+        conv_gender = GENDER_COV_MALE
     else:
-        print("Point 5")
-        conv_gender = "1"
+        conv_gender = GENDER_COV_FEMALE
 
     for test in tests:
         print("Point 6")
@@ -609,45 +681,68 @@ def reprint_barcode(test_id):
             print("Point 7")
             test_ids.append(test["test_type"])
             test_names.append(LaboratoryTestType.find_by_test_type(test["test_type"]).printable_name())
-            test_string = [var_patient["name"].replace(" ", "^"), var_patient["_id"], conv_gender,
-                           datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%s"),
-                           wards[tests[0]["ward"]], dr, (tests[0]["clinical_history"]).lower(), tests[0]["sample_type"],
-                           datetime.now().strftime("%s"), "^".join(test_ids), tests[0]["Priority"][0]]
+            test_string = [
+                var_patient["name"].replace(" ", "^"),
+                var_patient["_id"],
+                conv_gender,
+                datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%s"),
+                wards[tests[0]["ward"]],
+                dr,
+                (tests[0]["clinical_history"]).lower(),
+                tests[0]["sample_type"],
+                str(test.get("collected_at")),
+                "^".join(test_ids),
+                tests[0]["Priority"][0]
+            ]
         else:
             print("Point 8")
             panel = LaboratoryTestPanel.get(test["panel_type"])
             test_names.append(panel.short_name)
             if panel.orderable:
                 test_ids.append(panel.panel_id)
-                test_string = [var_patient["name"].replace(" ", "^"), var_patient["_id"], conv_gender,
-                               datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%s"),
-                               wards[tests[0]["ward"]], dr, (tests[0]["clinical_history"]).lower(), tests[0]["sample_type"],
-                               datetime.now().strftime("%s"), "^".join(test_ids), tests[0]["Priority"][0], "P"]
-                print("Point 9")
-                
+                test_string = [
+                    var_patient["name"].replace(" ", "^"),
+                    var_patient["_id"],
+                    conv_gender,
+                    datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%s"),
+                    wards[tests[0]["ward"]],
+                    dr,
+                    (tests[0]["clinical_history"]).lower(),
+                    tests[0]["sample_type"],
+                    str(test.get("collected_at")),
+                    "^".join(test_ids),
+                    tests[0]["Priority"][0],
+                    "P"
+                ]
             else:
                 print("Point 10")
                 for test_type in panel.tests:
-                    print("Point 11")
-                    test_id = LaboratoryTestType.get(test_type).test_type_id
-                    test_ids.append(test_id)
+                    test_id_val = LaboratoryTestType.get(test_type).test_type_id
+                    test_ids.append(test_id_val)
 
-                test_string = [var_patient["name"].replace(" ", "^"), var_patient["_id"], conv_gender,
-                               datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%s"),
-                               wards[tests[0]["ward"]], dr, (tests[0]["clinical_history"]).lower(), tests[0]["sample_type"],
-                               datetime.now().strftime("%s"), "^".join(test_ids), tests[0]["Priority"][0]]
-                print("Point 12")
-                
-
+                test_string = [
+                    var_patient["name"].replace(" ", "^"),
+                    var_patient["_id"],
+                    conv_gender,
+                    datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%s"),
+                    wards[tests[0]["ward"]],
+                    dr,
+                    (tests[0]["clinical_history"]).lower(),
+                    tests[0]["sample_type"],
+                    str(test.get("collected_at")),
+                    "^".join(test_ids),
+                    tests[0]["Priority"][0]
+                ]
 
     label_file = open("/tmp/test_order.lbl", "w+")
     label_file.write("N\nq406\nQ203,027\nZT\n")
     label_file.write('A5,10,0,1,1,2,N,"%s"\n' % var_patient["name"])
-    label_file.write('A5,40,0,1,1,2,N,"%s (%s)"\n' % (
-        datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%d-%b-%Y"), var_patient["gender"][0]))
+    label_file.write('A5,40,0,1,1,2,N,"%s (%s)"\n' %
+                     (datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%d-%b-%Y"),
+                      var_patient["gender"][0]))
     label_file.write('b5,70,P,386,80,"%s$"\n' % "~".join(test_string))
     label_file.write('A20,170,0,1,1,2,N,"%s"\n' % ",".join(test_names))
-    label_file.write('A260,170,0,1,1,2,N,"%s" \n' % datetime.now().strftime("%d-%b %H:%M"))
+    label_file.write('A260,170,0,1,1,2,N,"%s" \n' % datetime.fromtimestamp(test.get("collected_at")).strftime("%d-%b %H:%M"))
     label_file.write("P1\n")
     label_file.close()
     #os.system('sudo sh ~/print.sh /tmp/test_order.lbl')
@@ -684,14 +779,19 @@ def low_voltage():
 def get_test_measures(test, test_details):
     results = {}
     for measure in test.get("measures", []):
+        raw_value = test["measures"][measure]
+        if raw_value is None:
+            raw_value = ""
+        
         if test_details.measures.get(measure) is None:
-            results[measure] = {"range": "", "interpretation": "Normal", "value": test["measures"][measure]}
+            results[measure] = {"range": "", "interpretation": "Normal", "value": raw_value}
         else:
             if test_details.measures[measure].get("minimum") is not None:
                 results[measure] = {
-                    "range": test_details.measures[measure].get("minimum") + " - " + test_details.measures[
-                        measure].get("maximum")}
-                results[measure]["value"] = re.sub(r'[^0-9\.]', '', test["measures"][measure])
+                    "range": test_details.measures[measure].get("minimum") + " - " +
+                             test_details.measures[measure].get("maximum")
+                }
+                results[measure]["value"] = re.sub(r'[^0-9\.]', '', raw_value)
                 if results[measure]["value"] == "":
                     results[measure]["value"] = "Not Done"
                     results[measure]["interpretation"] = "Normal"
@@ -702,10 +802,9 @@ def get_test_measures(test, test_details):
                 else:
                     results[measure]["interpretation"] = "Normal"
             else:
-                results[measure] = {"range": "", "interpretation": "Normal", "value": test["measures"][measure]}
+                results[measure] = {"range": "", "interpretation": "Normal", "value": raw_value}
 
     return results
-
 
 def get_panel_details(panel):
     details = {}
@@ -716,7 +815,7 @@ def get_panel_details(panel):
         details[panel_test]['measures'] = get_test_measures(panel.get("tests")[panel_test], test)
     return details
 
-
+# LOOK AT THIS NEXT TIME
 def get_pending_panel_details(test):
     panel_details = {"test_id": test["_id"], "specimen_type": specimen_type_map(test['sample_type']),
                      "test_name": test["panel_type"]
@@ -765,20 +864,6 @@ def prescribers():
     return providers
 
 
-def locations_options():
-    return [["MSS", "Medical Short Stay"], ["4A", "Medical Female Ward"], ["4B", "Medical Male Ward"],
-            ["MHDU", "Medical HDU"]]
-#
-#     locations = {
-#         "Medical": ["4A", "4B", "Short Stay", "OPD1", "OPD2"],
-#         "Pediatrics": ["Ward A", "Ward B", "Ward C", "HDU"]
-#     }
-#     options = []
-#     for location, wards in locations.items():
-#         options.append([location, wards])
-#     return options
-
-
 
 def specimen_type_map(specimen_type):
     spec_type = LaboratoryTestType.match_specimen_types(specimen_type)
@@ -825,10 +910,23 @@ def initialize_connection():
         db = couchConnection.create(settings["couch"]["database"])
 
 
+def initialize_remote_connection():
+    # Connect to a remote couchdb archive instance 
+    remote_couchConnection = Server("http://%s:%s@%s:%s/" %
+                             (remote_settings["target"]["user"], remote_settings["target"]["password"],
+                              remote_settings["target"]["host"], remote_settings["target"]["port"]))
+    global remote_db
+    # Connect to a database or Create a Database
+    try:
+        remote_db = remote_couchConnection[f"{remote_settings['target_base_db']['database']}_archive"]
+    except:
+        remote_db = None
+
 @app.before_request
 def check_authentication():
     if not re.search("asset", request.path):
         initialize_connection()
+        initialize_remote_connection()
 
         if request.path not in ["/login", "/logout", "/get_charge_state", "/low_voltage"]:
             if session.get("user") is None:
@@ -859,11 +957,6 @@ def inject_power():
         check_charging = CheckChargeState().getState()
         voltage = CheckVoltage().get_voltage()
         raw_voltage = (voltage / 40.0) + 14
-
-        # if raw_voltage < 12:
-        # shutdown
-        # os.system('sudo shutdown now')
-
         if voltage > 70:
             rating = "high"
             if voltage == 100 and check_charging:
@@ -905,10 +998,11 @@ def not_found_error(error):
 @app.errorhandler(500)
 def internal_error(error):
     return render_template('main/500.html'), 500
+#   return error
 
 @app.errorhandler(502)
 def internal_error(error):
     return render_template('main/502.html'), 502
 
 if __name__ == '__main__':
-    app.run(port="4500", debug=True, host='0.0.0.0')
+    app.run(port="4500", debug=False, host='0.0.0.0')

@@ -26,10 +26,6 @@ GENDER_COV_FEMALE = "0"
 app = Flask(__name__, template_folder="views", static_folder="assets")
 app.secret_key = os.urandom(25)
 
-# Generate hashed password
-# password = "thatgirl"
-# hashed_password = generate_password_hash(password)
-# print(hashed_password)
 
 # Main application configuration
 global db

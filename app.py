@@ -398,8 +398,10 @@ def logout():
 # route to main user management page
 @app.route("/users")
 def users():
+    with open("config/department.config", "r") as f:
+        config = json.load(f)
     current_users = User.all()
-    return render_template("user/index.html", requires_keyboard=True, users=current_users)
+    return render_template("user/index.html", requires_keyboard=True, users=current_users, departments=config["departments"]) 
 
 
 @app.route("/user/create", methods=["POST"])
@@ -411,15 +413,15 @@ def create_user():
 
         if request.form['designation'] in ['Consultant', 'Intern', 'Registrar', 'Medical Student',
                                            'Student Clinical Officer', "Clinical Officer", "Visiting Doctor"]:
-            provider.team = request.form["team"]
+            provider.team = request.form.get("team")
         else:
-            provider.ward = request.form["wardAllocation"]
+            provider.ward = request.form.get("wardAllocation")
         provider.save()
+        flash("user added successfully", 'success')
     else:
         current_users = User.all()
         flash("Username already exists", 'error')
         return render_template("user/index.html", requires_keyboard=True, users=current_users)
-    flash("New user created", "success")
     return redirect(url_for("users"))
 
 
@@ -434,10 +436,14 @@ def edit_user(username=None):
     else:
 
         if request.method == 'POST':
-                user.name = request.form['name']
-                user.username = request.form['username']
-                user.role = request.form['role']
-                user.designation = request.form['designation']
+                user.name = request.form.get('name')
+                user.username = request.form.get('username')
+                user.role = request.form.get('role')
+                user.designation = request.form.get('designation')
+                user.department = request.form.get('department')
+                user.team = request.form.get('team')  # Returns None if missing
+                user.ward = request.form.get('wardAllocation')  # Returns None if missing
+
                 user.save()
                 flash("user updated successfully")
                 return redirect(url_for("users"))
@@ -484,6 +490,7 @@ def deactivate_user(user_id=None):
         return redirect(url_for("index"))
     else:
         user.status = "Deactivated"
+        flash("User Deactivated", 'info')
         user.save()
         return redirect(url_for("users"))
 
@@ -496,6 +503,7 @@ def activate_user(user_id=None):
         return redirect(url_for("index"))
     else:
         user.status = "Active"
+        flash("User Activated", 'success')
         user.save()
         return redirect(url_for("users"))
 
@@ -810,19 +818,14 @@ def low_voltage():
 # Collect specimen and reprint barcode - sanitize the barcode data
 # Sanitize individual barcode fields by removing characters unsafe for barcode printing.
 def sanitize_barcode_field(value):
-    """
-    Allow only safe characters for barcode printing.
-    Removes invalid characters like ., ", @, etc.
-    """
     if isinstance(value, str):
-        return re.sub(r'[^a-zA-Z0-9\-\^~_ ]', '', value)
+        return re.sub(r'[^a-zA-Z0-9\.\,\^~_]', '', value)
     return value
 
 # Sanitize the entire assembled barcode string before printing.
 # Ensures the full barcode data contains only allowed characters for the printer.
 def sanitize_barcode_data(barcode_data: str) -> str:
-    # Allow only letters, digits, ~, ^, -, _, and space
-    allowed_pattern = re.compile(r"[^a-zA-Z0-9~^_\-\s]")
+    allowed_pattern = re.compile(r"[^a-zA-Z0-9~^_\.\,]")
     return allowed_pattern.sub("", barcode_data)
 
 

@@ -54,7 +54,9 @@ def get_pending_tests():
                 "status": {"$in": ["Ordered", "Specimen Collected", "Specimen Received", "Being Analyzed",
                                    "Pending Verification"]}}, "limit": 1000
     })
-    return tests
+    return list(tests)  # Convert map or any iterable to list
+
+
 
 
 def get_pending_panels():

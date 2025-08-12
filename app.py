@@ -9,6 +9,7 @@ import re
 from datetime import datetime
 from couchdb import Server
 from flask import Flask, render_template, redirect, session, flash, request, url_for, Response, send_file
+from werkzeug.security import generate_password_hash
 from werkzeug.security import check_password_hash
 from models.laboratory_test_panel import LaboratoryTestPanel
 from models.laboratory_test_type import LaboratoryTestType
@@ -17,11 +18,13 @@ from models.user import User
 from utils import misc
 from fuzzywuzzy import fuzz
 
+GENDER_COV_MALE = "1"
+GENDER_COV_FEMALE = "0"
+
 
 
 app = Flask(__name__, template_folder="views", static_folder="assets")
 app.secret_key = os.urandom(25)
-
 
 
 # Main application configuration
@@ -88,7 +91,6 @@ def index():
     records = sorted(records, key=lambda e: e["date"], reverse=True)
     # my_team_recs = sorted(my_team_recs, key=lambda e: e["date"], reverse=True)
     return render_template('main/index.html', orders=records, current_facility=misc.current_facility())
-
 
 # process barcode from the main index page
 @app.route("/process_barcode", methods=["POST"])
@@ -346,11 +348,21 @@ def login():
 
 
     if request.method == "POST":
+        # username = request.form.get('username')
+        # password = request.form.get('password')
+         
+        # print(f"Username: {username}")
+        # print(f"Password: {password}")
+
+        # user = User.get(username)
         user = User.get(request.form['username'])
         if user is None:
             error = "Invalid username. Please try again."
+            # print("User not found.")
         else:
+            # print("User found:", user)  # Debugging
             if not check_password_hash(user.password_hash, request.form['password']):
+                # print("Password check failed")  # Debugging
                 error = "Wrong password. Please try again."
             else:
                 session.permanent = True
@@ -410,7 +422,6 @@ def create_user():
         current_users = User.all()
         flash("Username already exists", 'error')
         return render_template("user/index.html", requires_keyboard=True, users=current_users)
-    flash("New user created", "success")
     return redirect(url_for("users"))
 
 
@@ -479,6 +490,7 @@ def deactivate_user(user_id=None):
         return redirect(url_for("index"))
     else:
         user.status = "Deactivated"
+        flash("User Deactivated", 'info')
         user.save()
         return redirect(url_for("users"))
 
@@ -491,6 +503,7 @@ def activate_user(user_id=None):
         return redirect(url_for("index"))
     else:
         user.status = "Active"
+        flash("User Activated", 'success')
         user.save()
         return redirect(url_for("users"))
 
@@ -551,6 +564,7 @@ def create_lab_order():
             new_test['type'] = 'test'
             new_test['test_type'] = test
         db.save(new_test)
+       
         flash("New test ordered.", 'success')
     return redirect(url_for('patient', patient_id=request.form['patient_id'],
                             sample_draw=(request.form["sampleCollection"] == "Collect Now")))
@@ -577,9 +591,9 @@ def collect_specimens(test_id):
 
     #Converting gender
     if var_patient["gender"][0] == "m":
-        conv_gender = "1"
+        conv_gender = GENDER_COV_MALE
     else:
-        conv_gender = "0"
+        conv_gender = GENDER_COV_FEMALE
 
     for test in tests:
         test["status"] = "Specimen Collected"
@@ -589,28 +603,55 @@ def collect_specimens(test_id):
         if test["type"] == "test":
             test_ids.append(test["test_type"])
             test_names.append(LaboratoryTestType.find_by_test_type(test["test_type"]).printable_name())
-            test_string = [var_patient["name"].replace(" ", "^"), var_patient["_id"], conv_gender,
-                           datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%s"),
-                           wards[tests[0]["ward"]], dr, tests[0]["clinical_history"], tests[0]["sample_type"],
-                           str(collected_at), '^'.join(test_ids), tests[0]["Priority"][0]]
+            test_string = [
+            sanitize_barcode_field(var_patient["name"]).replace(" ", "^"),
+            sanitize_barcode_field(var_patient["_id"]),
+            sanitize_barcode_field(conv_gender),
+            sanitize_barcode_field(datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%s")),
+            sanitize_barcode_field(wards[tests[0]["ward"]]),
+            sanitize_barcode_field(dr),
+            sanitize_barcode_field(tests[0]["clinical_history"]).lower(),
+            sanitize_barcode_field(tests[0]["sample_type"]),
+            sanitize_barcode_field(str(collected_at)),
+            sanitize_barcode_field('^'.join(test_ids)),
+            sanitize_barcode_field(tests[0]["Priority"][0])
+        ]
         else:
             panel = LaboratoryTestPanel.get(test["panel_type"])
             test_names.append(panel.short_name)
             if panel.orderable:
                 test_ids.append(panel.panel_id)
-                test_string = [var_patient["name"].replace(" ", "^"), var_patient["_id"], conv_gender,
-                               datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%s"),
-                               wards[tests[0]["ward"]], dr, tests[0]["clinical_history"], tests[0]["sample_type"],
-                               str(collected_at), '^'.join(test_ids), tests[0]["Priority"][0], "P"]
+                test_string = [
+            sanitize_barcode_field(var_patient["name"]).replace(" ", "^"),
+            sanitize_barcode_field(var_patient["_id"]),
+            sanitize_barcode_field(conv_gender),
+            sanitize_barcode_field(datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%s")),
+            sanitize_barcode_field(wards[tests[0]["ward"]]),
+            sanitize_barcode_field(dr),
+            sanitize_barcode_field(tests[0]["clinical_history"]).lower(),
+            sanitize_barcode_field(tests[0]["sample_type"]),
+            sanitize_barcode_field(str(collected_at)),
+            sanitize_barcode_field('^'.join(test_ids)),
+            sanitize_barcode_field(tests[0]["Priority"][0])
+        ]
             else:
                 for test_type in panel.tests:
                     test_id = LaboratoryTestType.get(test_type).test_type_id
                     test_ids.append(test_id)
 
-                test_string = [var_patient["name"].replace(" ", "^"), var_patient["_id"], conv_gender,
-                               datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%s"),
-                               wards[tests[0]["ward"]], dr, tests[0]["clinical_history"], tests[0]["sample_type"],
-                               str(collected_at), '^'.join(test_ids), tests[0]["Priority"][0]]
+                test_string = [
+            sanitize_barcode_field(var_patient["name"]).replace(" ", "^"),
+            sanitize_barcode_field(var_patient["_id"]),
+            sanitize_barcode_field(conv_gender),
+            sanitize_barcode_field(datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%s")),
+            sanitize_barcode_field(wards[tests[0]["ward"]]),
+            sanitize_barcode_field(dr),
+            sanitize_barcode_field(tests[0]["clinical_history"]).lower(),
+            sanitize_barcode_field(tests[0]["sample_type"]),
+            sanitize_barcode_field(str(collected_at)),
+            sanitize_barcode_field('^'.join(test_ids)),
+            sanitize_barcode_field(tests[0]["Priority"][0])
+        ]
         db.save(test)
 
     if len('~'.join(test_string)) > 86:
@@ -624,7 +665,7 @@ def collect_specimens(test_id):
         datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%d-%b-%Y"), var_patient["gender"][0]))
     label_file.write('b5,70,P,386,80,"%s$"\n' % '~'.join(test_string))
     label_file.write('A20,170,0,1,1,2,N,"%s"\n' % ','.join(test_names))
-    label_file.write('A260,170,0,1,1,2,N,"%s" \n' % datetime.now().strftime("%d-%b %H:%M"))
+    label_file.write('A260,170,0,1,1,2,N,"%s" \n' % datetime.fromtimestamp(collected_at).strftime("%d-%b %H:%M"))
     label_file.write("P1\n")
     label_file.close()
     #os.system('sudo sh ~/print.sh /tmp/test_order.lbl')
@@ -643,24 +684,32 @@ def download_file():
 # update lab test orders to specimen ++collected
 @app.route("/test/<test_id>/reprint")
 def reprint_barcode(test_id):
+    print(test_id)
+    print("Point 0")
     tests = list(db.find({"selector": {"type": {"$in": ["test", "test panel"]}, "_id": {"$in": test_id.split("^")}}}))
+    print(tests)
     if tests is None or tests == []:
         tests = list(db.find({"selector": {"collection_id": test_id}}))
     test_ids = []
     test_names = []
     if tests is None or tests == []:
+        print("Point 2")
         return redirect(url_for("index", error="Tests not found"))
     var_patient = Patient.get(tests[0]["patient_id"])
     dr = tests[0]["ordered_by"]
     wards = wards_mapping
+    print("Point 3")
 
     if var_patient["gender"][0] == "m":
-        conv_gender = "1"
+        conv_gender = GENDER_COV_MALE
     else:
-        conv_gender = "0"
+        conv_gender = GENDER_COV_FEMALE
+
 
     for test in tests:
+        print("Point 6")
         if test["type"] == "test":
+            print("Point 7")
             test_ids.append(test["test_type"])
             test_names.append(LaboratoryTestType.find_by_test_type(test["test_type"]).printable_name())
             test_string = [
@@ -677,6 +726,7 @@ def reprint_barcode(test_id):
                 tests[0]["Priority"][0]
             ]
         else:
+            print("Point 8")
             panel = LaboratoryTestPanel.get(test["panel_type"])
             test_names.append(panel.short_name)
             if panel.orderable:
@@ -696,6 +746,7 @@ def reprint_barcode(test_id):
                     "P"
                 ]
             else:
+                print("Point 10")
                 for test_type in panel.tests:
                     test_id_val = LaboratoryTestType.get(test_type).test_type_id
                     test_ids.append(test_id_val)
@@ -720,9 +771,20 @@ def reprint_barcode(test_id):
     label_file.write('A5,40,0,1,1,2,N,"%s (%s)"\n' %
                      (datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%d-%b-%Y"),
                       var_patient["gender"][0]))
-    label_file.write('b5,70,P,386,80,"%s$"\n' % "~".join(test_string))
+    
+    # label_file.write('b5,70,P,386,80,"%s$"\n' % "~".join(test_string))
+
+    # Combine test string into one barcode string
+    raw_barcode = "~".join(test_string)
+
+    # Sanitize it to remove invalid characters (like . or @)
+    clean_barcode = sanitize_barcode_data(raw_barcode)
+
+    # Write sanitized barcode in label format
+    label_file.write(f'b5,70,P,386,80,"{clean_barcode}$"\n')
+
     label_file.write('A20,170,0,1,1,2,N,"%s"\n' % ",".join(test_names))
-    label_file.write('A260,170,0,1,1,2,N,"%s" \n' % datetime.fromtimestamp(test.get("collected_at")).strftime("%d-%b %H:%M")) #pulling time from collected_at (Specimen Collected)
+    label_file.write('A260,170,0,1,1,2,N,"%s" \n' % datetime.fromtimestamp(test.get("collected_at")).strftime("%d-%b %H:%M"))
     label_file.write("P1\n")
     label_file.close()
     #os.system('sudo sh ~/print.sh /tmp/test_order.lbl')
@@ -740,12 +802,10 @@ def review_test(test_id):
     test["reviewed_by"] = session["user"]['username']
     test["reviewed_at"] = int(datetime.now().strftime('%s'))
     db.save(test)
-
     if "review_ajax" in request.path.split("/"):
         return "Success"
     else:
         return redirect(url_for('patient', patient_id=test['patient_id']))
-
 
 @app.route("/get_charge_state")
 def get_charge_state():
@@ -755,6 +815,19 @@ def get_charge_state():
 @app.route("/low_voltage")
 def low_voltage():
     return render_template('main/low_voltage.html')
+
+# Collect specimen and reprint barcode - sanitize the barcode data
+# Sanitize individual barcode fields by removing characters unsafe for barcode printing.
+def sanitize_barcode_field(value):
+    if isinstance(value, str):
+        return re.sub(r'[^a-zA-Z0-9\.\,\^~_]', '', value)
+    return value
+
+# Sanitize the entire assembled barcode string before printing.
+# Ensures the full barcode data contains only allowed characters for the printer.
+def sanitize_barcode_data(barcode_data: str) -> str:
+    allowed_pattern = re.compile(r"[^a-zA-Z0-9~^_\.\,]")
+    return allowed_pattern.sub("", barcode_data)
 
 
 # MISC Functions
@@ -923,7 +996,6 @@ def check_authentication():
 def inject_now():
     return {'now': datetime.now().strftime("%H:%M%p")}
 
-
 @app.context_processor
 def inject_user():
     return {'current_user': session.get("user")}
@@ -988,4 +1060,4 @@ def internal_error(error):
     return render_template('main/502.html'), 502
 
 if __name__ == '__main__':
-    app.run(port="8000", debug=False, host='0.0.0.0')
+    app.run(port="4500", debug=False, host='0.0.0.0')

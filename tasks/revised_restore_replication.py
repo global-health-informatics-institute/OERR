@@ -5,13 +5,11 @@ import sys
 
 now = datetime.datetime.now()
 
-start_time = now.replace(hour=1, minute=0, second=0, microsecond=0)
-end_time = now.replace(hour=3, minute=0, second=0, microsecond=0)
+start_time = now.replace(hour=7, minute=30, second=0, microsecond=0)
+end_time = now.replace(hour=8, minute=30, second=0, microsecond=0)
 
 if start_time <= now <= end_time:
     sys.exit(0)
-
-
 
 replications_file = "config/replications.config"
 ward_file = "config/department.config"
@@ -34,16 +32,31 @@ source_url = f"http://{replication_settings['source']['user']}:{replication_sett
 target_url = f"http://{replication_settings['target']['user']}:{replication_settings['target']['password']}@{replication_settings['target']['host']}:{replication_settings['target']['port']}/{replication_settings['target_base_db']['database']}"
 replicator_db_url = f"http://{replication_settings['source']['user']}:{replication_settings['source']['passwd']}@{replication_settings['source']['host']}:{replication_settings['source']['port']}/_replicator"
 
+# Check if the replicator database already exists
+check_replicator_db_cmd = ['curl', '-X', 'GET', replicator_db_url]
+try:
+    result = subprocess.run(check_replicator_db_cmd, check=True, capture_output=True, text=True)
+    # If the GET request is successful, the database exists, so delete it
+    delete_replicator_db_cmd = ['curl', '-X', 'DELETE', replicator_db_url]
+    subprocess.run(delete_replicator_db_cmd, check=True, capture_output=True, text=True)
+    with open(log_file, 'a') as log:
+        log.write("Deleted existing _replicator database.\n")
+except subprocess.CalledProcessError:
+    # If the GET fails, the _replicator database doesn't exist; proceed without deleting
+    with open(log_file, 'a') as log:
+        log.write("No existing _replicator database found to delete.\n")
+
+# Create the _replicator database
 create_replicator_db_cmd = ['curl', '-X', 'PUT', replicator_db_url]
 try:
     subprocess.run(create_replicator_db_cmd, check=True, capture_output=True, text=True)
     with open(log_file, 'a') as log:
-        log.write(f"Created replicator databese:\n")
+        log.write("Created _replicator database.\n")
 except subprocess.CalledProcessError as e:
     with open(log_file, 'a') as log:
         log.write(f"Error creating _replicator database: {e.stderr}\n")
 
-design_id = (replication_settings["source"]["host"]).replace('.','')
+design_id = (replication_settings["source"]["host"]).replace('.', '')
 
 design_doc = {
     "filters": {
@@ -51,27 +64,46 @@ design_doc = {
     }
 }
 
+#  check if design document already exists
+check_design_doc_cmd = [
+    'curl', '-X', 'GET', f"{target_url}/_design/ward_filter_{design_id}"
+]
+try:
+    result = subprocess.run(check_design_doc_cmd, check=True, capture_output=True, text=True)
+    if result.returncode == 0:
+        # If the design document exists, delete it
+        delete_design_doc_cmd = [
+            'curl', '-X', 'DELETE', f"{target_url}/_design/ward_filter_{design_id}"
+        ]
+        subprocess.run(delete_design_doc_cmd, check=True, capture_output=True, text=True)
+        with open(log_file, 'a') as log:
+            log.write("Deleted existing design document.\n")
+except subprocess.CalledProcessError:
+    # If the GET fails, the design document doesn't exist; proceed without deleting
+    with open(log_file, 'a') as log:
+        log.write("No existing design document found to delete.\n")
+
+# Create or update the design document
 create_design_doc_cmd = [
     'curl', '-d', json.dumps(design_doc), '-H', 'Content-Type: application/json',
     '-X', 'PUT', f"{target_url}/_design/ward_filter_{design_id}"
 ]
-try:
-    result = subprocess.run(create_design_doc_cmd, check=True, capture_output=True, text=True)
-    with open(log_file, 'a') as log:
-        log.write(f"Design document created successfully on the target database\n")
-
-except subprocess.CalledProcessError as e:
-    with open(log_file, 'a') as log:
-        log.write(f"Error creating design document: {e.stderr}\n")
+# try:
+#     result = subprocess.run(create_design_doc_cmd, check=True, capture_output=True, text=True)
+#     with open(log_file, 'a') as log:
+#         log.write("Design document created or updated successfully on the target database.\n")
+# except subprocess.CalledProcessError as e:
+#     with open(log_file, 'a') as log:
+#         log.write(f"Error creating design document: {e.stderr}\n")
 
 def execute_replication(command, log_message):
     try:
         result = subprocess.run(command, check=True, capture_output=True, text=True)
         with open(log_file, 'a') as log:
-            log.write(f"Replication setup:\n")
+            log.write(f"{log_message} succeeded.\n")
     except subprocess.CalledProcessError as e:
         with open(log_file, 'a') as log:
-            log.write(f"Error: {log_message}\n{e.stderr}\n")
+            log.write(f"Error: {log_message} failed.\n{e.stderr}\n")
 
 source_to_target_cmd = [
     'curl', '-d', json.dumps({
@@ -83,7 +115,7 @@ source_to_target_cmd = [
     }), '-H', 'Content-Type: application/json', '-X', 'POST', replicator_db_url
 ]
 
-target_to_source_cmd =[
+target_to_source_cmd = [
     'curl', '-d', json.dumps({
         "_id": "target-to-source-filtered",
         "source": target_url,
@@ -96,7 +128,6 @@ target_to_source_cmd =[
 
 execute_replication(source_to_target_cmd, "Setting up replication from source to target")
 execute_replication(target_to_source_cmd, "Setting up filtered replication from target to source")
-
 
 sub_directories = ["_lab_test_panels", "_lab_test_type", "_patients", "_users"]
 

@@ -1,6 +1,6 @@
 import json
 from couchdb import Server
-import os
+import requests
 
 # Load the replication configuration
 replications_file = "config/replications.config"

@@ -1,0 +1,40 @@
+{ 
+  "departments": [
+    /**
+     * Maps department names to their respective wards and teams.
+     * For authoritative details, consult repository owners or the facility database.
+     * Replace department names (Title Case), ward names, and team names with actual values as needed.
+     * Rename this file to department.config for setup or production use.
+     */
+    {
+      "name": "Department A",
+      "wards":
+      [
+        "WARD_1",
+        "WARD_2",
+        "WARD_3",
+      ],
+      "team":
+      [
+        "Team A",
+        "Team B",
+        "Team C",
+      ]
+    },
+    {
+      "name": "Department B",
+      "wards":
+      [
+        "WARD_1",
+        "WARD_2",
+        "WARD_3",
+      ],
+      "team":
+      [
+        "Team A",
+        "Team B",
+        "Team C",
+      ]
+    },
+  ]
+}

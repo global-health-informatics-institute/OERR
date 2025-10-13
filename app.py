@@ -297,6 +297,8 @@ def login():
         user = User.get(request.form['username'])
         if user is None:
             error = "Invalid username. Please try again."
+        elif user.status == "Deactivated":
+            error = "Your account has been deactivated. Please contact the system administrator."
         else:
             if not check_password_hash(user.password_hash, request.form['password']):
                 error = "Wrong password. Please try again."

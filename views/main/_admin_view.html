@@ -1,34 +1,68 @@
+<style>
+    .tab-section {
+  display: table;
+  padding-top: 5em;
+  padding-left: 1em;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.tab-icon {
+  display: table-row;
+}
+
+.icon {
+  width: 8em;
+  height: 8em;
+  object-fit: contain;
+}
+
+
+.tab-label {
+  display: table-row;
+  font-size: 2em;
+  font-weight: 600;
+  padding: 0.8em 1.6em;
+  margin-top: 0.8em;
+  color: #fff;
+  background-color: #5a6d7c;
+  border: none;
+  border-radius: 0.6em;
+  cursor: pointer;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+  transition: all 0.2s ease-in-out;
+}
+
+.tab-label:hover,
+.tab-label:focus {
+  background-color: #4a5c69;
+  box-shadow: 0 5px 12px rgba(0,0,0,0.2);
+}
+</style>
+
 <div class="maintab" style="margin-top:4vh;">
   <button class="maintablinks" onclick="showMainTab(event, 'management')" id="defaultOpen">Management</button>
   <button class="maintablinks" onclick="showMainTab(event, 'preferences')">My Preferences</button>
 </div>
 
 <div id="management" class="maintabcontent">
-    <div style="display: table; padding-top: 10px;padding-left: 10px;margin-left: auto;margin-right: auto;">
-        <div style="display: table-row">
-            <div style="display: table-cell;width: 15vw;text-align: center;padding:5%;" onmousedown="Spinner.show();window.location='/users'">
-                <img src="/assets/images/user_management.png">
-            </div>
-        </div>
-        <div style="display: table-row">
-            <div style="display: table-cell;text-align: center;font-size: 1.4em;padding:5%;" onmousedown="Spinner.show();window.location='/users'">
-                User Management
-            </div>
-        </div>
+  <div class="tab-section">
+    <div class="tab-icon" onmousedown="Spinner.show();window.location='/users'">
+      <img src="/assets/images/user_management.png" class="icon">
     </div>
+    <button class="tab-label" onmousedown="Spinner.show();window.location='/users'">
+      User Management
+    </button>
+  </div>
 </div>
 
 <div id="preferences" class="maintabcontent">
-    <div style="display: table; padding-top: 10px;padding-left: 10px;margin-left: auto;margin-right: auto;">
-        <div style="display: table-row">
-            <div style="display: table-cell;width: 15vw;text-align: center;padding:5%;" onmousedown="Spinner.show();window.location='/user/{{ session['user']['username']}}/update_password'">
-                <img src="/assets/images/change_password.png">
-            </div>
-        </div>
-        <div style="display: table-row">
-            <div style="display: table-cell;text-align: center;font-size: 1.4em;padding:5%;" onmousedown="Spinner.show();window.location='/user/{{ session['user']['username']}}/update_password'">
-                Change Password
-            </div>
-        </div>
+  <div class="tab-section">
+    <div class="tab-icon" onmousedown="Spinner.show();window.location='/user/{{ session['user']['username']}}/update_password'">
+      <img src="/assets/images/change_password.png" class="icon">
     </div>
+    <button class="tab-label" onmousedown="Spinner.show();window.location='/user/{{ session['user']['username']}}/update_password'">
+      Change Password
+    </button>
+  </div>
 </div>

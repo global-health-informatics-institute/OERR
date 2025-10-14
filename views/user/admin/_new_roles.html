@@ -1,0 +1,47 @@
+<div class="tab" id="user-roles">
+    <!--TODO: move user roles to configurable -->
+    <div class="title-div">User Role</div>
+    <ul>
+        <li>
+            <input type="radio" id="clinicalOfficer" value="Clinical Officer" name="role"  onchange="filterDesignations('doc')">
+            <label for="clinicalOfficer">Clinical Officer</label>
+            <div class="check"></div>
+        </li>
+        <li>
+            <input type="radio" id="doctor" value="Doctor" name="role"  onchange="filterDesignations('doc')">
+            <label for="doctor">Doctor</label>
+            <div class="check"></div>
+        </li>
+        <li>
+            <input type="radio" id="nurse" value="Nurse" name="role" onchange="filterDesignations('nurse')">
+            <label for="nurse">Nurse</label>
+            <div class="check"></div>
+        </li>
+        <li>
+            <input type="radio" id="student" value="Student" name="role" onchange="filterDesignations('student')">
+            <label for="student">Student</label>
+            <div class="check"></div>
+        </li>
+    </ul>
+</div>
+
+<script type="text/javascript">
+    // DATA VALIDATION
+    const roleInputsContainer = document.getElementById("user-roles");
+    
+    function _validateRoleSelection() {
+        const isRoleSelected = document.querySelector("input[name='role']:checked") !== null;
+        setTabValidity(1, isRoleSelected); 
+        
+
+        const activeTab = _getCurrentActiveTab();
+        if (activeTab) {
+            _handleButtonsState(activeTab.index);
+        }
+    }
+    if (roleInputsContainer) {
+        roleInputsContainer.addEventListener('change', _validateRoleSelection);
+        _validateRoleSelection();
+    }
+
+</script>

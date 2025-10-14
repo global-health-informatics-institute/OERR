@@ -1,0 +1,77 @@
+<!-- TODO: move user allocations to configurable -->
+<div class="tab" id="user-allocations">
+    <h2>Allocation</h2>
+    <ul>
+        <li data-id="medical" name="allocationOptions">
+            <input type="radio" id="short_stay" value="MSS" name="team" >
+            <label for="short_stay">Short Stay</label>
+            <div class="check"></div>
+        </li>
+        <li data-id="medical" name="allocationOptions">
+            <input type="radio" id="opd" value="OPD" name="team" >
+            <label for="opd">OPD</label>
+            <div class="check"></div>
+        </li>
+        <li data-id="medical" name="allocationOptions">
+            <input type="radio" id="team_a" value="A" name="team" >
+            <label for="team_a">Team A</label>
+            <div class="check"></div>
+        </li>
+        <li data-id="medical" name="allocationOptions">
+            <input type="radio" id="team_b" value="B" name="team" >
+            <label for="team_b">Team B</label>
+            <div class="check"></div>
+        </li>
+        <li data-id="medical" name="allocationOptions">
+            <input type="radio" id="team_c" value="C" name="team" >
+            <label for="team_c">Team C</label>
+            <div class="check"></div>
+        </li>
+        <li data-id="medical" name="allocationOptions">
+            <input type="radio" id="team_d" value="D" name="team" >
+            <label for="team_d">Team D</label>
+            <div class="check"></div>
+        </li>
+        <li data-id="nursing" name="allocationOptions">
+            <input type="radio" id="4a" value="4A" name="wardAllocation" >
+            <label for="4a">Medical Female Ward</label>
+            <div class="check"></div>
+        </li>
+        <li data-id="nursing" name="allocationOptions">
+            <input type="radio" id="mhdu" value="MHDU" name="wardAllocation" >
+            <label for="mhdu">Medical HDU</label>
+            <div class="check"></div>
+        </li>
+        <li data-id="nursing" name="allocationOptions">
+            <input type="radio" id="4b" value="4B" name="wardAllocation" >
+            <label for="4b">Medical Male Ward</label>
+            <div class="check"></div>
+        </li>
+        <li data-id="nursing" name="allocationOptions">
+            <input type="radio" id="mss" value="MSS" name="wardAllocation" >
+            <label for="mss">Medical Short Stay</label>
+            <div class="check"></div>
+        </li>
+    </ul>
+</div>
+
+<script type="text/javascript">
+    // DATA VALIDATION
+    const allocationInputsContainer = document.getElementById("user-allocations");
+    
+    function _validateAllocationSelection() {
+        const isAllocationSelected = document.querySelector("input[name='team']:checked") !== null ||
+                                     document.querySelector("input[name='wardAllocation']:checked") !== null;
+        setTabValidity(3, isAllocationSelected); 
+        
+
+        const activeTab = _getCurrentActiveTab();
+        if (activeTab) {
+            _handleButtonsState(activeTab.index);
+        }
+    }
+    if (allocationInputsContainer) {
+        allocationInputsContainer.addEventListener('change', _validateAllocationSelection);
+        _validateAllocationSelection();
+    }
+</script>

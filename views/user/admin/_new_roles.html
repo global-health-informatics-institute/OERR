@@ -2,26 +2,14 @@
     <!--TODO: move user roles to configurable -->
     <div class="title-div">User Role</div>
     <ul>
-        <li>
-            <input type="radio" id="clinicalOfficer" value="Clinical Officer" name="role"  onchange="filterDesignations('doc')">
-            <label for="clinicalOfficer">Clinical Officer</label>
-            <div class="check"></div>
-        </li>
-        <li>
-            <input type="radio" id="doctor" value="Doctor" name="role"  onchange="filterDesignations('doc')">
-            <label for="doctor">Doctor</label>
-            <div class="check"></div>
-        </li>
-        <li>
-            <input type="radio" id="nurse" value="Nurse" name="role" onchange="filterDesignations('nurse')">
-            <label for="nurse">Nurse</label>
-            <div class="check"></div>
-        </li>
-        <li>
-            <input type="radio" id="student" value="Student" name="role" onchange="filterDesignations('student')">
-            <label for="student">Student</label>
-            <div class="check"></div>
-        </li>
+        {% for role_dict in user_roles.roles %}
+            {% set role_name = role_dict.keys() | list | first %}
+            <li>
+                <input type="radio" id="{{ role_name | replace(' ', '_') }}" value="{{ role_name }}" name="role" onchange="SetParentRole()">
+                <label for="{{ role_name | replace(' ', '_') }}">{{ role_name }}</label>
+                <div class="check"></div>
+            </li>
+        {% endfor %}
     </ul>
 </div>
 
@@ -42,6 +30,25 @@
     if (roleInputsContainer) {
         roleInputsContainer.addEventListener('change', _validateRoleSelection);
         _validateRoleSelection();
+    }
+
+    // set parent role
+    function _map_designations_to_role(role) {
+        // select all li elements with data-id attribute == role
+        const designationOptions = document.querySelectorAll("li[data-id='" + role + "']");
+        const allDesignationOptions = document.getElementsByName("designationOptions");
+        allDesignationOptions.forEach(option => {
+            option.style.display = "none";
+        });
+        designationOptions.forEach(option => {
+            option.style.display = "block";
+        });
+    }
+
+    function SetParentRole() {
+        const selectedRole = document.querySelector("input[name='role']:checked").id;
+        console.log("Selected role: " + selectedRole);
+        _map_designations_to_role(selectedRole);
     }
 
 </script>

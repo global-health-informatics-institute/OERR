@@ -2,61 +2,17 @@
 <div class="tab" id="user-designations">
     <div class="title-div">User Designation</div>
     <ul>
-        <li data-id="doc" name="designationOptions">
-            <input type="radio" id="co" value="Clinical Officer" name="designation"  onchange="filterAllocation('medical')">
-            <label for="co">Clinical Officer</label>
-            <div class="check"></div>
-        </li>
-        <li data-id="doc" name="designationOptions">
-            <input type="radio" id="consultant" value="Consultant" name="designation"  onchange="filterAllocation('medical')">
-            <label for="consultant">Consultant</label>
-            <div class="check"></div>
-        </li>
-        <li data-id="student" name="designationOptions">
-            <input type="radio" id="clinicalStudent" value="Student Clinical Officer" name="designation"  onchange="filterAllocation('medical')">
-            <label for="clinicalStudent">Clinical Officer Student</label>
-            <div class="check"></div>
-        </li>
-        <li data-id="doc" name="designationOptions">
-            <input type="radio" id="intern" value="Intern" name="designation" onchange="filterAllocation('medical')">
-            <label for="intern">Intern</label>
-            <div class="check"></div>
-        </li>
-        <li data-id="nurse" name="designationOptions">
-            <input type="radio" id="matron" value="Matron" name="designation" onchange="filterAllocation('nursing')">
-            <label for="matron">Matron</label>
-            <div class="check"></div>
-        </li>
-        <li data-id="nurse" name="designationOptions">
-            <input type="radio" id="nurseRole" value="Nurse" name="designation" onchange="filterAllocation('nursing')">
-            <label for="nurseRole">Nurse</label>
-            <div class="check"></div>
-        </li>
-        <li data-id="doc" name="designationOptions">
-            <input type="radio" id="registrar" value="Registrar" name="designation" onchange="filterAllocation('medical')">
-            <label for="registrar">Registrar</label>
-            <div class="check"></div>
-        </li>
-        <li data-id="nurse" name="designationOptions">
-            <input type="radio" id="nurse-ic" value="Nurse In-Charge" name="designation" onchange="filterAllocation('nursing')">
-            <label for="nurse-ic">Nurse in-charge</label>
-            <div class="check"></div>
-        </li>
-        <li data-id="student" name="designationOptions">
-            <input type="radio" id="nurse-student" value="Nursing Student" name="designation" onchange="filterAllocation('nursing')">
-            <label for="nurse-student">Nursing Student</label>
-            <div class="check"></div>
-        </li>
-        <li data-id="student" name="designationOptions">
-            <input type="radio" id="mbbs-student" value="Medical Student" name="designation" onchange="filterAllocation('medical')">
-            <label for="mbbs-student">Medical Student</label>
-            <div class="check"></div>
-        </li>
-        <li data-id="doc" name="designationOptions">
-            <input type="radio" id="visitingDoc" value="Visiting Doctor" name="designation" onchange="filterAllocation('medical')">
-            <label for="visitingDoc">Visiting Doctor</label>
-            <div class="check"></div>
-        </li>
+        {% for role_dict in user_roles.roles %}
+            {% set role_name = role_dict.keys() | list | first %}
+            {% set designations = role_dict[role_name].designations %}
+            {% for designation in designations %}
+                <li data-id="{{ role_name | replace(' ', '_') }}" name="designationOptions">
+                    <input type="radio" id="{{role_name | replace(' ', '_')}}_{{ designation | replace(' ', '_') }}" value="{{ designation }}" name="designation">
+                    <label for="{{role_name | replace(' ', '_')}}_{{ designation | replace(' ', '_') }}">{{ designation }}</label>
+                    <div class="check"></div>
+                </li>
+            {% endfor %}
+        {% endfor %}
     </ul>
 </div>
 

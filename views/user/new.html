@@ -79,7 +79,6 @@
 
 <script type="text/javascript">
 // NAVIGATION
-    /* Tabs model: validity_check === true means the tab is valid (Next enabled) */
     let allTabs = [
         { index: 0, id: "user-details", validity_check: false, is_active: false },
         { index: 1, id: "user-roles", validity_check: false, is_active: false },
@@ -94,7 +93,6 @@
         allTabs[defaultTabIndex].is_active = true;
     }
 
-    /* Helper: return the active tab object (or null) */
     function _getCurrentActiveTab() {
         return allTabs.find(tab => tab.is_active) || null;
     }

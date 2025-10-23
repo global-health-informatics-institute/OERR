@@ -46,6 +46,8 @@
     }
 
     function SetParentRole() {
+        setTabValidity(2, false);
+        _handleButtonsState(2);
         const selectedRole = document.querySelector("input[name='role']:checked").id;
         console.log("Selected role: " + selectedRole);
         _map_designations_to_role(selectedRole);

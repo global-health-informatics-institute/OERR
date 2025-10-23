@@ -1,21 +1,58 @@
 <!-- TODO: move user allocations to configurable -->
 <div class="tab" id="user-allocations">
-    <h2>Allocation</h2>
+    <div class="title-div">Allocation</div>
     <ul>
-        {% for team in teams %}
-            <li data-id="{{ team | replace(' ', '_')}}" name="allocationOptions">
-                <input type="radio" id="{{ team | replace(' ', '_') }}" value="{{ team }}" name="wardAllocation" >
-                <label for="{{ team | replace(' ', '_') }}">{{ team }}</label>
-                <div class="check"></div>
-            </li>
-        {% endfor %}
-        {% for unit in units %}
-            <li data-id="{{ unit | replace(' ', '_')}}" name="allocationOptions">
-                <input type="radio" id="{{ unit | replace(' ', '_') }}" value="{{ unit }}" name="wardAllocation" >
-                <label for="{{ unit | replace(' ', '_') }}">{{ unit }}</label>
-                <div class="check"></div>
-            </li>
-        {% endfor %}
+        <div class="subtitle-div">
+            Teams
+        </div>
+        {% if teams %}
+            {% for team in teams %}
+                <li data-id="{{ team | replace(' ', '_')}}" name="allocationOptions">
+                    <input type="radio" id="{{ team | replace(' ', '_') }}" value="{{ team }}" name="team" >
+                    <label for="{{ team | replace(' ', '_') }}">{{ team }}</label>
+                    <div class="check"></div>
+                </li>
+            {% endfor %}
+        {% else %}
+            <div class="notifier">
+                No teams available for this department
+            </div>
+            <input type="text" name="team" value="{{None}}"hidden>
+        {% endif %}
+
+        <hr>
+
+        <div class="subtitle-div">
+            Units
+        </div>
+
+        {% if units %}
+            {% for unit in units %}
+                <li data-id="{{ unit | replace(' ', '_')}}" name="allocationOptions">
+                    <input type="radio" id="{{ unit | replace(' ', '_') }}" value="{{ unit }}" name="unit" >
+                    <label for="{{ unit | replace(' ', '_') }}">{{ unit }}</label>
+                    <div class="check"></div>
+                </li>
+            {% endfor %}
+        {% else %}
+            <div class="notifier">
+                No units available for this department
+            </div>
+            <input type="text" name="unit" value="{{None}}" hidden>
+        {% endif %}
+
+
+        {% if department %}
+            <input type="text" name="department" value="{{ department }}" hidden>
+        {% else %}
+            <input type="text" name="department" value="{{None}}" hidden>
+        {% endif %}
+
+        {% if ward %}
+            <input type="text" name="ward" value="{{ ward }}" hidden>
+        {% else %}
+            <input type="text" name="ward" value="{{None}}" hidden>
+        {% endif %}
     </ul>
 </div>
 
@@ -24,9 +61,8 @@
     const allocationInputsContainer = document.getElementById("user-allocations");
     
     function _validateAllocationSelection() {
-        const isAllocationSelected = document.querySelector("input[name='wardAllocation']:checked") !== null;
-        setTabValidity(3, isAllocationSelected); 
-        
+        const isAllocationSelected = document.querySelector("input[name='ward']:checked") !== null || document.querySelector("input[name='team']:checked") !== null;
+        setTabValidity(3, isAllocationSelected);
 
         const activeTab = _getCurrentActiveTab();
         if (activeTab) {

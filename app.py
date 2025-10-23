@@ -311,8 +311,6 @@ def login():
         elif user.status == "Deactivated":
             error = "Your account has been deactivated. Please contact the system administrator."
         else:
-            print("PASSWORD:", request.form['password'])
-            print("SAVEd PASSWORD:", user.password_hash)
             if not check_password_hash(user.password_hash, request.form['password']):
                 # print("Password check failed")  # Debugging
                 error = "Wrong password. Please try again."
@@ -373,7 +371,6 @@ def create_user():
 
     user = User.get(request.form['username'])
     if user is None:
-        print("FORM DATA",request.form)
         provider = User(
             username = request.form['username'],
             name = request.form['name'],
@@ -386,7 +383,6 @@ def create_user():
             unit = request.form['unit'],
             ward = request.form['ward']
         )
-        print("PROVIDER",provider)
         provider.save()
         flash("user added successfully", 'success')
     else:

@@ -3,8 +3,21 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 
 class User:
-    def __init__(self, username, name, role, designation, password="", status="Active", dept="Medical",
-                 ward=None, team=None, password_hash="", revision=""):
+    def __init__(
+            self,
+            username,
+            name,
+            role,
+            designation,
+            password="",
+            status="Active",
+            department=None,
+            ward=None,
+            team=None,
+            unit=None,
+            password_hash="",
+            revision=""
+        ):
         self.database = DataAccess("users").db
         self.username = username
         self.name = name
@@ -12,20 +25,30 @@ class User:
         self.designation = designation
         self.password = password
         self.status = status
+        self.department = department
         self.ward = ward
-        self.department = dept
         self.team = team
-        self.rev = revision
+        self.unit = unit
         self.password_hash = password_hash
+        self.rev = revision
 
     @staticmethod
     def get(username):
         user = DataAccess("users").db.get(username)
         if user is not None:
-            user = User(user.get('_id'), user.get('name', "Unknown"), user.get('role'),
-                        user.get('designation', 'Unassigned'), "", user.get('status', "Active"),
-                        user.get('department', "Medical"), user.get('ward', ""), user.get('team', "Unassigned"),
-                        user.get("password_hash"), user.get("_rev"))
+            user = User(
+                user.get('_id'),
+                user.get('name', "Unknown"),
+                user.get('role'),
+                user.get('designation', 'Unassigned'),
+                "",
+                user.get('status', "Active"),
+                user.get('department', "Medical"),
+                user.get('ward', "unassigned"),
+                user.get('team', "Unassigned"),
+                user.get('units', "unassigned"),
+                user.get("password_hash"),
+                    )
         return user
 
     @staticmethod
@@ -86,6 +109,7 @@ class User:
                 user_data.get('department', "Medical"),
                 user_data.get('ward', ""),
                 user_data.get('team', "Unassigned"),
+                user_data.get('units', "unassigned"),
                 user_data.get("password_hash"),
                 user_data.get("_rev")
             )

@@ -16,7 +16,7 @@ class User:
             team=None,
             unit=None,
             password_hash="",
-            revision=""
+            rev=""
         ):
         self.database = DataAccess("users").db
         self.username = username
@@ -30,7 +30,7 @@ class User:
         self.team = team
         self.unit = unit
         self.password_hash = password_hash
-        self.rev = revision
+        self.rev = rev
 
     @staticmethod
     def get(username):
@@ -48,7 +48,8 @@ class User:
                 user.get('team', "Unassigned"),
                 user.get('units', "unassigned"),
                 user.get("password_hash"),
-                    )
+                user.get("_rev")
+                )
         return user
 
     @staticmethod

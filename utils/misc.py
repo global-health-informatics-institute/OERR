@@ -138,8 +138,8 @@ def update_patient(patient_id):
     else:
         f"Failed to retrieve documents: {response.status_code} - {response.text}"
 
-def get_teams_and_units(all_departments, ward_selected):
+def get_teams_units_department_ward(all_departments, ward_selected):
         for department in all_departments["departments"]:
             if ward_selected in department["wards"]:
-                return department["teams"], department["units"]
+                return department["teams"], department["units"], department["name"], ward_selected
         return None, None

@@ -31,7 +31,8 @@ app.secret_key = os.urandom(25)
 global db
 global remote_db
 settings = misc.initialize_settings()
-remote_settings =misc.initialize_remote_settings()
+app.config['user_roles'] = misc.initialize_user_roles()
+app.config['departments'] = misc.initialize_departments()
 
 # optional configuration when running on rpi
 if settings["using_rpi"] == "True":
@@ -361,7 +362,8 @@ def login():
         elif user.status == "Deactivated":
             error = "Your account has been deactivated. Please contact the system administrator."
         else:
-            # print("User found:", user)  # Debugging
+            print("PASSWORD:", request.form['password'])
+            print("SAVEd PASSWORD:", user.password_hash)
             if not check_password_hash(user.password_hash, request.form['password']):
                 # print("Password check failed")  # Debugging
                 error = "Wrong password. Please try again."
@@ -402,27 +404,57 @@ def users():
     with open("config/department.config", "r") as f:
         config = json.load(f)
     current_users = User.all()
-    return render_template("user/index.html", requires_keyboard=True, users=current_users, departments=config["departments"]) 
+
+    qualifying_teams, qualifying_units, department, ward = misc.get_teams_units_department_ward(app.config['departments'], session["location"])
+
+    return render_template(
+        "user/index.html",
+        requires_keyboard=True,
+        users=current_users,
+        user_roles=app.config['user_roles'],
+        teams=qualifying_teams,
+        units=qualifying_units,
+        department=department,
+        ward=ward
+    )
 
 
 @app.route("/user/create", methods=["POST"])
 def create_user():
+
     user = User.get(request.form['username'])
     if user is None:
-        provider = User(request.form['username'], request.form["name"], request.form['role'],
-                        request.form['designation'], request.form["password"], "Active")
-
-        if request.form['designation'] in ['Consultant', 'Intern', 'Registrar', 'Medical Student',
-                                           'Student Clinical Officer', "Clinical Officer", "Visiting Doctor"]:
-            provider.team = request.form.get("team")
-        else:
-            provider.ward = request.form.get("wardAllocation")
+        print("FORM DATA",request.form)
+        provider = User(
+            username = request.form['username'],
+            name = request.form['name'],
+            role = request.form['role'],
+            designation = request.form['designation'],
+            password = request.form['password'],
+            status = "Active",
+            department = request.form['department'],
+            team = request.form['team'],
+            unit = request.form['unit'],
+            ward = request.form['ward']
+        )
+        print("PROVIDER",provider)
         provider.save()
         flash("user added successfully", 'success')
     else:
         current_users = User.all()
         flash("Username already exists", 'error')
-        return render_template("user/index.html", requires_keyboard=True, users=current_users)
+        qualifying_teams, qualifying_units, department, ward= misc.get_teams_units_department_ward(app.config['departments'], session["location"])
+        return render_template(
+            "user/index.html",
+            requires_keyboard=True,
+            users=current_users,
+            user_roles=app.config['user_roles'],
+            teams=qualifying_teams,
+            units=qualifying_units,
+            department=department,
+            ward=ward
+        )
+    flash("New user created", "success")
     return redirect(url_for("users"))
 
 

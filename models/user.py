@@ -37,19 +37,18 @@ class User:
         user = DataAccess("users").db.get(username)
         if user is not None:
             user = User(
-                user.get('_id'),
-                user.get('name', "Unknown"),
-                user.get('role'),
-                user.get('designation', 'Unassigned'),
-                "",
-                user.get('status', "Active"),
-                user.get('department', "Medical"),
-                user.get('ward', "unassigned"),
-                user.get('team', "Unassigned"),
-                user.get('units', "unassigned"),
-                user.get("password_hash"),
-                user.get("_rev")
-                )
+                username=user.get('_id'),
+                name=user.get('name', "Unknown"),
+                role=user.get('role'),
+                designation=user.get('designation', 'Unassigned'),
+                status=user.get('status', "Active"),
+                department=user.get('department', "Medical"),
+                ward=user.get('ward', "unassigned"),
+                team=user.get('team', "Unassigned"),
+                units=user.get('units', "unassigned"),
+                password_hash=user.get("password_hash"),
+                rev=user.get("_rev")
+            )
         return user
 
     @staticmethod
@@ -102,17 +101,17 @@ class User:
         user_data = DataAccess("users").db.get(username)
         if user_data is not None:
             user = User(
-                user_data.get('_id'),
-                user_data.get('name', "Unknown"),
-                user_data.get('role'),
-                user_data.get('designation', 'Unassigned'),
-                user_data.get('status', "Active"),
-                user_data.get('department', "Medical"),
-                user_data.get('ward', ""),
-                user_data.get('team', "Unassigned"),
-                user_data.get('units', "unassigned"),
-                user_data.get("password_hash"),
-                user_data.get("_rev")
+                username=user_data.get('_id'),
+                name=user_data.get('name', "Unknown"),
+                role=user_data.get('role'),
+                designation=user_data.get('designation', 'Unassigned'),
+                status=user_data.get('status', "Active"),
+                department=user_data.get('department', "Medical"),
+                ward=user_data.get('ward', ""),
+                team=user_data.get('team', "Unassigned"),
+                units=user_data.get('units', "unassigned"),
+                password_hash=user_data.get("password_hash"),
+                rev=user_data.get("_rev")
             )
             return user
         return None

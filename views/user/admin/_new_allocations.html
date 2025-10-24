@@ -61,7 +61,7 @@
     const allocationInputsContainer = document.getElementById("user-allocations");
     
     function _validateAllocationSelection() {
-        const isAllocationSelected = document.querySelector("input[name='ward']:checked") !== null || document.querySelector("input[name='team']:checked") !== null;
+        const isAllocationSelected = document.querySelector("input[name='unit']:checked") !== null || document.querySelector("input[name='team']:checked") !== null;
         setTabValidity(3, isAllocationSelected);
 
         const activeTab = _getCurrentActiveTab();

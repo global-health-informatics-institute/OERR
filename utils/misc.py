@@ -141,5 +141,9 @@ def update_patient(patient_id):
 def get_teams_units_department_ward(all_departments, ward_selected):
         for department in all_departments["departments"]:
             if ward_selected in department["wards"]:
+                if not department.get("teams"):
+                    department.get["teams"] == None
+                if not department.get("units"):
+                    department["units"] == None
                 return department["teams"], department["units"], department["name"], ward_selected
-        return None, None
+        return None, None, None, None

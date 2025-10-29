@@ -705,6 +705,7 @@ def reprint_barcode(test_id):
     else:
         conv_gender = GENDER_COV_FEMALE
 
+
     for test in tests:
         print("Point 6")
         if test["type"] == "test":

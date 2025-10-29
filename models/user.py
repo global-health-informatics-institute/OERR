@@ -43,9 +43,9 @@ class User:
                 designation=user.get('designation', 'Unassigned'),
                 status=user.get('status', "Active"),
                 department=user.get('department', "Medical"),
-                ward=user.get('ward', "unassigned"),
-                team=user.get('team', "Unassigned"),
-                units=user.get('units', "unassigned"),
+                ward=user.get('ward', ""),
+                team=user.get('team', ""),
+                unit=user.get('unit', ""),
                 password_hash=user.get("password_hash"),
                 rev=user.get("_rev")
             )
@@ -75,7 +75,7 @@ class User:
         return DataAccess("users").db.find({"selector": {"role": "Doctor", "status": "Active"}, "limit": 5000})
 
     def save(self):
-        user = self.__repr__()
+        user = self.to_dict()
         if self.rev == "":
             user.pop("_rev")
         if not self.password == "":
@@ -86,14 +86,30 @@ class User:
 
     def is_active(self):
         return False if self.status == "Inactive" else True
+    
+    def to_dict(self):
+        return {
+            "_id": self.username,
+            "username": self.username,
+            "name": self.name,
+            "role": self.role,
+            "designation": self.designation,
+            "status": self.status,
+            "department": self.department,
+            "ward": self.ward,
+            "team": self.team,
+            "unit": self.unit,
+            "type": "user",
+            "_rev": self.rev
+        }
+
 
     def __str__(self):
-        return 'User(username: ' + self.username + ', name: ' + self.name + ', role: ' + self.role + ', designation: ' + self.designation + ', status: ' + self.status + ', department: ' + self.department + ', ward: ' + self.ward + ')'
+        return f"User(username: {self.username}, name: {self.name}, role: {self.role}, designation: {self.designation}, status: {self.status}, department: {self.department}, ward: {self.ward}, team: {self.team}, unit: {self.unit})"
 
     def __repr__(self):
-        return {"_id": self.username, "name": self.name, "role": self.role, 'designation': self.designation,
-                'status': self.status, 'department': self.department, 'team': self.team, 'ward': self.ward,
-                'type': "user", "_rev": self.rev}
+        """String representation for logging and debugging purposes."""
+        return f"User(username: {self.username}, name: {self.name}, role: {self.role}, designation: {self.designation}, status: {self.status}, department: {self.department}, ward: {self.ward}, team: {self.team}, unit: {self.unit})"
 
  # Define get_user_by_id 
     @staticmethod
@@ -104,12 +120,12 @@ class User:
                 username=user_data.get('_id'),
                 name=user_data.get('name', "Unknown"),
                 role=user_data.get('role'),
-                designation=user_data.get('designation', 'Unassigned'),
+                designation=user_data.get('designation', ""),
                 status=user_data.get('status', "Active"),
-                department=user_data.get('department', "Medical"),
+                department=user_data.get('department', ""),
                 ward=user_data.get('ward', ""),
-                team=user_data.get('team', "Unassigned"),
-                units=user_data.get('units', "unassigned"),
+                team=user_data.get('team', ""),
+                unit=user_data.get('unit', ""),
                 password_hash=user_data.get("password_hash"),
                 rev=user_data.get("_rev")
             )

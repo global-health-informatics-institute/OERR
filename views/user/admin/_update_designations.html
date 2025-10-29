@@ -1,0 +1,28 @@
+<div class="tab" id="edit-user-designations">
+    <div class="title-div">User Designation</div>
+    <ul>
+        {% for role_dict in user_roles.roles %}
+            {% set role_name = role_dict.keys() | list | first %}
+            {% set designations = role_dict[role_name].designations %}
+            {% for designation in designations %}
+                {% if user.designation == designation and user.role == role_name %}
+                    <li data-id="edit_{{ role_name | replace(' ', '_') }}" name="designationOptions">
+                        <input type="radio" id="edit_{{role_name | replace(' ', '_')}}_{{ designation | replace(' ', '_') }}" value="{{ designation }}" name="designation" checked>
+                        <label for="edit_{{role_name | replace(' ', '_')}}_{{ designation | replace(' ', '_') }}">{{ designation }}</label>
+                        <div class="check"></div>
+                    </li>
+                {% else %}
+                    <li data-id="edit_{{ role_name | replace(' ', '_') }}" name="designationOptions">
+                        <input type="radio" id="edit_{{role_name | replace(' ', '_')}}_{{ designation | replace(' ', '_') }}" value="{{ designation }}" name="designation">
+                        <label for="edit_{{role_name | replace(' ', '_')}}_{{ designation | replace(' ', '_') }}">{{ designation }}</label>
+                        <div class="check"></div>
+                    </li>
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+    </ul>
+</div>
+
+
+<script type="text/javascript">
+</script>

@@ -1,0 +1,63 @@
+<div class="tab" id="edit-user-roles">
+    <div class="title-div">User Role</div>
+    <ul>
+        {% for role_dict in user_roles.roles %}
+            {% set role_name = role_dict.keys() | list | first %}
+            {% if user.role == role_name %}
+                <li>
+                    <input type="radio" id="edit_{{ role_name | replace(' ', '_') }}" value="{{ role_name }}" name="role" onchange="editSetParentRole()" checked>
+                    <label for="edit_{{ role_name | replace(' ', '_') }}">{{ role_name }}</label>
+                    <div class="check"></div>
+                </li>
+            {% else %}
+                <li>
+                    <input type="radio" id="edit_{{ role_name | replace(' ', '_') }}" value="{{ role_name }}" name="role" onchange="editSetParentRole()">
+                    <label for="edit_{{ role_name | replace(' ', '_') }}">{{ role_name }}</label>
+                    <div class="check"></div>
+                </li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+</div>
+
+<script type="text/javascript">
+    function _mapEditDesignationsToRole(role) {
+        const designationOptions = document.querySelectorAll("li[data-id='" + role + "']");
+        const allDesignationOptions = document.getElementsByName("designationOptions");
+
+        Array.from(allDesignationOptions).forEach(option => {
+            option.style.display = "none";
+        });
+
+        designationOptions.forEach(option => {
+            option.style.display = "block";
+        });
+    }
+
+    function _uncheckAllDesignations() {
+        const allDesignationOptions = document.getElementsByName("designation");
+        allDesignationOptions.forEach(option => {
+            option.checked = false;
+        });
+    }
+
+    function _checkFirstDesignationForRole(role){
+        const designationOptions = document.querySelectorAll("li[data-id='" + role + "'] input[name='designation']");
+        if (designationOptions.length > 0) {
+            designationOptions[0].checked = true;
+        }
+    }
+
+    function editSetParentRole() {
+        const selectedRole = document.querySelector("input[name='role']:checked").id;
+        console.log("Selected role: " + selectedRole);
+        _uncheckAllDesignations();
+        _mapEditDesignationsToRole(selectedRole);
+        _checkFirstDesignationForRole(selectedRole);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const selectedRole = document.querySelector("input[name='role']:checked").id;
+        _mapEditDesignationsToRole(selectedRole);
+    });
+</script>

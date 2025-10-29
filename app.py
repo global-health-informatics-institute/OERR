@@ -402,14 +402,28 @@ def edit_user(username=None):
 
         if request.method == 'POST':
                 user.name = request.form['name']
-                user.username = request.form['username']
+                user.username = user.username
                 user.role = request.form['role']
                 user.designation = request.form['designation']
+                user.team = (request.form['team'] if request.form['team'] != 'None' else None)
+                user.unit = (request.form['unit'] if request.form['unit'] != 'None' else None)
+                user.department = (request.form['department'] or user.department)
+                user.ward = ((request.form['ward'] if request.form['ward'] != 'None' else None) or user.ward)
                 user.save()
                 flash("user updated successfully")
                 return redirect(url_for("users"))
         else:
-            return render_template("user/edit_user.html", requires_keyboard=True, user=user)
+            qualifying_teams, qualifying_units, department, ward= misc.get_teams_units_department_ward(app.config['departments'], (user.ward or session["location"]))
+            return render_template(
+                "user/edit_user.html",
+                requires_keyboard=True,
+                user=user,
+                user_roles=app.config['user_roles'],
+                teams=qualifying_teams,
+                units=qualifying_units,
+                department=department,
+                ward=(user.ward or ward)
+            )
 
 
 

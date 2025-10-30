@@ -52,25 +52,15 @@ def initialize_settings():
         pass
     return settings
 
-def initialize_user_roles():
-    user_roles = {}
+
+def initialize_remote_settings():
+    settings = {}
     try:
-        with open("config/user_roles.config") as json_file:
-            user_roles = json.load(json_file)
+        with open("config/replications.config") as json_file:
+            settings = json.load(json_file)
     finally:
         pass
-    return user_roles
-
-
-def initialize_departments():
-    departments = {}
-    try:
-        with open("config/department.config") as json_file:
-            departments = json.load(json_file)
-    finally:
-        pass
-    return departments
-
+    return settings
 
 def current_facility():
     try:
@@ -137,13 +127,3 @@ def update_patient(patient_id):
                     f"Failed to update document {doc_id}: {update_response.status_code} - {update_response.text}"
     else:
         f"Failed to retrieve documents: {response.status_code} - {response.text}"
-
-def get_teams_units_department_ward(all_departments, ward_selected):
-        for department in all_departments["departments"]:
-            if ward_selected in department["wards"]:
-                if not department.get("teams"):
-                    department.get["teams"] == None
-                if not department.get("units"):
-                    department["units"] == None
-                return department["teams"], department["units"], department["name"], ward_selected
-        return None, None, None, None

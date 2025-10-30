@@ -29,9 +29,9 @@ app.secret_key = os.urandom(25)
 
 # Main application configuration
 global db
+global remote_db
 settings = misc.initialize_settings()
-app.config['user_roles'] = misc.initialize_user_roles()
-app.config['departments'] = misc.initialize_departments()
+remote_settings =misc.initialize_remote_settings()
 
 # optional configuration when running on rpi
 if settings["using_rpi"] == "True":
@@ -182,7 +182,10 @@ def patient(patient_id):
     draw_sample = False
     pending_sample = []
     records = []
+    details_of_test = {}
     grouped_samples = {}
+    remote_grouped_samples = {}
+    
     if request.args.get("sample_draw") == "True":
         draw_sample = True
 
@@ -230,6 +233,53 @@ def patient(patient_id):
         else:
             samples[0]["test_id"] = str(samples[0]["test_id"])  # Single test case
             pending_sample.append(samples[0])
+
+    # ----------------------------------- Start remote database processing
+
+    # get remote tests for patient
+    if (remote_db is not None ):
+        remote_test_query_result = remote_db.find({"selector": {"patient_id": patient_id}, "limit": 100})
+        for test in remote_test_query_result:
+            record = {"date_ordered": datetime.fromtimestamp(float(test["date_ordered"])).strftime('%d %b %Y %H:%S'),
+                    "id": test.get("_id"), "type": test.get("type"), "status": test.get("status"),
+                    "priority": test.get("Priority"), "date": float(test["date_ordered"]),
+                    "collection_id": test.get("collection_id", ""), "history": test.get("clinical_history"),
+                    "ordered_by": test.get("ordered_by"), "rejection_reason": test.get("rejection_reason"),
+                    "test_type": "test" if test.get("type") == "test" else "test panel"}
+
+            if test.get('panel_type') is not None:
+                record["test_name"] = test.get('panel_type')
+                record["panel_test_details"] = get_panel_details(test)
+                if test["status"] == "Ordered":
+                    pending_sample.append(get_pending_panel_details(test))
+            else:
+                detail = LaboratoryTestType.find_by_test_type(test.get('test_type'))
+                record["test_name"] = detail.test_name
+                record["measures"] = get_test_measures(test, detail)
+                if test["status"] == "Ordered":
+                    pending_details = get_pending_test_details(test, detail)
+                    group_key = (pending_details["department"], pending_details["container"])
+                    remote_grouped_samples.setdefault(group_key, []).append(pending_details)
+
+                elif test["status"] == "Analysis Complete" or test["status"] == "Reviewed":
+                    get_test_measures(test, detail)
+
+            records.append(record)
+
+        # Group and append remote samples
+        for group, remote_samples in remote_grouped_samples.items():
+            if len(remote_samples) > 1:
+                test_names = ", ".join([sample["test_name"] for sample in remote_samples])
+                remote_samples[0]["test_name"] = test_names
+                test_ids = "^".join([sample["test_id"] for sample in remote_samples])
+                remote_samples[0]["test_id"] = test_ids
+                pending_sample.append(remote_samples[0])
+            else:
+                remote_samples[0]["test_id"] = str(remote_samples[0]["test_id"]) 
+                pending_sample.append(remote_samples[0])
+
+    else:
+        misc.update_patient(patient_id)
 
 
     # Sort combined records (local + remote) by date in reverse order
@@ -308,9 +358,9 @@ def login():
         user = User.get(request.form['username'])
         if user is None:
             error = "Invalid username. Please try again."
-        elif user.status == "Deactivated":
-            error = "Your account has been deactivated. Please contact the system administrator."
+            # print("User not found.")
         else:
+            # print("User found:", user)  # Debugging
             if not check_password_hash(user.password_hash, request.form['password']):
                 # print("Password check failed")  # Debugging
                 error = "Wrong password. Please try again."
@@ -351,55 +401,27 @@ def users():
     with open("config/department.config", "r") as f:
         config = json.load(f)
     current_users = User.all()
-
-    qualifying_teams, qualifying_units, department, ward = misc.get_teams_units_department_ward(app.config['departments'], session["location"])
-
-    return render_template(
-        "user/index.html",
-        requires_keyboard=True,
-        users=current_users,
-        user_roles=app.config['user_roles'],
-        teams=qualifying_teams,
-        units=qualifying_units,
-        department=department,
-        ward=ward
-    )
+    return render_template("user/index.html", requires_keyboard=True, users=current_users, departments=config["departments"]) 
 
 
 @app.route("/user/create", methods=["POST"])
 def create_user():
-
     user = User.get(request.form['username'])
     if user is None:
-        provider = User(
-            username = request.form['username'],
-            name = request.form['name'],
-            role = request.form['role'],
-            designation = request.form['designation'],
-            password = request.form['password'],
-            status = "Active",
-            department = request.form['department'],
-            team = request.form['team'],
-            unit = request.form['unit'],
-            ward = request.form['ward']
-        )
+        provider = User(request.form['username'], request.form["name"], request.form['role'],
+                        request.form['designation'], request.form["password"], "Active")
+
+        if request.form['designation'] in ['Consultant', 'Intern', 'Registrar', 'Medical Student',
+                                           'Student Clinical Officer', "Clinical Officer", "Visiting Doctor"]:
+            provider.team = request.form.get("team")
+        else:
+            provider.ward = request.form.get("wardAllocation")
         provider.save()
         flash("user added successfully", 'success')
     else:
         current_users = User.all()
         flash("Username already exists", 'error')
-        qualifying_teams, qualifying_units, department, ward= misc.get_teams_units_department_ward(app.config['departments'], session["location"])
-        return render_template(
-            "user/index.html",
-            requires_keyboard=True,
-            users=current_users,
-            user_roles=app.config['user_roles'],
-            teams=qualifying_teams,
-            units=qualifying_units,
-            department=department,
-            ward=ward
-        )
-    flash("New user created", "success")
+        return render_template("user/index.html", requires_keyboard=True, users=current_users)
     return redirect(url_for("users"))
 
 
@@ -414,29 +436,19 @@ def edit_user(username=None):
     else:
 
         if request.method == 'POST':
-                user.name = request.form['name']
-                user.username = user.username
-                user.role = request.form['role']
-                user.designation = request.form['designation']
-                user.team = (request.form['team'] if request.form['team'] != 'None' else None)
-                user.unit = (request.form['unit'] if request.form['unit'] != 'None' else None)
-                user.department = (request.form['department'] or user.department)
-                user.ward = ((request.form['ward'] if request.form['ward'] != 'None' else None) or user.ward)
+                user.name = request.form.get('name')
+                user.username = request.form.get('username')
+                user.role = request.form.get('role')
+                user.designation = request.form.get('designation')
+                user.department = request.form.get('department')
+                user.team = request.form.get('team')  # Returns None if missing
+                user.ward = request.form.get('wardAllocation')  # Returns None if missing
+
                 user.save()
                 flash("user updated successfully")
                 return redirect(url_for("users"))
         else:
-            qualifying_teams, qualifying_units, department, ward= misc.get_teams_units_department_ward(app.config['departments'], (user.ward or session["location"]))
-            return render_template(
-                "user/edit_user.html",
-                requires_keyboard=True,
-                user=user,
-                user_roles=app.config['user_roles'],
-                teams=qualifying_teams,
-                units=qualifying_units,
-                department=department,
-                ward=(user.ward or ward)
-            )
+            return render_template("user/edit_user.html", requires_keyboard=True, user=user)
 
 
 
@@ -591,28 +603,55 @@ def collect_specimens(test_id):
         if test["type"] == "test":
             test_ids.append(test["test_type"])
             test_names.append(LaboratoryTestType.find_by_test_type(test["test_type"]).printable_name())
-            test_string = [var_patient["name"].replace(" ", "^"), var_patient["_id"], conv_gender,
-                           datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%s"),
-                           wards[tests[0]["ward"]], dr, tests[0]["clinical_history"], tests[0]["sample_type"],
-                           str(collected_at), '^'.join(test_ids), tests[0]["Priority"][0]]
+            test_string = [
+            sanitize_barcode_field(var_patient["name"]).replace(" ", "^"),
+            sanitize_barcode_field(var_patient["_id"]),
+            sanitize_barcode_field(conv_gender),
+            sanitize_barcode_field(datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%s")),
+            sanitize_barcode_field(wards[tests[0]["ward"]]),
+            sanitize_barcode_field(dr),
+            sanitize_barcode_field(tests[0]["clinical_history"]).lower(),
+            sanitize_barcode_field(tests[0]["sample_type"]),
+            sanitize_barcode_field(str(collected_at)),
+            sanitize_barcode_field('^'.join(test_ids)),
+            sanitize_barcode_field(tests[0]["Priority"][0])
+        ]
         else:
             panel = LaboratoryTestPanel.get(test["panel_type"])
             test_names.append(panel.short_name)
             if panel.orderable:
                 test_ids.append(panel.panel_id)
-                test_string = [var_patient["name"].replace(" ", "^"), var_patient["_id"], conv_gender,
-                               datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%s"),
-                               wards[tests[0]["ward"]], dr, tests[0]["clinical_history"], tests[0]["sample_type"],
-                               str(collected_at), '^'.join(test_ids), tests[0]["Priority"][0], "P"]
+                test_string = [
+            sanitize_barcode_field(var_patient["name"]).replace(" ", "^"),
+            sanitize_barcode_field(var_patient["_id"]),
+            sanitize_barcode_field(conv_gender),
+            sanitize_barcode_field(datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%s")),
+            sanitize_barcode_field(wards[tests[0]["ward"]]),
+            sanitize_barcode_field(dr),
+            sanitize_barcode_field(tests[0]["clinical_history"]).lower(),
+            sanitize_barcode_field(tests[0]["sample_type"]),
+            sanitize_barcode_field(str(collected_at)),
+            sanitize_barcode_field('^'.join(test_ids)),
+            sanitize_barcode_field(tests[0]["Priority"][0])
+        ]
             else:
                 for test_type in panel.tests:
                     test_id = LaboratoryTestType.get(test_type).test_type_id
                     test_ids.append(test_id)
 
-                test_string = [var_patient["name"].replace(" ", "^"), var_patient["_id"], conv_gender,
-                               datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%s"),
-                               wards[tests[0]["ward"]], dr, tests[0]["clinical_history"], tests[0]["sample_type"],
-                               str(collected_at), '^'.join(test_ids), tests[0]["Priority"][0]]
+                test_string = [
+            sanitize_barcode_field(var_patient["name"]).replace(" ", "^"),
+            sanitize_barcode_field(var_patient["_id"]),
+            sanitize_barcode_field(conv_gender),
+            sanitize_barcode_field(datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%s")),
+            sanitize_barcode_field(wards[tests[0]["ward"]]),
+            sanitize_barcode_field(dr),
+            sanitize_barcode_field(tests[0]["clinical_history"]).lower(),
+            sanitize_barcode_field(tests[0]["sample_type"]),
+            sanitize_barcode_field(str(collected_at)),
+            sanitize_barcode_field('^'.join(test_ids)),
+            sanitize_barcode_field(tests[0]["Priority"][0])
+        ]
         db.save(test)
 
     if len('~'.join(test_string)) > 86:
@@ -732,7 +771,18 @@ def reprint_barcode(test_id):
     label_file.write('A5,40,0,1,1,2,N,"%s (%s)"\n' %
                      (datetime.strptime(var_patient.get('dob'), "%d-%m-%Y").strftime("%d-%b-%Y"),
                       var_patient["gender"][0]))
-    label_file.write('b5,70,P,386,80,"%s$"\n' % "~".join(test_string))
+    
+    # label_file.write('b5,70,P,386,80,"%s$"\n' % "~".join(test_string))
+
+    # Combine test string into one barcode string
+    raw_barcode = "~".join(test_string)
+
+    # Sanitize it to remove invalid characters (like . or @)
+    clean_barcode = sanitize_barcode_data(raw_barcode)
+
+    # Write sanitized barcode in label format
+    label_file.write(f'b5,70,P,386,80,"{clean_barcode}$"\n')
+
     label_file.write('A20,170,0,1,1,2,N,"%s"\n' % ",".join(test_names))
     label_file.write('A260,170,0,1,1,2,N,"%s" \n' % datetime.fromtimestamp(test.get("collected_at")).strftime("%d-%b %H:%M"))
     label_file.write("P1\n")
@@ -740,7 +790,6 @@ def reprint_barcode(test_id):
     #os.system('sudo sh ~/print.sh /tmp/test_order.lbl')
 
     return render_template("download.html", patient_id=var_patient["_id"])
-
 
 @app.route("/test/<test_id>/review_ajax")
 @app.route("/test/<test_id>/review")
@@ -916,11 +965,23 @@ def initialize_connection():
         db = couchConnection.create(settings["couch"]["database"])
 
 
+def initialize_remote_connection():
+    # Connect to a remote couchdb archive instance 
+    remote_couchConnection = Server("http://%s:%s@%s:%s/" %
+                             (remote_settings["target"]["user"], remote_settings["target"]["password"],
+                              remote_settings["target"]["host"], remote_settings["target"]["port"]))
+    global remote_db
+    # Connect to a database or Create a Database
+    try:
+        remote_db = remote_couchConnection[f"{remote_settings['target_base_db']['database']}_archive"]
+    except:
+        remote_db = None
 
 @app.before_request
 def check_authentication():
     if not re.search("asset", request.path):
         initialize_connection()
+        initialize_remote_connection()
 
         if request.path not in ["/login", "/logout", "/get_charge_state", "/low_voltage"]:
             if session.get("user") is None:

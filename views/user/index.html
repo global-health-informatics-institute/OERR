@@ -19,16 +19,455 @@
         <button id="searchButton" style="background-color: #0550a0; color: #fff; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">Search</button>
 
     </div>
+    
+    <h1 >User Management</h1>
+    <div style="width: 95%; margin-left:auto;margin-right:auto;height:85%; overflow: auto;text-align:left;">
+        <table class="myTable table hover">
+            <tbody>
+                <tr>
+                    <th>User</th>
+                    <th>Name</th>
+                    <th>Role</th>
+                    <th>Designation</th>
+                    <th>Team/Ward</th>
+                    <th>Action</th>
+                </tr>
+                {% for user in users %}
+                <tr>
+                        <td>{{user.get("_id")}}</td>
+                        <td>{{user.get("name")}}</td>
+                        <td>{{user.get("role")}}</td>
+                        <td>{{user.get("designation")}}</td>
+                        <!--If ward is None or empty, it will fall back to team, and if both ward and team are None, it will display "No allocation".-->
+                        <td>{{ user.get("ward") or user.get("team") or "No allocation" }}</td>
 
-    {% include 'user/admin/_view_users.html' %}
 
-    {% include 'user/new.html' %}
+                        
+                            <td>
+                              <button class="displayButton edit-button blue" onmousedown="window.location='/user/{{user.get('_id')}}/edit'">Edit</button>
+                             
+                            <!-- <button class="displayButton edit-button blue" onclick="showEditUserDialog()">Edit User</button> -->
+
+
+
+                                <!-- <a href="/user/{{ user.get('_id') }}/edit" class="btn btn-primary">Edit</a>
+         -->
+                            {% if user.get("status") == "Active" %}
+                                <button class="displayButton red" onmousedown="window.location='/user/{{user.get('_id')}}/deactivate'">Deactivate</button>
+                            {% else %}
+                                <button class="displayButton green" onmousedown="window.location='/user/{{user.get('_id')}}/activate'">Reactivate</button>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div id="userModal" class="modalDialog">
+        <div>
+            <div style="height: 89%; overflow-y: auto;overflow-x: hidden;">
+                <form id="regForm" method="post" action="/user/create" autocomplete="off">
+                    <div class="tab">
+                        <h2>User Details</h2>
+                        <h3>Full Name</h3>
+                        <input type="text" placeholder="Full name" name="name" minlength="6"  id="default" class="input" value="{{
+                      request.form.lname }}" required autocomplete="on" style="width: 90%; font-size : 18pt;border-radius:5px;height: 7vh;">
+                        <h3>Username</h3>
+                              <input type="text" placeholder="Username" minlength="6" name="username" id="input3" class="input" value="{{
+          request.form.username }}" required autocomplete="on" style="width: 90%; font-size : 18pt;border-radius:5px;height: 7vh;">
+          <h3>Password</h3>
+          <div style="position: relative;">
+              <input type="password" placeholder="Password" name="password" minlength="6" id="input4" class="input" value="{{ request.form.password }}" required style="width: 90%; font-size: 18pt; border-radius: 5px; height: 7vh;">
+              <span class="password-toggle" onclick="togglePasswordVisibility(this)">&#x1f441;</span>
+          </div>
+          <h3></h3>
+          <input type="password" placeholder="Confirm Password" name="confirm_password" minlength="6" id="input5" class="input" value="{{ request.form.confirm_password }}" required style="width: 90%; font-size: 18pt; border-radius: 5px; height: 7vh;" oninput="checkPasswordMatch()">
+          <span class="password-match-error" style="color: red;"></span>
+          
+
+       <div class="simple-keyboard" style="width: 99%; border: 1px solid silver;margin-top: 2vh;"></div>
+             </div>
+             <div class="tab">
+                <h2>User Role</h2>
+                {% set user_roles = {
+                    'doc': ['Doctor', 'Clinical Officer'],  
+                    'nurse': ['Nurse'],
+                    'student': ['Student']
+                } %}
+                <ul>
+                    {% for role, labels in user_roles.items() %}
+                        {% for label in labels %}
+                            <li>
+                                <input type="radio" 
+                                id="role_{{ role }}_{{ label | lower | replace(' ', '_') }}" 
+                                value="{{ label }}" 
+                                name="role" 
+                                autocomplete="off"
+                                onchange="filterDesignations('{{ role }}')">
+                         <label for="role_{{ role }}_{{ label | lower | replace(' ', '_') }}">{{ label }}</label>
+                         
+                                <div class="check"></div>
+                            </li>
+                        {% endfor %}
+                    {% endfor %}
+                </ul>
+            </div>
+            
+            <div class="tab">
+                <h2>User Designation</h2>
+                {% set user_designation = {
+                    'doc': ['Clinical Officer', 'Consultant', 'Intern', 'Registrar', 'Visiting Doctor'],
+                    'nurse': ['Matron', 'Nurse in charge', 'Nurse'],
+                    'student': ['Medical Student', 'Nursing Student', 'Clinical Officer Student']
+                } %}
+                <ul>
+                    {% for role, designations in user_designation.items() %}
+                        {% for designation in designations %}
+                            <li data-id="{{ role }}" name="designationOptions">
+                                <input type="radio" 
+       id="designation_{{ role }}_{{ designation | lower | replace(' ', '_') }}" 
+       value="{{ designation }}" 
+       name="designation" 
+       autocomplete="off"
+       required 
+       onchange="filterAllocation('{{ role }}')">
+<label for="designation_{{ role }}_{{ designation | lower | replace(' ', '_') }}">{{ designation }}</label>
+
+                                <div class="check"></div>
+                            </li>
+                        {% endfor %}
+                    {% endfor %}
+                </ul>
+            </div>
+            
+            <div class="tab">
+                <h2>Department</h2>
+                {% set user_department = ['Medical', 'Ethel Mutharika', 'Oncology', 'Surgery', 'Pediatrics'] %}
+                <ul>
+                    {% for department in user_department %}
+                        <li>
+                            <input type='radio' id='{{ department | lower | replace(" ", "_") }}' value='{{ department }}' name='department' autocomplete="off" onclick='showWards("{{ department }}")'>
+                            <label for='{{ department | lower | replace(" ", "_") }}'>{{ department }}</label>
+                            <div class='check'></div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            
+
+                    
+{% set designation_allocation = {
+    'Clinical Officer': 'teams',
+    'Consultant': 'teams',
+    'Intern': 'teams',
+    'Registrar': 'teams',
+    'Visiting Doctor': 'teams',
+    'Medical Student': 'teams',
+    'Clinical Officer Student': 'teams',
+    'Nursing Student': 'wards',
+    'Nurse': 'wards',
+    'Nurse in charge': 'wards',
+    'Matron': 'wards'
+} %}
+
+{% set departments_info = {
+    'Medical': {
+        'teams': [
+            {'value': 'OPD', 'label': 'OPD'},
+            {'value': 'Short Stay', 'label': 'Short Stay'},
+            {'value': 'Team A', 'label': 'Team A'},
+            {'value': 'Team B', 'label': 'Team B'},
+            {'value': 'Team C', 'label': 'Team C'},
+            {'value': 'Team D', 'label': 'Team D'}
+        ],
+        'wards': [
+            {'value': 'OPD2', 'label': 'OPD2'},
+            {'value': 'MSS', 'label': 'MSS'},
+            {'value': '4A', 'label': '4A'},
+            {'value': '4B', 'label': '4B'},
+            {'value': 'MHDU', 'label': 'MHDU'},
+            {'value': 'DIALYSIS UNIT', 'label': 'DIALYSIS UNIT'}
+        ]
+    },
+    'Surgery': {
+        'teams': [
+            {'value': 'Unit 1', 'label': 'Unit 1'},
+            {'value': 'Unit 2', 'label': 'Unit 2'},
+            {'value': 'PAEDS SURGERY', 'label': 'Paeds Surgery'},
+            {'value': 'PLASTIC SURGERY', 'label': 'Plastic Surgery'},
+            {'value': 'NEUROLOGY', 'label': 'Neurology'},
+            {'value': 'UROLOGY', 'label': 'Urology'},
+            {'value': 'ENT', 'label': 'ENT'}
+        ],
+        'wards': [
+            {'value': 'CASUALTY', 'label': 'Casualty'},
+            {'value': '1A', 'label': '1A'},
+            {'value': '1B', 'label': '1B'},
+            {'value': '2B', 'label': '2B'},
+            {'value': '3A', 'label': '3A'},
+            {'value': '3B', 'label': '3B'},
+            {'value': 'SHDU', 'label': 'SHDU'},
+            {'value': 'THEATRE', 'label': 'Theatre'}
+        ]
+    },
+    'Oncology': {
+        'teams': [
+        {'value': 'Team A', 'label': 'Team A'},
+        {'value': 'Team B', 'label': 'Team B'},
+        {'value': 'Team C', 'label': 'Team C'}
+        ],
+        'wards': [
+        {'value': 'ICU', 'label': 'ICU'},
+        {'value': 'OPD1', 'label': 'OPD1'},
+        {'value': 'EYE', 'label': 'EYE'},
+        {'value': 'DENTAL', 'label': 'DENTAL'}
+        ]
+    },
+    'Pediatrics': {
+        'teams': [
+        {'value': 'Pediatrics', 'label': 'Pediatrics'}
+        ],
+        'wards': [
+        {'value': 'UNDER 5', 'label': 'UNDER 5'},
+        {'value': 'CWA', 'label': 'CWA'},
+        {'value': 'CWB', 'label': 'CWB'},
+        {'value': 'CWC', 'label': 'CWC'},
+        {'value': 'CW HDU', 'label': 'CW HDU'}
+       ]
+    },
+    'Ethel Mutharika': {
+        'teams': [
+        {'value': 'Unit 1', 'label': 'Unit 1'},
+        {'value': 'Unit 2', 'label': 'Unit 2'},
+        {'value': 'Unit 3', 'label': 'Unit 3'},
+        {'value': 'Unit 4', 'label': 'Unit 4'}
+        ],
+        'wards': [
+        {'value': 'LABOUR', 'label': 'LABOUR'},
+        {'value': 'POSTNATAL WARD', 'label': 'POSTNATAL WARD'},
+        {'value': 'ANTENATAL WARD', 'label': 'ANTENATAL WARD'},
+        {'value': 'EM OPD', 'label': 'EM OPD'},
+        {'value': 'EM NURSERY', 'label': 'EM NURSERY'},
+        {'value': 'EMHDU', 'label': 'EMHDU'},
+        {'value': 'GYNAE', 'label': 'GYNAE'}
+       ]
+    }
+} %}
+
+                    <div class="tab">
+                        <h2>Allocation</h2>
+                        <div id="allocationContainer">
+                            <ul>
+
+                            </ul>
+                        </div>
+                    </div>
+                        
+                       
+                    
+
+                </form>
+            </div>
+           
+            <table style="width:100%;">
+                    <tbody><tr>
+                        <td>
+                            <a href="#close" title="Close"><button type="button" class="modalNVButton red">Cancel</button></a>
+                        </td>
+                        <td style="text-align: center;">
+                            <span class="step finish"></span>
+                            <span class="step finish"></span>
+                            <span class="step finish"></span>
+                            <span class="step finish finish"></span>
+                        </td>
+                        <td style="text-align: right">
+                            <button type="button" id="prevBtn" class="modalNVButton" onclick="nextPrev(-1)" style="display: inline;">Previous</button>
+                            <button type="button" id="nextBtn" class="modalNVButton green" onclick="nextPrev(1)">Submit</button>
+                        </td>
+                    </tr>
+                </tbody></table>
+
+         
+</div>
+</div>
+</div>
+
+ 
+            
+            <!-- <div style="height: 12%; margin-top: 1vh;border: 1px solid silver; padding:10px; border-radius: 0px 0px 5px 5px"> -->
+                <table style="width:100%;">
+                    <tr>
+                        <td>
+                            <a href="#close" title="Close" ><button type="button" class="modalNVButton red">Cancel</button></a>
+                        </td>
+                        <td style="text-align: center;">
+                            <span class="step"></span>
+                            <span class="step"></span>
+                            <span class="step"></span>
+                            <span class="step"></span>
+                        </td>
+                        <td style="text-align: right">
+                            <button type="button" id="prevBtn" class="modalNVButton" onclick="nextPrev(-1)">Previous</button>
+                            <button type="button" id="nextBtn" class="modalNVButton green" onclick="nextPrev(1)">Next</button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
 
     <script type="text/javascript">
+            
+       
+        /*let options = {
+            numberPerPage:8, //Cantidad de datos por pagina
+            goBar:false, //Barra donde puedes digitar el numero de la pagina al que quiere ir
+            pageCounter:true, //Contador de paginas, en cual estas, de cuantas paginas
+        };
+        paginate.init('.myTable',options);
+*/
         var currentTab = 0; // Current tab is set to be the first tab (0)
         function showNewUserDialog(){
             window.location='{{request.url.split("?")[0]}}#userModal'
             showTab(0); // Display the current tab
         }
+
+        
+        function filterDesignations(id) {
+            var options = document.getElementsByName("designationOptions");
+            for (var i = 0, length = options.length; i < length; i++) {
+                if (options[i].dataset.id != id) {
+                    options[i].style.display = "none";
+                } else {
+                    options[i].style.display = "block";
+                }
+            }
+        }
+
+        function filterAllocation(classification){
+            var options = document.getElementsByName("allocationOptions");
+            for (var i = 0, length = options.length; i < length; i++) {
+                if (options[i].dataset.id != classification) {
+                    options[i].style.display = "none";
+                } else {
+                    options[i].style.display = "block";
+                }
+            }
+        }
+        function togglePasswordVisibility(eyeIcon) {
+        const passwordInput = eyeIcon.previousElementSibling; 
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+        } else {
+            passwordInput.type = 'password';
+        }
+    }
+
+    function checkPasswordMatch() {
+        const passwordInput = document.querySelector('input[name="password"]');
+        const confirmPasswordInput = document.querySelector('input[name="confirm_password"]');
+        const passwordMatchError = document.querySelector('.password-match-error');
+
+        const password = passwordInput.value;
+        const confirmPassword = confirmPasswordInput.value;
+
+        if (password === confirmPassword) {
+            passwordMatchError.textContent = ''; 
+        } else {
+            passwordMatchError.textContent = 'Passwords do not match.';
+        }
+    }
+    document.addEventListener("DOMContentLoaded", function () {
+        const searchInput = document.getElementById("searchInput");
+        const tableRows = document.querySelectorAll(".myTable tbody tr");
+
+        searchInput.addEventListener("input", function () {
+            const searchTerm = searchInput.value.trim().toLowerCase();
+
+            tableRows.forEach(function (row) {
+                const usernameCell = row.querySelector("td:first-child");
+                if (usernameCell) {
+                    const username = usernameCell.textContent.toLowerCase();
+                    if (username.includes(searchTerm)) {
+                        row.style.display = "";
+                    } else {
+                        row.style.display = "none";
+                    }
+                }
+            });
+        });
+
+        // Clear the search input and show all rows when the input is empty
+        searchInput.addEventListener("input", function () {
+            const searchTerm = searchInput.value.trim().toLowerCase();
+            if (searchTerm === "") {
+                tableRows.forEach(function (row) {
+                    row.style.display = "";
+                });
+            }
+        });
+    });
+
+    //function to filter teams and wards
+    var departments = {{ departments | tojson | safe}};
+    const designationAllocation = {{ designation_allocation | tojson }};
+    const departmentsInfo = {{ departments_info | tojson }};
+
+    let selectedDesignation = null;
+    let selectedDepartment = null;
+
+    function filterAllocation(role) {
+        const selected = document.querySelector("input[name='designation']:checked");
+        if (selected) {
+            selectedDesignation = selected.value;
+            updateAllocations();
+        }
+    }
+
+    function showWards(department) {
+        selectedDepartment = department;
+        updateAllocations();
+    }
+
+    function updateAllocations() {
+        const allocationContainer = document.getElementById("allocationContainer");
+
+        if (!selectedDesignation || !selectedDepartment) {
+            allocationContainer.innerHTML = "<p>Please select both a designation and a department.</p>";
+            return;
+        }
+
+        const allocationType = designationAllocation[selectedDesignation];
+        const departmentData = departmentsInfo[selectedDepartment];
+
+        if (!departmentData || !departmentData[allocationType]) {
+            allocationContainer.innerHTML = `<p>No ${allocationType} available for ${selectedDepartment}.</p>`;
+            return;
+        }
+
+        const items = departmentData[allocationType];
+        const nameAttr = allocationType === 'teams' ? 'team' : 'wardAllocation';
+
+        const htmlList = items.map(item => {
+            const id = `${selectedDepartment.toLowerCase().replace(/ /g, '_')}_${item.value.toLowerCase().replace(/ /g, '_')}`;
+            return `
+                <li>
+                    <input type="radio" id="${id}" 
+                           value="${item.value}" 
+                           name="${nameAttr}" 
+                           autocomplete="off">
+                    <label for="${id}">${item.label}</label>
+                    <div class="check"></div>
+                </li>
+            `;
+        }).join('');
+
+        allocationContainer.innerHTML = `
+            <h3>${allocationType.charAt(0).toUpperCase() + allocationType.slice(1)} in ${selectedDepartment}</h3>
+            <ul>${htmlList}</ul>
+        `;
+    }
+
      </script>
 {% endblock %}

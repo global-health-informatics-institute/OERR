@@ -52,6 +52,15 @@ def initialize_settings():
         pass
     return settings
 
+def initialize_remote_settings():
+    settings = {}
+    try:
+        with open("config/replications.config") as json_file:
+            settings = json.load(json_file)
+    finally:
+        pass
+    return settings
+
 def initialize_user_roles():
     user_roles = {}
     try:

@@ -8,6 +8,7 @@ import random
 import re
 from datetime import datetime
 from couchdb import Server
+from couchdb.http import ResourceNotFound
 from flask import Flask, render_template, redirect, session, flash, request, url_for, Response, send_file
 from werkzeug.security import generate_password_hash
 from werkzeug.security import check_password_hash
@@ -17,6 +18,7 @@ from models.patient import Patient
 from models.user import User
 from utils import misc
 from fuzzywuzzy import fuzz
+import socket
 
 GENDER_COV_MALE = "1"
 GENDER_COV_FEMALE = "0"
@@ -30,6 +32,8 @@ app.secret_key = os.urandom(25)
 # Main application configuration
 global db
 settings = misc.initialize_settings()
+remote_settings = misc.initialize_remote_settings()
+remote_db = None
 app.config['user_roles'] = misc.initialize_user_roles()
 app.config['departments'] = misc.initialize_departments()
 
@@ -183,6 +187,8 @@ def patient(patient_id):
     pending_sample = []
     records = []
     grouped_samples = {}
+    remote_grouped_samples = {}
+
     if request.args.get("sample_draw") == "True":
         draw_sample = True
 
@@ -230,6 +236,50 @@ def patient(patient_id):
         else:
             samples[0]["test_id"] = str(samples[0]["test_id"])  # Single test case
             pending_sample.append(samples[0])
+    
+    if (remote_db is not None ):
+        remote_test_query_result = remote_db.find({"selector": {"patient_id": patient_id}, "limit": 100})
+        for test in remote_test_query_result:
+            record = {"date_ordered": datetime.fromtimestamp(float(test["date_ordered"])).strftime('%d %b %Y %H:%S'),
+                    "id": test.get("_id"), "type": test.get("type"), "status": test.get("status"),
+                    "priority": test.get("Priority"), "date": float(test["date_ordered"]),
+                    "collection_id": test.get("collection_id", ""), "history": test.get("clinical_history"),
+                    "ordered_by": test.get("ordered_by"), "rejection_reason": test.get("rejection_reason"),
+                    "test_type": "test" if test.get("type") == "test" else "test panel"}
+
+            if test.get('panel_type') is not None:
+                record["test_name"] = test.get('panel_type')
+                record["panel_test_details"] = get_panel_details(test)
+                if test["status"] == "Ordered":
+                    pending_sample.append(get_pending_panel_details(test))
+            else:
+                detail = LaboratoryTestType.find_by_test_type(test.get('test_type'))
+                record["test_name"] = detail.test_name
+                record["measures"] = get_test_measures(test, detail)
+                if test["status"] == "Ordered":
+                    pending_details = get_pending_test_details(test, detail)
+                    group_key = (pending_details["department"], pending_details["container"])
+                    remote_grouped_samples.setdefault(group_key, []).append(pending_details)
+
+                elif test["status"] == "Analysis Complete" or test["status"] == "Reviewed":
+                    get_test_measures(test, detail)
+
+            records.append(record)
+
+        # Group and append remote samples
+        for group, remote_samples in remote_grouped_samples.items():
+            if len(remote_samples) > 1:
+                test_names = ", ".join([sample["test_name"] for sample in remote_samples])
+                remote_samples[0]["test_name"] = test_names
+                test_ids = "^".join([sample["test_id"] for sample in remote_samples])
+                remote_samples[0]["test_id"] = test_ids
+                pending_sample.append(remote_samples[0])
+            else:
+                remote_samples[0]["test_id"] = str(remote_samples[0]["test_id"]) 
+                pending_sample.append(remote_samples[0])
+
+    else:
+        misc.update_patient(patient_id)
 
 
     # Sort combined records (local + remote) by date in reverse order
@@ -239,12 +289,20 @@ def patient(patient_id):
     permitted_length = 85 - 50 - len(var_patient['name']) - len(var_patient['id'])
 
     # Render the template with both local and remote test data
-    return render_template('patient/show.html', pt_details=var_patient, tests=records, pending_orders=pending_sample,
-                           containers=misc.container_options(),
-                           collect_samples=draw_sample, doctors=prescribers(), ch_length=permitted_length,
-                           requires_keyboard=True,
-                           test_options=inject_tests(), specimen_types=inject_specimen_types(),
-                           panel_options=inject_panels())
+    return render_template(
+        'patient/show.html',
+        pt_details=var_patient,
+        tests=records,
+        pending_orders=pending_sample,
+        containers=misc.container_options(),
+        collect_samples=draw_sample,
+        doctors=prescribers(),
+        ch_length=permitted_length,
+        requires_keyboard=True,
+        test_options=inject_tests(),
+        specimen_types=inject_specimen_types(),
+        panel_options=inject_panels()
+    )
 
 
 
@@ -904,23 +962,33 @@ def inject_panels():
 
 ###### APPLICATION CALLBACKS ###########
 def initialize_connection():
-    # Connect to a couchdb instance
     couchConnection = Server("http://%s:%s@%s:%s/" %
                              (settings["couch"]["user"], settings["couch"]["passwd"],
                               settings["couch"]["host"], settings["couch"]["port"]))
     global db
-    # Connect to a database or Create a Database
     try:
         db = couchConnection[settings["couch"]["database"]]
     except:
         db = couchConnection.create(settings["couch"]["database"])
 
+def initialize_remote_connection(timeout=15):
+    global remote_db
+    remote_db = None
+    try:
+        remote_couchConnection = Server("http://%s:%s@%s:%s/" %
+                                (remote_settings["target"]["user"], remote_settings["target"]["password"],
+                                remote_settings["target"]["host"], remote_settings["target"]["port"]),
+                                timeout=timeout)
+        remote_db = remote_couchConnection[f"{remote_settings['target_base_db']['database']}_archive"]
+    except (socket.timeout, ResourceNotFound, ConnectionRefusedError, Exception) as e:
+        remote_db = None
 
 
 @app.before_request
 def check_authentication():
     if not re.search("asset", request.path):
         initialize_connection()
+        initialize_remote_connection()
 
         if request.path not in ["/login", "/logout", "/get_charge_state", "/low_voltage"]:
             if session.get("user") is None:
@@ -999,4 +1067,4 @@ def internal_error(error):
     return render_template('main/502.html'), 502
 
 if __name__ == '__main__':
-    app.run(port="4500", debug=False, host='0.0.0.0')
+    app.run(port="4500", debug=True, host='0.0.0.0')

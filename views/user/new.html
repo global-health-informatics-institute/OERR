@@ -1,0 +1,189 @@
+<style>
+    .label-div {
+        margin-bottom: 1em;
+        margin-top: 1em;
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+    .title-div {
+        font-size: 2rem;
+        font-weight: bold;
+        margin-bottom: 1em;
+        text-align: center;
+    }
+    .disabled-button{
+        border: .25px dashed black !important;
+        color: #000;
+        cursor: not-allowed;
+        background-color: gray;
+    }
+    input[type="text"][name='name'], input[type="text"][name='username'],
+    input[type="password"][name='password'],
+    input[type="text"][name='password'],
+    input[type="password"][name='confirm_password'] {
+        width: 90%;
+        font-size : 18pt;
+        border-radius:5px;
+        height: 7vh;
+    }
+    .warning-div{
+        font-size: 1.5rem;
+        font-weight: normal;
+        text-align: left;
+        padding: 5px;
+        color: #FFC107;
+    }
+    .notifier{
+        font-size: 1.2rem;
+        font-weight: normal;
+        text-align: center;
+        padding: 5px;
+        color: #555555;
+    }
+    .subtitle-div {
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin-top: 1em;
+        margin-bottom: 0.5em;
+    }
+</style>
+
+<div id="userModal" class="modalDialog">
+    <div>
+        <div style="height: 90%; overflow-y: auto;overflow-x: hidden;">
+
+            <form id="regForm" method="post" action="/user/create">
+                <!-- user details -->
+                {% include 'user/admin/_new_details.html' %}
+
+                <!-- user roles -->
+                {% include 'user/admin/_new_roles.html' %}
+
+                <!-- user designations -->
+                {% include 'user/admin/_new_designations.html' %}
+
+                <!-- user allocations -->
+                {% include 'user/admin/_new_allocations.html' %}
+            </form>
+        </div>
+        <table style="width:100%;">
+            <tr>
+                <td>
+                    <a href="#close" title="Close" ><button type="button" class="modalNVButton red">Cancel</button></a>
+                </td>
+                <td style="text-align: center;">
+                    <span class="step"></span>
+                    <span class="step"></span>
+                    <span class="step"></span>
+                    <span class="step"></span>
+                </td>
+                <td style="text-align: right">
+                    <button type="button" id="prevBtn" class="modalNVButton" onclick="paginate(-1)">Previous</button>
+                    <button type="button" id="nextBtn" class="modalNVButton green" onclick="paginate(1)">Next</button>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+// NAVIGATION
+    let allTabs = [
+        { index: 0, id: "user-details", validity_check: false, is_active: false },
+        { index: 1, id: "user-roles", validity_check: false, is_active: false },
+        { index: 2, id: "user-designations", validity_check: false, is_active: false },
+        { index: 3, id: "user-allocations", validity_check: false, is_active: false }
+    ];
+
+    const defaultTabIndex = allTabs[0].index;
+
+    // if none active, activate default
+    if (allTabs.every(tab => tab.is_active === false)) {
+        allTabs[defaultTabIndex].is_active = true;
+    }
+
+    function _getCurrentActiveTab() {
+        return allTabs.find(tab => tab.is_active) || null;
+    }
+
+    /* Show the tab content for index, hide others */
+    function _showCurrentTab(index) {
+        allTabs.forEach(tab => {
+            const el = document.getElementById(tab.id);
+            if (!el) return; // defensive
+            el.style.display = (tab.index === index) ? "block" : "none";
+        });
+    }
+
+    /* Enable/disable buttons and set text appropriately for the supplied index */
+    function _handleButtonsState(index) {
+        const prevBtn = document.getElementById("prevBtn");
+        const nextBtn = document.getElementById("nextBtn");
+        const currentTab = allTabs[index];
+
+        if (!prevBtn || !nextBtn || !currentTab) return; // defensive
+
+        // Prev button
+        if (index === 0) {
+            prevBtn.classList.add("disabled-button");
+            prevBtn.setAttribute("aria-disabled", "true");
+            prevBtn.disabled = true;
+        } else {
+            prevBtn.classList.remove("disabled-button");
+            prevBtn.setAttribute("aria-disabled", "false");
+            prevBtn.disabled = false;
+        }
+
+        // Next / Submit text
+        const isLast = index === allTabs.length - 1;
+        nextBtn.innerText = isLast ? "Submit" : "Next";
+
+        // Next button enabled only if current tab is valid"
+        if (currentTab.validity_check) {
+            nextBtn.classList.remove("disabled-button");
+            nextBtn.disabled = false;
+            nextBtn.setAttribute("aria-disabled", "false");
+        } else {
+            nextBtn.classList.add("disabled-button");
+            nextBtn.disabled = true;
+            nextBtn.setAttribute("aria-disabled", "true");
+        }
+    }
+
+    /* Paginate: direction === -1 for back, 1 for forward */
+    function paginate(direction) {
+        const currentTab = _getCurrentActiveTab();
+        console.log("Paginate called, direction:", direction, "currentTab:", currentTab);
+        if (!currentTab) return;
+
+        // Prevent moving forward if current tab invalid and not the last tab
+        if (direction > 0 && !currentTab.validity_check && currentTab.index !== allTabs.length - 1) {
+            // optionally show a message / validation UI here
+            console.log("Current tab invalid, cannot proceed.");
+            return;
+        }
+
+
+        let targetIndex = currentTab.index + direction;
+        if (targetIndex < 0) targetIndex =  0;
+        if (targetIndex >= allTabs.length) targetIndex = allTabs.length - 1;
+        console.log("New index:", targetIndex);
+
+        allTabs.forEach(tab => {
+            tab.is_active = Boolean(false);
+        });
+        allTabs[targetIndex].is_active = Boolean(true);
+
+        _handleButtonsState(targetIndex);
+        nextPrev(direction);
+
+    }
+
+    function setTabValidity(index, isValid) {
+        const tab = allTabs.find(t => t.index === index);
+        if (!tab) return;
+        tab.validity_check = Boolean(isValid);
+    }
+
+</script>

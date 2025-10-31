@@ -1,0 +1,56 @@
+<div class="tab" id="user-roles">
+    <!--TODO: move user roles to configurable -->
+    <div class="title-div">User Role</div>
+    <ul>
+        {% for role_dict in user_roles.roles %}
+            {% set role_name = role_dict.keys() | list | first %}
+            <li>
+                <input type="radio" id="{{ role_name | replace(' ', '_') }}" value="{{ role_name }}" name="role" onchange="SetParentRole()">
+                <label for="{{ role_name | replace(' ', '_') }}">{{ role_name }}</label>
+                <div class="check"></div>
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+
+<script type="text/javascript">
+    // DATA VALIDATION
+    const roleInputsContainer = document.getElementById("user-roles");
+    
+    function _validateRoleSelection() {
+        const isRoleSelected = document.querySelector("input[name='role']:checked") !== null;
+        setTabValidity(1, isRoleSelected); 
+        
+
+        const activeTab = _getCurrentActiveTab();
+        if (activeTab) {
+            _handleButtonsState(activeTab.index);
+        }
+    }
+    if (roleInputsContainer) {
+        roleInputsContainer.addEventListener('change', _validateRoleSelection);
+        _validateRoleSelection();
+    }
+
+    // set parent role
+    function _map_designations_to_role(role) {
+        // select all li elements with data-id attribute == role
+        const designationOptions = document.querySelectorAll("li[data-id='" + role + "']");
+        const allDesignationOptions = document.getElementsByName("designationOptions");
+        allDesignationOptions.forEach(option => {
+            option.style.display = "none";
+        });
+        designationOptions.forEach(option => {
+            option.style.display = "block";
+        });
+    }
+
+    function SetParentRole() {
+        setTabValidity(2, false);
+        _handleButtonsState(2);
+        const selectedRole = document.querySelector("input[name='role']:checked").id;
+        console.log("Selected role: " + selectedRole);
+        _map_designations_to_role(selectedRole);
+    }
+
+</script>

@@ -1,48 +1,49 @@
 {% extends 'layout/application.html' %}
 {% block content %}
 <style>
-    .label-div {
+    .edit-user .label-div {
         margin-bottom: 1em;
         margin-top: 1em;
         font-size: 1.5rem;
         font-weight: bold;
     }
-    .title-div {
+    .edit-user .title-div {
         font-size: 2rem;
         font-weight: bold;
         margin-bottom: 1em;
         text-align: center;
     }
-    .disabled-button{
+    .edit-user .disabled-button{
         border: .25px dashed black !important;
         color: #000;
         cursor: not-allowed;
         background-color: gray;
     }
-    input[type="text"][name='name'], input[type="text"][name='username'],
-    input[type="password"][name='password'],
-    input[type="text"][name='password'],
-    input[type="password"][name='confirm_password'] {
+    .edit-user input[type="text"][name='name'],
+    .edit-user input[type="text"][name='username'],
+    .edit-user input[type="password"][name='password'],
+    .edit-user input[type="text"][name='password'],
+    .edit-user input[type="password"][name='confirm_password'] {
         width: 90%;
         font-size : 18pt;
         border-radius:5px;
         height: 7vh;
     }
-    .warning-div{
+    .edit-user .warning-div{
         font-size: 1.5rem;
         font-weight: normal;
         text-align: left;
         padding: 5px;
         color: #FFC107;
     }
-    .notifier{
+    .edit-user .notifier{
         font-size: 1.2rem;
         font-weight: normal;
         text-align: center;
         padding: 5px;
         color: #555555;
     }
-    .subtitle-div {
+    .edit-user .subtitle-div {
         font-size: 1.5rem;
         font-weight: bold;
         margin-top: 1em;
@@ -56,7 +57,7 @@
 <script src="{{url_for('static', filename='javascript/paginate.min.js')}}"></script>
 
 <div style="width: 95%; margin-left:auto; margin-right:auto; height: 100%; overflow: auto; text-align:left;">
-  <form id="editUserForm" method="POST" action="/user/{{ user.username}}/edit">
+  <form id="editUserForm" method="POST" action="/user/{{ user.username}}/edit" class="edit-user">
 
         {% include 'user/admin/_update_details.html' %}
 

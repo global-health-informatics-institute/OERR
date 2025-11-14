@@ -1,46 +1,47 @@
 <style>
-    .label-div {
+    .new-user .label-div {
         margin-bottom: 1em;
         margin-top: 1em;
         font-size: 1.5rem;
         font-weight: bold;
     }
-    .title-div {
+    .new-user .title-div {
         font-size: 2rem;
         font-weight: bold;
         margin-bottom: 1em;
         text-align: center;
     }
-    .disabled-button{
+    .new-user .disabled-button{
         border: .25px dashed black !important;
         color: #000;
         cursor: not-allowed;
         background-color: gray;
     }
-    input[type="text"][name='name'], input[type="text"][name='username'],
-    input[type="password"][name='password'],
-    input[type="text"][name='password'],
-    input[type="password"][name='confirm_password'] {
+    .new-user input[type="text"][name='name'],
+    .new-user input[type="text"][name='username'],
+    .new-user input[type="password"][name='password'],
+    .new-user input[type="text"][name='password'],
+    .new-user input[type="password"][name='confirm_password'] {
         width: 90%;
         font-size : 18pt;
         border-radius:5px;
         height: 7vh;
     }
-    .warning-div{
+    .new-user .warning-div{
         font-size: 1.5rem;
         font-weight: normal;
         text-align: left;
         padding: 5px;
         color: #FFC107;
     }
-    .notifier{
+    .new-user .notifier{
         font-size: 1.2rem;
         font-weight: normal;
         text-align: center;
         padding: 5px;
         color: #555555;
     }
-    .subtitle-div {
+    .new-user .subtitle-div {
         font-size: 1.5rem;
         font-weight: bold;
         margin-top: 1em;
@@ -48,7 +49,7 @@
     }
 </style>
 
-<div id="userModal" class="modalDialog">
+<div id="userModal" class="modalDialog new-user">
     <div>
         <div style="height: 90%; overflow-y: auto;overflow-x: hidden;">
 

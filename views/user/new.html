@@ -47,11 +47,19 @@
         margin-top: 1em;
         margin-bottom: 0.5em;
     }
+    .content-builder {
+        overflow-y: scroll;
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
+    }
+    .content-builder::-webkit-scrollbar {
+        display: none;
+    }
 </style>
 
 <div id="userModal" class="modalDialog new-user">
     <div>
-        <div style="height: 90%; overflow-y: auto;overflow-x: hidden;">
+        <div class="content-builder" style="height: 90%; overflow-x: hidden;">
 
             <form id="regForm" method="post" action="/user/create">
                 <!-- user details -->

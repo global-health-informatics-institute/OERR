@@ -7,7 +7,7 @@
                 <th>Name</th>
                 <th>Role</th>
                 <th>Designation</th>
-                <th>Team/Ward</th>
+                <th>Ward/Team/Unit</th>
                 <th>Action</th>
             </tr>
             {% for user in users %}
@@ -16,6 +16,23 @@
                     <td>{{user.get("name")}}</td>
                     <td>{{user.get("role")}}</td>
                     <td>{{user.get("designation")}}</td>
+                    <td>
+                        {% if user.get("ward") %}
+                            {{user.get("ward")}}
+                        {% else %}
+                            None
+                        {% endif %} /
+                        {% if user.get("team") %}
+                            {{user.get("team")}}
+                        {% else %}
+                            None
+                        {% endif %} /
+                        {% if user.get("unit") %}
+                            {{user.get("unit")}}
+                        {% else %}
+                            None
+                        {% endif %}
+                    </td>
                     <td>{{user.get("ward", user.get("team"))}}</td>
                     
                         <td>

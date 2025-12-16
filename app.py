@@ -747,14 +747,26 @@ def low_voltage():
 # MISC Functions
 def get_test_measures(test, test_details):
     results = {}
+
+    def _find_alias(measure):
+        for measure_key, details in test_details.measures.items():
+            if "aliases" in details and measure in details["aliases"]:
+                return measure_key
+        return None
+    print("TEST OBJECT: ", test)
+    
     for measure in test.get("measures", []):
         raw_value = test["measures"][measure]
         if raw_value is None:
             raw_value = ""
         
-        if test_details.measures.get(measure) is None:
+        measure_key = _find_alias(measure) if test_details.measures.get(measure) is None else measure
+        print("MEASURE KEY: ",measure_key)
+
+        if measure_key is None:
             results[measure] = {"range": "", "interpretation": "Normal", "value": raw_value}
         else:
+            measure = measure_key
             if test_details.measures[measure].get("minimum") is not None:
                 results[measure] = {
                     "range": test_details.measures[measure].get("minimum") + " - " +
@@ -784,7 +796,7 @@ def get_panel_details(panel):
         details[panel_test]['measures'] = get_test_measures(panel.get("tests")[panel_test], test)
     return details
 
-# LOOK AT THIS NEXT TIME
+# TODO: LOOK AT THIS NEXT TIME
 def get_pending_panel_details(test):
     panel_details = {"test_id": test["_id"], "specimen_type": specimen_type_map(test['sample_type']),
                      "test_name": test["panel_type"]

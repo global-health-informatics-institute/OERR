@@ -41,6 +41,7 @@
             <span style="font-weight: bold; font-size:18pt;">Please select Ward :</span>
         </p>
         <form action="/select_location" method="POST" name="wardSelection">
+            <input type="hidden" name="department" id="selectedDepartment" value="">
             <div style="width: 100%; height: 80%; border: 2px solid blue; overflow:auto;">
                 <ul id="wardsList">
                 </ul>
@@ -86,6 +87,19 @@
         var wardsList = document.getElementById("wardsList");
         wardsList.innerHTML = ""; // Clear existing wards list
 
+
+    // set hidden input for department
+    var deptInput = document.getElementById('selectedDepartment');
+    if (!deptInput) {
+        // safety: create it if missing
+        deptInput = document.createElement('input');
+        deptInput.type = 'hidden';
+        deptInput.name = 'department';
+        deptInput.id = 'selectedDepartment';
+        document.forms['wardSelection'].appendChild(deptInput);
+    }
+    deptInput.value = departmentName;
+
         // Find the department in the JSON data
         var department = departments.find(dep => dep.name === departmentName);
     if (department) {
@@ -123,16 +137,21 @@
 
     function onSubmit() {
         var selectedWard = document.querySelector('input[name="ward"]:checked');
-        console.log(selectedWard);
-        if (selectedWard) {
-            var wardValue = selectedWard.value;
-            console.log("Selected Ward:", wardValue);
-            Spinner.show()
-            document.wardSelection.submit();
+        var deptValue = document.getElementById('selectedDepartment') ? document.getElementById('selectedDepartment').value : null;
+
+        if (!deptValue) {
+            document.getElementById("errorField").innerText = "Please select a department first.";
             return;
-        } else {
-             document.getElementById("errorField").innerText = "Please select one ward from the list."
         }
+        if (!selectedWard) {
+            document.getElementById("errorField").innerText = "Please select one ward from the list.";
+            return;
+        }
+
+        // show spinner if you use it
+        Spinner.show && Spinner.show();
+
+        document.forms['wardSelection'].submit();
     }
 
     function setNavButtons(tabName) {
@@ -147,7 +166,7 @@
         if (tabName === "ward") {
             buttons = [
                 "<button class=\"nvButton red\" onmousedown=\"window.location='/login'\" style=\"float:left;\">Logout</button>",
-                "<button class=\"nvButton blue\" onmousedown=\"window.location='/select_location'\" style=\"float:left;\">Previous</button>",
+                "<button class=\"nvButton lightGreen\" onmousedown=\"window.location='/select_location'\" style=\"float:left;\">Previous</button>",
                 "<button class=\"nvButton green\" id=\"btnSubmit\" onmousedown=\"onSubmit()\" style=\"float:right;\">Finish</button>"
             ];
         }

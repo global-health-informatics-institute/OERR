@@ -309,6 +309,7 @@ def login():
                 session["user"] = {'username': user.username,
                                    'role': user.role,
                                    'current_user': user.name,
+                                   'department': user.department,
                                    'team': user.team,
                                    'rank': user.designation}
                 if not user.is_active():
@@ -497,13 +498,21 @@ def select_location():
 
     if request.method == "POST":
         selected_department = request.form.get('department')
+        print("SELECTED DEPARTMENT:", selected_department)
         selected_ward = request.form.get('ward')
+
+        # Keep selected ward and department in user session
+
+        session["department"] = selected_department
+        session["ward"] = selected_ward
 
         if selected_department == '' or selected_ward == '':
             flash("Please select both department and ward.", 'error')
             error = "Please select both department and ward."
         else:
             session["location"] = selected_ward
+            session["dpt"] = selected_department
+            print("SESSION LOCATION:", session["location"], " DEPT: ", session["dpt"])
             return redirect(url_for('index'))
 
     session["ward"] = None

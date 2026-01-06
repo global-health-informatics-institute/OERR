@@ -9,6 +9,10 @@
           request.form.username }}" required style="width: 90%; font-size : 18pt;border-radius:5px;height: 7vh;">
           <h3>Password</h3>
          <input type="password" placeholder="Password" required name="password"  id="input2" class="input" style="width: 90%; font-size : 18pt;border-radius:5px;height: 7vh;">
+         <div style="margin-top: 20px;">
+         <!-- Show or hide password toggle -->
+            <button type="button" onclick="togglePasswordVisibility()" style="display: block; background-color: #ffff; color: black; padding: 10px 20px;font-size : 18pt;border-radius:5px; font-weight: 500;border: 1px solid silver;">Show Password</button>
+        </div>
       </form>
         <p class="error" id="errorField" style="font-size: 12pt;">
             {% if error %}
@@ -22,6 +26,19 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/keyboard.css') }}">
     <script src="{{url_for('static', filename='javascript/keyboard.js')}}" defer></script>
     <script src="{{url_for('static', filename='javascript/keyboard_init.js')}}" defer></script>
+    <script>
+            function togglePasswordVisibility() {
+                var passwordInput = document.getElementById("input2");
+                var toggleButton = event.currentTarget;
+                if (passwordInput.type === "password") {
+                    passwordInput.type = "text";
+                    toggleButton.textContent = "Hide Password";
+                } else {
+                    passwordInput.type = "password";
+                    toggleButton.textContent = "Show Password";
+                }
+            }
+        </script>
 <script>
     function validateLogin() {
         var username = document.getElementById("default");

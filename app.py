@@ -340,7 +340,6 @@ def logout():
 @app.route("/users")
 def users():
     current_users = User.all()
-
     qualifying_teams, qualifying_units, department, ward = misc.get_teams_units_department_ward(app.config['departments'], session["location"])
 
     return render_template(
@@ -498,7 +497,6 @@ def select_location():
 
     if request.method == "POST":
         selected_department = request.form.get('department')
-        print("SELECTED DEPARTMENT:", selected_department)
         selected_ward = request.form.get('ward')
 
         # Keep selected ward and department in user session
@@ -512,7 +510,6 @@ def select_location():
         else:
             session["location"] = selected_ward
             session["dpt"] = selected_department
-            print("SESSION LOCATION:", session["location"], " DEPT: ", session["dpt"])
             return redirect(url_for('index'))
 
     session["ward"] = None

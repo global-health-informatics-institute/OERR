@@ -353,8 +353,22 @@
 {% endif %}
 
                 <div class="tab">
-                    <h2>Enter Clinical Information/History</h2>
+                    <h2>Select/Enter Clinical Information/History</h2>
                     <div>
+                    <!-- Predifined common clinical histories using check box  -->
+                    <div style="margin-bottom: 10px;">
+                        <label style="font-size:18pt; font-weight:bold;">
+                            Common Clinical Histories:
+                        </label><br/>
+
+                        <div id="commonHistoriesContainer" style="
+                            display: grid;
+                            grid-template-columns: repeat(3, 1fr);
+                            gap: 15px;
+                            margin-top: 10px;
+                        "></div>
+                    </div>
+
                     <input type="text" placeholder="Clinical history" name="clinical_history" id="input20" class="input" value="{{
                       request.form.clinical_history }}" maxlength="{{ch_length}}" required style="width: 100%; font-size : 18pt;border-radius:5px;height: 7vh;">
                         <span style="font-weight:500;font-size:14pt;">Max Char : {{ch_length}}</span>
@@ -426,6 +440,97 @@
             </div>
         </div>
     </div>
+
+   <script>
+        document.addEventListener('DOMContentLoaded', function () {
+
+            const maxChars = {{ ch_length }};
+            const commonHistories = [
+                "Hypertension",
+                "Diabetes Mellitus",
+                "Asthma",
+                "Fever",
+                "Cough",
+                "Weight Loss",
+                "Previous TB Treatment",
+                "Chronic Kidney Disease",
+                "Epilepsy",
+                "Heart Failure",
+                "Peptic Ulcer Disease",
+                "Sickle Cell Disease"
+            ];
+
+            const container = document.getElementById('commonHistoriesContainer');
+            const clinicalHistoryInput = document.getElementById('input20');
+
+            commonHistories.forEach((history, index) => {
+                const wrapper = document.createElement('div');
+                wrapper.style.display = 'flex';
+                wrapper.style.alignItems = 'center';
+                wrapper.style.fontSize = '16pt';
+                wrapper.style.padding = '5px';
+                wrapper.style.cursor = 'pointer';
+
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.id = `history-${index}`;
+                checkbox.value = history;
+                checkbox.style.width = '24px';
+                checkbox.style.height = '24px';
+                checkbox.style.marginRight = '8px';
+                checkbox.style.cursor = 'pointer';
+
+                const label = document.createElement('label');
+                label.htmlFor = checkbox.id;
+                label.textContent = history;
+                label.style.userSelect = 'none';  // prevents accidental text selection
+
+                wrapper.appendChild(checkbox);
+                wrapper.appendChild(label);
+
+                // Clicking wrapper also toggles checkbox (better for touch)
+                wrapper.addEventListener('click', (e) => {
+                    if (e.target !== checkbox) checkbox.checked = !checkbox.checked;
+                    checkbox.dispatchEvent(new Event('change'));
+                });
+
+                container.appendChild(wrapper);
+            });
+
+            const checkboxes = container.querySelectorAll('input[type="checkbox"]');
+
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', () => {
+                    let selected = [];
+                    checkboxes.forEach(cb => {
+                        if (cb.checked) selected.push(cb.value);
+                    });
+
+                    let combined = selected.join('; ');
+
+                    if (combined.length > maxChars) {
+                        alert(
+                            `Maximum allowed characters is ${maxChars}. Try entering clinical history manually.`
+                        );
+                        checkbox.checked = false;
+                        return;
+                    }
+
+                    clinicalHistoryInput.value = combined;
+                });
+            });
+
+            clinicalHistoryInput.addEventListener('input', () => {
+                if (clinicalHistoryInput.value.length > maxChars) {
+                    clinicalHistoryInput.value =
+                        clinicalHistoryInput.value.slice(0, maxChars);
+                }
+            });
+
+        });
+    </script>
+
+
 
     <script>
         selected =null
@@ -525,7 +630,6 @@ function handleCheckboxChange() {
     } else {
         document.getElementById('antibiotics').style.display = 'none';
     }
-
 }
 
     </script>

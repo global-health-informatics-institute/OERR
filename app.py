@@ -340,7 +340,7 @@ def logout():
 @app.route("/users")
 def users():
     current_users = User.all()
-    qualifying_teams, qualifying_units, department, ward = misc.get_teams_units_department_ward(app.config['departments'], session["location"])
+    qualifying_teams, qualifying_units, department, wards, ward = misc.get_teams_units_department_ward(app.config['departments'], session["location"])
 
     return render_template(
         "user/index.html",
@@ -350,6 +350,7 @@ def users():
         teams=qualifying_teams,
         units=qualifying_units,
         department=department,
+        wards=wards,
         ward=ward
     )
 
@@ -367,15 +368,15 @@ def create_user():
             password = request.form['password'],
             status = "Active",
             department = request.form['department'],
-            team = request.form['team'],
-            unit = request.form['unit'],
-            ward = request.form['ward']
+             team=request.form.get('team'),   # None if not provided
+            unit=request.form.get('unit'),   # None if not provided
+            ward=request.form.get('ward')    # None if not provided
         )
         provider.save()
     else:
         current_users = User.all()
         flash("Username already exists", 'error')
-        qualifying_teams, qualifying_units, department, ward= misc.get_teams_units_department_ward(app.config['departments'], session["location"])
+        qualifying_teams, qualifying_units, department, wards, ward= misc.get_teams_units_department_ward(app.config['departments'], session["location"])
         return render_template(
             "user/index.html",
             requires_keyboard=True,
@@ -384,6 +385,7 @@ def create_user():
             teams=qualifying_teams,
             units=qualifying_units,
             department=department,
+            wards=wards,
             ward=ward
         )
     flash("New user created", "success")
@@ -413,7 +415,7 @@ def edit_user(username=None):
                 flash("user updated successfully")
                 return redirect(url_for("users"))
         else:
-            qualifying_teams, qualifying_units, department, ward= misc.get_teams_units_department_ward(app.config['departments'], (user.ward or session["location"]))
+            qualifying_teams, qualifying_units, department, wards, ward= misc.get_teams_units_department_ward(app.config['departments'], (user.ward or session["location"]))
             return render_template(
                 "user/edit_user.html",
                 requires_keyboard=True,
@@ -422,6 +424,7 @@ def edit_user(username=None):
                 teams=qualifying_teams,
                 units=qualifying_units,
                 department=department,
+                wards=wards,
                 ward=(user.ward or ward)
             )
 

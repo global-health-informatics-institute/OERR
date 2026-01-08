@@ -45,12 +45,78 @@
         });
     }
 
+    // Toggle units and teams visibility based on role selection
+    function _toggleAllocationFields() {
+        const selectedRole = document.querySelector("input[name='role']:checked");
+        if (!selectedRole) return;
+
+        const selectedRoleId = selectedRole.id.replace(/_/g, ' ');
+        const isNurse = selectedRoleId.toLowerCase().includes('nurse');
+
+        // Get all team, unit and ward elements
+        const wardSection = document.getElementById('ward-section');
+        const teamSection = document.getElementById('teams-section');
+        const unitsSection = document.getElementById('units-section');
+        const teamsSeparator = document.getElementById('teams-separator');
+        const wardNotifier = document.getElementById('ward-notifier');
+        const teamsNotifier = document.getElementById('teams-notifier');
+        const unitsNotifier = document.getElementById('units-notifier');
+
+        const wardOptions = document.querySelectorAll('li[id^="ward-option-"]');
+        const teamOptions = document.querySelectorAll('li[id^="team-option-"]');
+        const unitOptions = document.querySelectorAll('li[id^="unit-option-"]');
+
+        if (isNurse) {
+            // Show ward, hide teams and units for nurses
+            if (wardSection) wardSection.style.display = 'block';
+            if (teamSection) teamSection.style.display = 'none';
+            if (unitsSection) unitsSection.style.display = 'none';
+            if (teamsSeparator) teamsSeparator.style.display = 'none';
+            if (wardNotifier) wardNotifier.style.display = 'block';
+            if (teamsNotifier) teamsNotifier.style.display = 'none';
+            if (unitsNotifier) unitsNotifier.style.display = 'none';
+            
+            wardOptions.forEach(option => {
+                option.style.display = 'block';
+            });
+            teamOptions.forEach(option => {
+                option.style.display = 'none';
+                option.querySelector('input[type="radio"]').checked = false;
+            });
+            unitOptions.forEach(option => {
+                option.style.display = 'none';
+                option.querySelector('input[type="radio"]').checked = false;
+            });
+        } else {
+            // Hide ward, show teams and units for non-nurses
+            if (wardSection) wardSection.style.display = 'none';
+            if (teamSection) teamSection.style.display = 'block';
+            if (unitsSection) unitsSection.style.display = 'block';
+            if (teamsSeparator) teamsSeparator.style.display = 'block';
+            if (wardNotifier) wardNotifier.style.display = 'none';
+            if (teamsNotifier) teamsNotifier.style.display = 'block';
+            if (unitsNotifier) unitsNotifier.style.display = 'block';
+            
+            wardOptions.forEach(option => {
+                option.style.display = 'none';
+                option.querySelector('input[type="radio"]').checked = false;
+            });
+            teamOptions.forEach(option => {
+                option.style.display = 'block';
+            });
+            unitOptions.forEach(option => {
+                option.style.display = 'block';
+            });
+        }
+    }
+
     function SetParentRole() {
         setTabValidity(2, false);
         _handleButtonsState(2);
         const selectedRole = document.querySelector("input[name='role']:checked").id;
         console.log("Selected role: " + selectedRole);
         _map_designations_to_role(selectedRole);
+        _toggleAllocationFields();
     }
 
 </script>

@@ -54,10 +54,12 @@
         _uncheckAllDesignations();
         _mapEditDesignationsToRole(selectedRole);
         _checkFirstDesignationForRole(selectedRole);
+        _toggleEditAllocationFields();
     }
 
     document.addEventListener('DOMContentLoaded', () => {
         const selectedRole = document.querySelector("input[name='role']:checked").id;
         _mapEditDesignationsToRole(selectedRole);
+        _toggleEditAllocationFields();
     });
 </script>

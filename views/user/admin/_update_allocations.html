@@ -2,19 +2,47 @@
 <div class="tab" id="edit-user-allocations">
     <div class="title-div">Allocation</div>
     <ul>
-        <div class="subtitle-div">
+        <!-- If role selected is Nurse show ward section, else show teams and units -->
+        
+        <div class="subtitle-div" id="edit-ward-section" style="display:none;">
+            Ward
+        </div>
+        {% if wards %}
+            {% for ward in wards %}
+                {% if user.ward == ward %}
+                    <li data-id="edit_{{ ward | replace(' ', '_')}}" name="allocationOptions" id="edit-ward-option-{{ ward | replace(' ', '_')}}" style="display:none;">
+                        <input type="radio" id="edit_{{ ward | replace(' ', '_') }}" value="{{ ward }}" name="ward" checked>
+                        <label for="edit_{{ ward | replace(' ', '_') }}">{{ ward }}</label>
+                        <div class="check"></div>
+                    </li>
+                {% else %}
+                    <li data-id="edit_{{ ward | replace(' ', '_')}}" name="allocationOptions" id="edit-ward-option-{{ ward | replace(' ', '_')}}" style="display:none;">
+                        <input type="radio" id="edit_{{ ward | replace(' ', '_') }}" value="{{ ward }}" name="ward" >
+                        <label for="edit_{{ ward | replace(' ', '_') }}">{{ ward }}</label>
+                        <div class="check"></div>
+                    </li>
+                {% endif %}
+            {% endfor %}
+        {% else %}
+            <div class="notifier" id="edit-ward-notifier" style="display:none;">
+                No wards available for this department
+            </div>
+            <input type="text" name="ward" value="{{None}}" hidden>
+        {% endif %}
+         
+        <div class="subtitle-div" id="edit-teams-section" style="display:none;">
             Teams
         </div>
         {% if teams %}
             {% for team in teams %}
                 {% if user.team == team %}
-                    <li data-id="edit_{{ team | replace(' ', '_')}}" name="allocationOptions">
+                    <li data-id="edit_{{ team | replace(' ', '_')}}" name="allocationOptions" id="edit-team-option-{{ team | replace(' ', '_')}}" style="display:none;">
                         <input type="radio" id="edit_{{ team | replace(' ', '_') }}" value="{{ team }}" name="team" checked>
                         <label for="edit_{{ team | replace(' ', '_') }}">{{ team }}</label>
                         <div class="check"></div>
                     </li>
                 {% else %}
-                    <li data-id="edit_{{ team | replace(' ', '_')}}" name="allocationOptions">
+                    <li data-id="edit_{{ team | replace(' ', '_')}}" name="allocationOptions" id="edit-team-option-{{ team | replace(' ', '_')}}" style="display:none;">
                         <input type="radio" id="edit_{{ team | replace(' ', '_') }}" value="{{ team }}" name="team" >
                         <label for="edit_{{ team | replace(' ', '_') }}">{{ team }}</label>
                         <div class="check"></div>
@@ -22,27 +50,27 @@
                 {% endif %}
             {% endfor %}
         {% else %}
-            <div class="notifier">
+            <div class="notifier" id="edit-teams-notifier" style="display:none;">
                 No teams available for this department
             </div>
             <input type="text" name="team" value="{{None}}"hidden>
         {% endif %}
 
-        <hr>
+        <hr id="edit-teams-separator" style="display:none;">
 
-        <div class="subtitle-div">
+        <div class="subtitle-div" id="edit-units-section" style="display:none;">
             Units
         </div>
         {% if units %}
             {% for unit in units %}
-                <li data-id="{{ unit | replace(' ', '_')}}" name="allocationOptions">
-                    <input type="radio" id="{{ unit | replace(' ', '_') }}" value="{{ unit }}" name="unit" >
-                    <label for="{{ unit | replace(' ', '_') }}">{{ unit }}</label>
+                <li data-id="{{ unit | replace(' ', '_')}}" name="allocationOptions" id="edit-unit-option-{{ unit | replace(' ', '_')}}" style="display:none;">
+                    <input type="radio" id="edit_{{ unit | replace(' ', '_') }}" value="{{ unit }}" name="unit" >
+                    <label for="edit_{{ unit | replace(' ', '_') }}">{{ unit }}</label>
                     <div class="check"></div>
                 </li>
             {% endfor %}
         {% else %}
-            <div class="notifier">
+            <div class="notifier" id="edit-units-notifier" style="display:none;">
                 No units available for this department
             </div>
             <input type="text" name="unit" value="{{None}}" hidden>
@@ -64,4 +92,76 @@
 </div>
 
 <script type="text/javascript">
+    // Toggle units and teams visibility based on role selection in edit mode
+    function _toggleEditAllocationFields() {
+        const selectedRole = document.querySelector("input[name='role']:checked");
+        if (!selectedRole) return;
+
+        const selectedRoleId = selectedRole.id.replace(/edit_/g, '').replace(/_/g, ' ');
+        const isNurse = selectedRoleId.toLowerCase().includes('nurse');
+
+        // Get all team, unit and ward elements
+        const wardSection = document.getElementById('edit-ward-section');
+        const teamSection = document.getElementById('edit-teams-section');
+        const unitsSection = document.getElementById('edit-units-section');
+        const teamsSeparator = document.getElementById('edit-teams-separator');
+        const wardNotifier = document.getElementById('edit-ward-notifier');
+        const teamsNotifier = document.getElementById('edit-teams-notifier');
+        const unitsNotifier = document.getElementById('edit-units-notifier');
+
+        const wardOptions = document.querySelectorAll('li[id^="edit-ward-option-"]');
+        const teamOptions = document.querySelectorAll('li[id^="edit-team-option-"]');
+        const unitOptions = document.querySelectorAll('li[id^="edit-unit-option-"]');
+
+        if (isNurse) {
+            // Show ward, hide teams and units for nurses
+            if (wardSection) wardSection.style.display = 'block';
+            if (teamSection) teamSection.style.display = 'none';
+            if (unitsSection) unitsSection.style.display = 'none';
+            if (teamsSeparator) teamsSeparator.style.display = 'none';
+            if (wardNotifier) wardNotifier.style.display = 'block';
+            if (teamsNotifier) teamsNotifier.style.display = 'none';
+            if (unitsNotifier) unitsNotifier.style.display = 'none';
+            
+            wardOptions.forEach(option => {
+                option.style.display = 'block';
+            });
+            teamOptions.forEach(option => {
+                option.style.display = 'none';
+                const input = option.querySelector('input[type="radio"]');
+                if (input) input.checked = false;
+            });
+            unitOptions.forEach(option => {
+                option.style.display = 'none';
+                const input = option.querySelector('input[type="radio"]');
+                if (input) input.checked = false;
+            });
+        } else {
+            // Hide ward, show teams and units for non-nurses
+            if (wardSection) wardSection.style.display = 'none';
+            if (teamSection) teamSection.style.display = 'block';
+            if (unitsSection) unitsSection.style.display = 'block';
+            if (teamsSeparator) teamsSeparator.style.display = 'block';
+            if (wardNotifier) wardNotifier.style.display = 'none';
+            if (teamsNotifier) teamsNotifier.style.display = 'block';
+            if (unitsNotifier) unitsNotifier.style.display = 'block';
+            
+            wardOptions.forEach(option => {
+                option.style.display = 'none';
+                const input = option.querySelector('input[type="radio"]');
+                if (input) input.checked = false;
+            });
+            teamOptions.forEach(option => {
+                option.style.display = 'block';
+            });
+            unitOptions.forEach(option => {
+                option.style.display = 'block';
+            });
+        }
+    }
+
+    // Call on page load to set initial state
+    document.addEventListener('DOMContentLoaded', function() {
+        _toggleEditAllocationFields();
+    });
 </script>

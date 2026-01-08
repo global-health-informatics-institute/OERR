@@ -145,5 +145,7 @@ def get_teams_units_department_ward(all_departments, ward_selected):
                     department["teams"] = []
                 if not department.get("units"):
                     department["units"] = []
-                return department["teams"], department["units"], department["name"], ward_selected
-        return None, None, None, None
+                if not department.get("wards"):
+                    department["wards"] = []
+                return department["teams"], department["units"], department["name"], department["wards"], ward_selected
+        return None, None, None, None, None

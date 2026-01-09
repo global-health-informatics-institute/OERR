@@ -55,6 +55,16 @@
 };
 
     function openTab(evt, tabName) {
+
+        if (tabName == "ward" && !document.querySelector('input[name="department"]:checked')) {
+            alert("Please select a department first.");
+            return;
+        }
+
+        if (!document.getElementById(tabName)) {
+            tabName = "location"; // default to location tab if not found
+        }
+
         var i, tabcontent, tablinks;
         tabcontent = document.getElementsByClassName("tabcontent");
         for (i = 0; i < tabcontent.length; i++) {
@@ -136,23 +146,29 @@
     }
 
     function setNavButtons(tabName) {
-        let buttons = [];
+        let navButtons = [];
 
         if (tabName === "location") {
-            buttons = [
+            navButtons = [
                 "<button class=\"nvButton red\" onmousedown=\"window.location='/login'\" style=\"float:left;\">Logout</button>"    
             ];
         }
 
-        if (tabName === "ward") {
-            buttons = [
+        else if (tabName === "ward") {
+            navButtons = [
                 "<button class=\"nvButton red\" onmousedown=\"window.location='/login'\" style=\"float:left;\">Logout</button>",
                 "<button class=\"nvButton blue\" onmousedown=\"window.location='/select_location'\" style=\"float:left;\">Previous</button>",
                 "<button class=\"nvButton green\" id=\"btnSubmit\" onmousedown=\"onSubmit()\" style=\"float:right;\">Finish</button>"
             ];
         }
 
-        document.getElementById("navFooter").innerHTML = buttons.join("");
+        else {
+            navButtons = [
+                "<button class=\"nvButton red\" onmousedown=\"window.location='/login'\" style=\"float:left;\">Logout</button>"    
+            ];
+        }
+
+        document.getElementById("navFooter").innerHTML = navButtons.join("");
     }
 
 </script>

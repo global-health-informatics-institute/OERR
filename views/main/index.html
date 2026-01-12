@@ -15,7 +15,22 @@
         <tr>
             <td><b>Department</b></td>
             <td>:</td>
-            <td><i>{{ session["location"] }}</i></td>
+            <td>
+                <i>
+                    {% set currentDepartment = session.get("department") %}
+                    {% set currentLocation = session.get("location") %}
+
+                    {% if currentDepartment and currentLocation %}
+                        {{ currentDepartment }} - {{ currentLocation }}
+                    {% elif currentDepartment %}
+                        {{ currentDepartment }}
+                    {% elif currentLocation %}
+                        {{ currentLocation }}
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </i>
+            </td>
             <td><b>Role</b></td>
             <td>:</td>
             <td><i>{{ session["user"]["rank"] }}</i></td>

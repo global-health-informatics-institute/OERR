@@ -357,9 +357,16 @@
                     <div>
                     <!-- Predifined common clinical histories using check box  -->
                     <div style="margin-bottom: 10px;">
-                        <label style="font-size:18pt; font-weight:bold;">
-                            Common Clinical Histories:
-                        </label><br/>
+                        <button type="button"
+                            style="border: gray 1px solid; padding: 10px; font-size: 18px; border-radius: 5px;"
+                            class="collapsible__toggle"
+                            aria-expanded="true"
+                            aria-controls="commonHistoriesContainer"
+                            onclick="toggleCommonHistories(this)">
+                            Common Clinical Histories
+                            <span class="collapsible__caret">▾</span>
+                        </button>
+                        <br/>
 
                         <div id="commonHistoriesContainer" style="
                             display: grid;
@@ -373,12 +380,13 @@
                       request.form.clinical_history }}" maxlength="{{ch_length}}" required style="width: 100%; font-size : 18pt;border-radius:5px;height: 7vh;">
                         <span style="font-weight:500;font-size:14pt;">Max Char : {{ch_length}}</span>
                     </div>
-                    <div id="antibiotics" style="margin-top: 10px;">
+
+
+                    <div id="antibiotics" style="margin-top: 10px; display: none;">
                     <label  style="font-size: 18pt;">Antibiotics:</label>
                     <input type="text"  value="" name="antibiotics" style="width: 45%; font-size: 18pt; border-radius: 5px;
                      height: 7vh; display: inline-block; margin-left: 10px;"/>
                      </div>
-
                     <div class="simple-keyboard" style="width: 99%; border: 1px solid silver;margin-top: 2vh;"></div>
                 </div>
                 <div class="tab">
@@ -442,195 +450,230 @@
     </div>
 
    <script>
-        document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function () {
+        const maxChars = {{ ch_length }};
+        const commonHistories = {{ common_histories | tojson }};
 
-            const maxChars = {{ ch_length }};
-            const commonHistories = [
-                "Hypertension",
-                "Diabetes Mellitus",
-                "Asthma",
-                "Fever",
-                "Cough",
-                "Weight Loss",
-                "Previous TB Treatment",
-                "Chronic Kidney Disease",
-                "Epilepsy",
-                "Heart Failure",
-                "Peptic Ulcer Disease",
-                "Sickle Cell Disease"
-            ];
+        // Initialize container state
+        const container = document.getElementById('commonHistoriesContainer');
+        const clinicalHistoryInput = document.getElementById('input20');
+        
+        if (container) {
+            container.style.display = 'none';
+        }
 
-            const container = document.getElementById('commonHistoriesContainer');
-            const clinicalHistoryInput = document.getElementById('input20');
+        // Create common history checkboxes
+        commonHistories.forEach((history, index) => {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'common-history-item';
+            wrapper.style.display = 'flex';
+            wrapper.style.alignItems = 'center';
+            wrapper.style.fontSize = '16pt';
+            wrapper.style.padding = '5px';
+            wrapper.style.cursor = 'pointer';
 
-            commonHistories.forEach((history, index) => {
-                const wrapper = document.createElement('div');
-                wrapper.style.display = 'flex';
-                wrapper.style.alignItems = 'center';
-                wrapper.style.fontSize = '16pt';
-                wrapper.style.padding = '5px';
-                wrapper.style.cursor = 'pointer';
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.id = `history-${index}`;
+            checkbox.value = history;
+            checkbox.className = 'common-history-checkbox';
+            checkbox.style.width = '24px';
+            checkbox.style.height = '24px';
+            checkbox.style.marginRight = '8px';
+            checkbox.style.cursor = 'pointer';
 
-                const checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-                checkbox.id = `history-${index}`;
-                checkbox.value = history;
-                checkbox.style.width = '24px';
-                checkbox.style.height = '24px';
-                checkbox.style.marginRight = '8px';
-                checkbox.style.cursor = 'pointer';
+            const label = document.createElement('label');
+            label.htmlFor = checkbox.id;
+            label.textContent = history;
+            label.style.userSelect = 'none';
+            label.style.cursor = 'pointer';
 
-                const label = document.createElement('label');
-                label.htmlFor = checkbox.id;
-                label.textContent = history;
-                label.style.userSelect = 'none';  // prevents accidental text selection
+            wrapper.appendChild(checkbox);
+            wrapper.appendChild(label);
 
-                wrapper.appendChild(checkbox);
-                wrapper.appendChild(label);
+            // Toggle checkbox when clicking wrapper
+            wrapper.addEventListener('click', (e) => {
+                if (e.target !== checkbox && e.target !== label) {
+                    checkbox.checked = !checkbox.checked;
+                    updateClinicalHistory();
+                }
+            });
 
-                // Clicking wrapper also toggles checkbox (better for touch)
-                wrapper.addEventListener('click', (e) => {
-                    if (e.target !== checkbox) checkbox.checked = !checkbox.checked;
-                    checkbox.dispatchEvent(new Event('change'));
-                });
+            // Also update on checkbox change
+            checkbox.addEventListener('change', updateClinicalHistory);
 
+            if (container) {
                 container.appendChild(wrapper);
-            });
-
-            const checkboxes = container.querySelectorAll('input[type="checkbox"]');
-
-            checkboxes.forEach(checkbox => {
-                checkbox.addEventListener('change', () => {
-                    let selected = [];
-                    checkboxes.forEach(cb => {
-                        if (cb.checked) selected.push(cb.value);
-                    });
-
-                    let combined = selected.join('; ');
-
-                    if (combined.length > maxChars) {
-                        alert(
-                            `Maximum allowed characters is ${maxChars}. Try entering clinical history manually.`
-                        );
-                        checkbox.checked = false;
-                        return;
-                    }
-
-                    clinicalHistoryInput.value = combined;
-                });
-            });
-
-            clinicalHistoryInput.addEventListener('input', () => {
-                if (clinicalHistoryInput.value.length > maxChars) {
-                    clinicalHistoryInput.value =
-                        clinicalHistoryInput.value.slice(0, maxChars);
-                }
-            });
-
+            }
         });
-    </script>
 
+        // Update clinical history input based on selected checkboxes
+        function updateClinicalHistory() {
+            if (!clinicalHistoryInput) return;
+            
+            const checkboxes = document.querySelectorAll('.common-history-checkbox');
+            const selected = [];
+            
+            checkboxes.forEach(cb => {
+                if (cb.checked) selected.push(cb.value);
+            });
 
-
-    <script>
-        selected =null
-        isNurse = "{{ session.get('user').get('role') in ['Nurse', 'Student'] }}"
-        function toggleDisplay(id, test_status){
-            var state= {true: "View", false: "Hide"}
-            div = document.getElementById(id)
-            var status = div.hidden;
-            div.hidden = !status;
-            document.getElementById(id+"-status").innerHTML = state[!status]
-            if ((test_status == "Analysis Complete" || test_status == "Rejected") && (isNurse == "False")){
-                testReviewed(id)
-            }
-        }
-
-        var currentTab = 0; // Current tab is set to be the first tab (0)
-        function showOrderDialog(){
-            window.location='{{request.url.split("?")[0]}}#orderModal'
-            showTab(0); // Display the current tab
-        }
-
-        function showDrawDialog(){
-            document.getElementById("modalContent").innerHTML = document.getElementById("sampleDrawContent").innerHTML
-            window.location='{{request.url}}#openModal'
-        }
-
-        function filterTests(id){
-
-            var radios = document.getElementsByName('specimen_type');
-            var specimen_type = null
-            for (var i = 0, length = radios.length; i < length; i++) {
-                if (radios[i].checked) {
-                    // do whatever you want with the checked radio
-                    specimen_type = radios[i].value
-                    // only one radio can be logically checked, don't check the rest
-                    break;
-                }
-            }
-            var options = document.getElementsByName('testOptions');
-            for (var i = 0, length = options.length; i < length; i++) {
-                if (!options[i].dataset.id.split(',').includes(specimen_type)){
-                    options[i].style.display= "none";
-                }
-                else {
-                    options[i].style.display= "block";
-                }
-            }
-        }
-
-        function testReviewed(id){
-            var xhr = new XMLHttpRequest();
-            var url = "/test/"+id+"/review_ajax";
-            xhr.open("GET", url, true);
-            xhr.setRequestHeader("Content-Type", "application/text");
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState === 4 && xhr.status === 200) {
-                    console.log(xhr.responseText);
-                }
-            };
-            xhr.send();
-        }
-
-        function waitForKeyboard() {
-            if(typeof keyboard !== 'undefined' ) {
-                keyboard.options.maxLength["default"] = {{ch_length}}
+            const combined = selected.join('; ');
+            
+            if (combined.length > maxChars) {
+                alert(`Maximum allowed characters is ${maxChars}. Try entering clinical history manually.`);
+                // Uncheck the most recently checked box
+                selected.pop();
+                // Recalculate
+                const newCombined = selected.join('; ');
+                clinicalHistoryInput.value = newCombined;
                 return;
             }
-            else {
-                setTimeout(function() {
-                    waitForKeyboard();
-                }, 2000);
-            }
-        }
-        waitForKeyboard()
-        function disable_button(x){
-            x.disabled =  true;
-            x.innerHTML= "Printing..";
+
+            clinicalHistoryInput.value = combined;
         }
 
-
-function handleCheckboxChange() {
-    var checkboxes = document.querySelectorAll('input[name="test_type[]"]:checked');
-    var displayAntibiotics = false;
-
-    checkboxes.forEach(function (checkbox) {
-        var selectedTest = checkbox.value;
-
-        // Customize the condition based on your requirements
-        if (selectedTest == '4') {
-            displayAntibiotics = true;
+        // Limit input characters
+        if (clinicalHistoryInput) {
+            clinicalHistoryInput.addEventListener('input', () => {
+                if (clinicalHistoryInput.value.length > maxChars) {
+                    clinicalHistoryInput.value = clinicalHistoryInput.value.slice(0, maxChars);
+                }
+            });
         }
-            console.log(selectedTest);
     });
 
-    if (displayAntibiotics) {
-        document.getElementById('antibiotics').style.display = 'block';
-    } else {
-        document.getElementById('antibiotics').style.display = 'none';
-    }
-}
+    // Global functions
+    let selected = null;
+    const isNurse = {{ 'true' if session.get('user').get('role') in ['Nurse', 'Student'] else 'false' }};
 
-    </script>
+    function toggleDisplay(id, test_status) {
+        const states = { true: "View", false: "Hide" };
+        const div = document.getElementById(id);
+        
+        if (!div) return;
+        
+        const isHidden = div.hidden;
+        div.hidden = !isHidden;
+        
+        const statusElement = document.getElementById(`${id}-status`);
+        if (statusElement) {
+            statusElement.innerHTML = states[!isHidden];
+        }
+        
+        if ((test_status === "Analysis Complete" || test_status === "Rejected") && !isNurse) {
+            testReviewed(id);
+        }
+    }
+
+    let currentTab = 0;
+
+    function showOrderDialog() {
+        const urlParts = window.location.href.split('?');
+        const baseUrl = urlParts[0];
+        window.location = `${baseUrl}#orderModal`;
+        showTab(0);
+    }
+
+    function showDrawDialog() {
+        const modalContent = document.getElementById("modalContent");
+        const sampleDrawContent = document.getElementById("sampleDrawContent");
+        
+        if (modalContent && sampleDrawContent) {
+            modalContent.innerHTML = sampleDrawContent.innerHTML;
+            window.location = '{{ request.url }}#openModal';
+        }
+    }
+
+    function filterTests(id) {
+        const radios = document.getElementsByName('specimen_type');
+        let specimen_type = null;
+        
+        for (let i = 0; i < radios.length; i++) {
+            if (radios[i].checked) {
+                specimen_type = radios[i].value;
+                break;
+            }
+        }
+        
+        if (!specimen_type) return;
+        
+        const options = document.getElementsByName('testOptions');
+        for (let i = 0; i < options.length; i++) {
+            const option = options[i];
+            const allowedTypes = option.dataset.id ? option.dataset.id.split(',') : [];
+            
+            if (!allowedTypes.includes(specimen_type)) {
+                option.style.display = "none";
+            } else {
+                option.style.display = "block";
+            }
+        }
+    }
+
+    function testReviewed(id) {
+        const xhr = new XMLHttpRequest();
+        const url = `/test/${id}/review_ajax`;
+        
+        xhr.open("GET", url, true);
+        xhr.setRequestHeader("Content-Type", "application/text");
+        
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                console.log("Test reviewed:", xhr.responseText);
+            }
+        };
+        
+        xhr.send();
+    }
+
+    function waitForKeyboard() {
+        if (typeof keyboard !== 'undefined') {
+            if (keyboard.options && keyboard.options.maxLength) {
+                keyboard.options.maxLength["default"] = {{ ch_length }};
+            }
+            return;
+        }
+        
+        setTimeout(waitForKeyboard, 2000);
+    }
+
+    // Initialize keyboard after DOM loads
+    document.addEventListener('DOMContentLoaded', waitForKeyboard);
+
+    function disable_button(x) {
+        if (!x) return;
+        
+        x.disabled = true;
+        x.innerHTML = "Printing...";
+    }
+
+    function toggleCommonHistories(button) {
+        const container = document.getElementById('commonHistoriesContainer');
+        if (!container || !button) return;
+        
+        const isHidden = container.style.display === 'none';
+        container.style.display = isHidden ? 'grid' : 'none';
+        button.setAttribute('aria-expanded', isHidden ? 'true' : 'false');
+        
+        const caret = button.querySelector('.collapsible__caret');
+        if (caret) {
+            caret.textContent = isHidden ? '▾' : '▸';
+        }
+    }
+
+    // Add CSS for better styling
+    const style = document.createElement('style');
+    style.textContent = `
+        .common-history-item:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .common-history-checkbox:checked + label {
+            font-weight: bold;
+            color: #0066cc;
+        }
+    `;
+    document.head.appendChild(style);
+</script>
 {% endblock %}

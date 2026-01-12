@@ -72,6 +72,17 @@ def initialize_departments():
     return departments
 
 
+# Load common histories from config file
+def load_common_histories():
+    common_histories = []
+    try:
+        with open("config/histories.config") as json_file:
+            common_histories = json.load(json_file)
+    finally:
+        pass
+    return common_histories
+
+
 def current_facility():
     try:
         with open("config/application.config") as json_file:

@@ -2,7 +2,25 @@
 <div class="tab" id="user-allocations">
     <div class="title-div">Allocation</div>
     <ul>
-        <div class="subtitle-div">
+        <div class="subtitle-div" id="ward-section" style="display:none;">
+            Ward
+        </div>
+        {% if all_wards %}
+            {% for ward in all_wards %}
+                <li data-id="{{ ward | replace(' ', '_')}}" name="allocationOptions" id="ward-option-{{ ward | replace(' ', '_')}}" style="display:none;">
+                    <input type="radio" id="{{ ward | replace(' ', '_') }}" value="{{ ward }}" name="ward" >
+                    <label for="{{ ward | replace(' ', '_') }}">{{ ward }}</label>
+                    <div class="check"></div>
+                </li>
+            {% endfor %}
+        {% else %}
+            <div class="notifier" id="ward-notifier" style="display:none;">
+                No ward available for this department
+            </div>
+            <input type="text" name="ward" value="{{None}}" hidden>
+        {% endif %}
+
+        <div class="subtitle-div" id="teams-section" style="display:none;">
             Teams
         </div>
         {% if teams %}

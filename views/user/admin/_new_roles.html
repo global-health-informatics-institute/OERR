@@ -48,9 +48,65 @@
     function SetParentRole() {
         setTabValidity(2, false);
         _handleButtonsState(2);
-        const selectedRole = document.querySelector("input[name='role']:checked").id;
-        console.log("Selected role: " + selectedRole);
-        _map_designations_to_role(selectedRole);
+        const selectedRole = document.querySelector("input[name='role']:checked");
+        const roleId = selectedRole.id;
+        const roleValue = selectedRole.value;
+        console.log("Selected role: " + roleId);
+        _map_designations_to_role(roleId);
+        
+        // Check if Nurse role is selected
+        if (roleValue === 'Nurse') {
+            isNurseRole = true;
+            console.log("Nurse role selected - allocation tab will be skipped");
+            
+            // Enable hidden inputs for nurse (no allocation)
+            const nurseTeamInput = document.getElementById('nurse-team-input');
+            const nurseUnitInput = document.getElementById('nurse-unit-input');
+            if (nurseTeamInput) nurseTeamInput.disabled = false;
+            if (nurseUnitInput) nurseUnitInput.disabled = false;
+            
+            // Disable radio inputs for team/unit selection
+            const teamRadios = document.querySelectorAll("input[type='radio'][name='team']");
+            const unitRadios = document.querySelectorAll("input[type='radio'][name='unit']");
+            
+            teamRadios.forEach(input => {
+                input.checked = false;
+                input.disabled = true;
+            });
+            unitRadios.forEach(input => {
+                input.checked = false;
+                input.disabled = true;
+            });
+            
+            // Auto-validate allocation tab for nurses
+            setTabValidity(3, true);
+        } else {
+            isNurseRole = false;
+            
+            // Disable hidden nurse inputs
+            const nurseTeamInput = document.getElementById('nurse-team-input');
+            const nurseUnitInput = document.getElementById('nurse-unit-input');
+            if (nurseTeamInput) nurseTeamInput.disabled = true;
+            if (nurseUnitInput) nurseUnitInput.disabled = true;
+            
+            // Enable radio inputs for team/unit selection
+            const teamRadios = document.querySelectorAll("input[type='radio'][name='team']");
+            const unitRadios = document.querySelectorAll("input[type='radio'][name='unit']");
+            
+            teamRadios.forEach(input => {
+                input.disabled = false;
+            });
+            unitRadios.forEach(input => {
+                input.disabled = false;
+            });
+            
+            // Reset allocation tab validation for non-nurse roles
+            setTabValidity(3, false);
+            // Trigger validation check
+            if (typeof _validateAllocationSelection === 'function') {
+                _validateAllocationSelection();
+            }
+        }
     }
 
 </script>

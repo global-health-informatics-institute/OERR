@@ -1,6 +1,11 @@
 <!-- TODO: move user allocations to configurable -->
 <div class="tab" id="user-allocations">
     <div class="title-div">Allocation</div>
+    
+    <!-- Hidden inputs for Nurse role (no allocation required) -->
+    <input type="hidden" id="nurse-team-input" name="team" value="None" disabled>
+    <input type="hidden" id="nurse-unit-input" name="unit" value="None" disabled>
+    
     <ul>
         <div class="subtitle-div">
             Teams
@@ -61,6 +66,17 @@
     const allocationInputsContainer = document.getElementById("user-allocations");
     
     function _validateAllocationSelection() {
+        // Nurse role is selected, auto-validate (allocation not required)
+        if (typeof isNurseRole !== 'undefined' && isNurseRole) {
+            setTabValidity(3, true);
+            const activeTab = _getCurrentActiveTab();
+            if (activeTab) {
+                _handleButtonsState(activeTab.index);
+            }
+            return;
+        }
+        
+        // For non-nurse roles, validate normally
         const isAllocationSelected = document.querySelector("input[name='unit']:checked") !== null || document.querySelector("input[name='team']:checked") !== null;
         setTabValidity(3, isAllocationSelected);
 

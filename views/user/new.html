@@ -99,6 +99,9 @@
 
 <script type="text/javascript">
 // NAVIGATION
+    // Global flag to track if Nurse role is selected (to skip allocation tab)
+    let isNurseRole = false;
+
     let allTabs = [
         { index: 0, id: "user-details", validity_check: false, is_active: false },
         { index: 1, id: "user-roles", validity_check: false, is_active: false },
@@ -176,6 +179,21 @@
 
 
         let targetIndex = currentTab.index + direction;
+        
+        // Skip allocation tab if Nurse role is selected
+        if (isNurseRole && targetIndex === 3) {
+            // If moving forward from designations (tab 2), skip to submit (would be last tab)
+            if (direction > 0 && currentTab.index === 2) {
+                // Submit the form directly
+                document.getElementById("regForm").submit();
+                return;
+            }
+            // If moving backward from beyond allocations, skip back to designations
+            if (direction < 0 && currentTab.index > 3) {
+                targetIndex = 2;
+            }
+        }
+        
         if (targetIndex < 0) targetIndex =  0;
         if (targetIndex >= allTabs.length) targetIndex = allTabs.length - 1;
         console.log("New index:", targetIndex);

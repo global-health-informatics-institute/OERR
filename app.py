@@ -504,10 +504,7 @@ def select_location():
             error = "Please select both department and ward."
         else:
             session["location"] = selected_ward
-<<<<<<< HEAD
-=======
             session["department"] = selected_department
->>>>>>> d5b5ea8 (feat: update session handling for department and location display in the UI)
             return redirect(url_for('index'))
 
     session["ward"] = None

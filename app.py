@@ -30,6 +30,9 @@ settings = misc.initialize_settings()
 app.config['user_roles'] = misc.initialize_user_roles()
 app.config['departments'] = misc.initialize_departments()
 
+# Common histories
+app.config['common_histories'] = misc.initialize_common_histories()
+
 # optional configuration when running on rpi
 if settings["using_rpi"] == "True":
     from utils.led_control import led_control
@@ -242,7 +245,7 @@ def patient(patient_id):
                            collect_samples=draw_sample, doctors=prescribers(), ch_length=permitted_length,
                            requires_keyboard=True,
                            test_options=inject_tests(), specimen_types=inject_specimen_types(),
-                           panel_options=inject_panels())
+                           panel_options=inject_panels(), common_histories=app.config['common_histories'])
 
 
 
@@ -510,6 +513,8 @@ def select_location():
     return render_template('user/select_location.html', error=error, departments=departments)
 
 ###### LAB ORDER ROUTES ###########
+
+
 # create a new lab test order
 @app.route("/test/create", methods=['POST'])
 def create_lab_order():

@@ -61,6 +61,15 @@ def initialize_user_roles():
         pass
     return user_roles
 
+def initialize_common_histories():
+    common_histories = {}
+    try:
+        with open("config/histories.config") as json_file:
+            common_histories = json.load(json_file)
+    finally:
+        pass
+    return common_histories
+
 
 def initialize_departments():
     departments = {}

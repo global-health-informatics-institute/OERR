@@ -80,6 +80,12 @@ function showTab(n) {
     }
     //... and run a function that will display the correct step indicator:
     fixStepIndicator(n)
+    
+    // For patient form: re-evaluate checkbox-dependent sections when showing clinical history tab
+    if (n === 3 && typeof handleCheckboxChange === 'function') {
+        // Small delay to ensure DOM is fully rendered
+        setTimeout(handleCheckboxChange, 10);
+    }
 }
 
 function nextPrev(n) {

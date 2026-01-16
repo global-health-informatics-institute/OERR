@@ -354,16 +354,103 @@
 
                 <div class="tab">
                     <h2>Enter Clinical Information/History</h2>
-                    <div>
-                    <input type="text" placeholder="Clinical history" name="clinical_history" id="input20" class="input" value="{{
-                      request.form.clinical_history }}" maxlength="{{ch_length}}" required style="width: 100%; font-size : 18pt;border-radius:5px;height: 7vh;">
-                        <span style="font-weight:500;font-size:14pt;">Max Char : {{ch_length}}</span>
-                    </div>
-                    <div id="antibiotics" style="margin-top: 10px;">
+                    
+                    <div id="antibiotics" style="margin-top: 10px; display: none">
                     <label  style="font-size: 18pt;">Antibiotics:</label>
                     <input type="text"  value="" name="antibiotics" style="width: 45%; font-size: 18pt; border-radius: 5px;
                      height: 7vh; display: inline-block; margin-left: 10px;"/>
                      </div>
+
+
+                    <div id="bloodVolume" class="blood-volume">
+                        <!-- Unit selector -->
+                        <div class="unit-group">
+                            <label class="unit-option">
+                                <input type="radio" id="mls" value="mls" name="volume_unit" checked>
+                                <span>mls</span>
+                            </label>
+
+                            <label class="unit-option">
+                                <input type="radio" id="pints" value="pints" name="volume_unit">
+                                <span>pints</span>
+                            </label>
+                                                        <input
+                                id="bloodVolumeInput"
+                                type="number"
+                                min="1"
+                                max="10"
+                                step="1"
+                                inputmode="numeric"
+                                name="bloodVolume"
+                                class="input blood-input"
+                                placeholder="1–10"
+                                style="font-size: 18pt; border-radius: 5px; height: 7vh;"
+                                required
+                            />
+
+                        </div>
+                       
+                    </div>
+
+                    
+                    <div style="margin-top: 10px;">
+
+                    <!-- Button + Input Row -->
+                    <div style="display: flex; gap: 10px; align-items: center;">
+
+                        <!-- Toggle Button -->
+                        <button type="button"
+                            style="
+                                border: gray 1px solid;
+                                padding: 10px 15px;
+                                font-size: 18px;
+                                border-radius: 5px;
+                                white-space: nowrap;
+                                height: 7vh;
+                            "
+                            class="collapsible__toggle"
+                            aria-expanded="true"
+                            aria-controls="commonHistoriesContainer"
+                            onclick="toggleCommonHistories(this)">
+                            Common Histories
+                            <span class="collapsible__caret">▾</span>
+                        </button>
+
+                        <!-- Input -->
+                        <input type="text"
+                            placeholder="Clinical history"
+                            name="clinical_history"
+                            id="input20"
+                            class="input"
+                            value="{{ request.form.clinical_history }}"
+                            maxlength="{{ ch_length }}"
+                            required
+                            style="
+                                width: 100%;
+                                font-size: 18pt;
+                                border-radius: 5px;
+                                height: 7vh;
+                            ">
+                    </div>
+
+                    <!-- Max char -->
+                    <span style="font-weight:500;font-size:14pt;">
+                        Max Char : {{ ch_length }}
+                    </span>
+
+                    <!-- Collapsible Content -->
+                    <div id="commonHistoriesContainer" style="
+                        display: grid;
+                        grid-template-columns: repeat(3, 1fr);
+                        gap: 15px;
+                        margin-top: 10px;
+                    "></div>
+
+                </div>
+
+
+                    
+
 
                     <div class="simple-keyboard" style="width: 99%; border: 1px solid silver;margin-top: 2vh;"></div>
                 </div>
@@ -505,6 +592,76 @@
             x.innerHTML= "Printing..";
         }
 
+function handleCheckboxChange() {
+    const checkboxes = document.querySelectorAll('input[name="test_type[]"]:checked');
+    const antibioticsDiv = document.getElementById('antibiotics');
+    const bloodVolumeDiv = document.getElementById('bloodVolume');
+
+    if (!antibioticsDiv || !bloodVolumeDiv) return;
+
+    let displayAntibiotics = false;
+    let displayBloodVolume = false;
+
+    // Use backend data if available, else fallback
+    const testReqs = window.TEST_REQUIREMENTS && Object.keys(window.TEST_REQUIREMENTS).length
+        ? window.TEST_REQUIREMENTS
+        : {
+            "ABO Blood Grouping": { needs_blood_volume: true, needs_antibiotics: false },
+            "Cross-match": { needs_blood_volume: true, needs_antibiotics: false },
+            "29": { needs_blood_volume: true, needs_antibiotics: false },
+            "30": { needs_blood_volume: true, needs_antibiotics: false },
+            "MC&S": { needs_blood_volume: false, needs_antibiotics: true },
+            "4": { needs_blood_volume: false, needs_antibiotics: true }
+        };
+
+    checkboxes.forEach(checkbox => {
+        const testTypeId = checkbox.value;
+
+        if (!testReqs[testTypeId]) return;
+
+        if (testReqs[testTypeId].needs_antibiotics) {
+            displayAntibiotics = true;
+        }
+
+        if (testReqs[testTypeId].needs_blood_volume) {
+            displayBloodVolume = true;
+        }
+    });
+
+    // Show / hide sections
+    antibioticsDiv.style.display = displayAntibiotics ? 'block' : 'none';
+    bloodVolumeDiv.style.display = displayBloodVolume ? 'block' : 'none';
+
+    // Clear hidden fields
+    if (!displayAntibiotics) clearFormSection(antibioticsDiv);
+    if (!displayBloodVolume) clearFormSection(bloodVolumeDiv);
+
+    // Rebind inputs (if needed)
+    setTimeout(bindKeyboardInputs, 50);
+}
+
+function clearFormSection(sectionElement) {
+    const inputs = sectionElement.querySelectorAll('input, select, textarea');
+    inputs.forEach(input => {
+        if (input.type === 'checkbox' || input.type === 'radio') {
+            input.checked = false;
+        } else if (input.tagName === 'SELECT') {
+            input.selectedIndex = 0;
+        } else {
+            input.value = '';
+        }
+    });
+}
+
+function bindKeyboardInputs() {
+  document.querySelectorAll(".input").forEach(input => {
+    input.removeEventListener("focus", onInputFocus);
+    input.removeEventListener("input", onInputChange);
+
+    input.addEventListener("focus", onInputFocus);
+    input.addEventListener("input", onInputChange);
+  });
+}
 
 function handleCheckboxChange() {
     var checkboxes = document.querySelectorAll('input[name="test_type[]"]:checked');

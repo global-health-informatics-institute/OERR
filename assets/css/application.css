@@ -588,3 +588,60 @@ button:hover {
     padding: 10px;
     font-family: Arial, "Helvetica Neue", Helvetica, sans-serif; font-size: 12pt;
 }
+
+
+/* Blood volume input styles  */
+.blood-volume {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 10px;
+    flex-wrap: wrap; /* allows wrapping on small screens */
+    justify-content: space-between;
+    width: 100%;
+}
+
+/* Radio group */
+.unit-group {
+    display: flex;
+    gap: 20px;
+    margin-left: 10px;
+}
+
+/* Make radios touch-friendly */
+.unit-option {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    font-size: 18pt;
+    min-height: 48px;
+    cursor: pointer;
+}
+
+/* Enlarge radio buttons */
+.unit-option input[type="radio"] {
+    transform: scale(1.8);
+    margin: 0;
+}
+
+/* Label */
+.blood-label {
+    font-size: 18pt;
+    white-space: nowrap;
+}
+/* Input field */
+.blood-input {
+    width: 100%;
+    height: 48px; /* Google recommended */
+    font-size: 18pt;
+    font-weight: 400;
+    border-radius: 6px;
+    padding: 6px 12px;
+}
+
+.blood-volume span{
+  font-size: 20px;
+  font-weight: 400;
+  text-transform: uppercase;
+}
+

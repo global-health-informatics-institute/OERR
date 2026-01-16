@@ -171,6 +171,21 @@ def barcode():
 
 
 ###### PATIENT ROUTES ##########
+def needs_blood_volume(test_type_id):
+    # Clean the test type ID (remove pipes if present)
+    clean_id = test_type_id.strip('|')
+    
+    # Check both the ID and name variations
+    blood_test_patterns = [
+        "ABO Blood Grouping",
+        "ABO", 
+        "Cross-match",
+        "Crossmatch",
+        "Blood Group"
+    ]
+    
+    return any(pattern.lower() in clean_id.lower() for pattern in blood_test_patterns)
+
 @app.route("/patient/<patient_id>", methods=['GET'])
 def patient(patient_id):
     # Turn off LEDs
@@ -233,6 +248,37 @@ def patient(patient_id):
     # Sort combined records (local + remote) by date in reverse order
     records = sorted(records, key=lambda e: e["date"], reverse=True)
 
+    # Prepare test requirements data
+    test_requirements = {}
+    
+    # Get test type information - safer approach
+    try:
+        # Try to get available test types
+        available_tests = LaboratoryTestType.get_available()
+        for test_record in available_tests:
+            test_id = test_record.get('_id', '')
+            test_type_id = test_record.get('test_type_id', '')
+            
+            # Use both _id and test_type_id as keys
+            if test_id:
+                test_requirements[test_id] = {
+                    'needs_blood_volume': needs_blood_volume(test_id),
+                    'needs_antibiotics': needs_antibiotics(test_id)
+                }
+
+    except Exception as e:
+        # Fallback - hardcode the known test types
+        print(f"Warning: Could not load test types: {e}")
+        test_requirements = {
+            "ABO Blood Grouping": {"needs_blood_volume": True, "needs_antibiotics": False},
+            "Cross-match": {"needs_blood_volume": True, "needs_antibiotics": False},
+            "29": {"needs_blood_volume": True, "needs_antibiotics": False},
+            "30": {"needs_blood_volume": True, "needs_antibiotics": False},
+            "MC&S": {"needs_blood_volume": False, "needs_antibiotics": True},
+            "4": {"needs_blood_volume": False, "needs_antibiotics": True},
+            "Culture & Sensitivity": {"needs_blood_volume": False, "needs_antibiotics": True}
+        }
+
     # Calculate permitted length
     permitted_length = 85 - 50 - len(var_patient['name']) - len(var_patient['id'])
 
@@ -242,7 +288,7 @@ def patient(patient_id):
                            collect_samples=draw_sample, doctors=prescribers(), ch_length=permitted_length,
                            requires_keyboard=True,
                            test_options=inject_tests(), specimen_types=inject_specimen_types(),
-                           panel_options=inject_panels())
+                           panel_options=inject_panels(), common_histories=app.config['common_histories'])
 
 
 
@@ -425,9 +471,6 @@ def edit_user(username=None):
                 ward=(user.ward or ward)
             )
 
-
-
-
 #update password query
 @app.route("/user/<user_id>/update_password", methods=["GET", "POST"])
 def change_password(user_id=None):
@@ -468,7 +511,6 @@ def deactivate_user(user_id=None):
         user.save()
         return redirect(url_for("users"))
 
-
 @app.route("/user/<user_id>/activate")
 def activate_user(user_id=None):
     user = User.get(user_id)
@@ -479,7 +521,6 @@ def activate_user(user_id=None):
         user.status = "Active"
         user.save()
         return redirect(url_for("users"))
-
 
 @app.route("/select_location", methods=["GET", "POST"])
 def select_location():
@@ -525,6 +566,14 @@ def create_lab_order():
             'patient_id':
                 request.form['patient_id']
         }
+        # Handle ABO and Cross-match transfusion(volume and unit) to db
+        # Check for test type IDs: 29 (ABO Blood Grouping) and 30 (Cross-match)
+        if test == "29" or test == "30":
+            new_test['transfusion'] = {
+                'volume': request.form.get('bloodVolume', 0),
+                'unit': request.form.get('volume_unit', 'mls')
+            }
+
         if len(test.split("|")) > 1:
             new_test['tests'] = {}
             new_test['type'] = "test panel"
@@ -537,6 +586,7 @@ def create_lab_order():
             new_test['type'] = 'test'
             new_test['test_type'] = test
         db.save(new_test)
+        print(new_test)
         flash("New test ordered.", 'success')
     return redirect(url_for('patient', patient_id=request.form['patient_id'],
                             sample_draw=(request.form["sampleCollection"] == "Collect Now")))

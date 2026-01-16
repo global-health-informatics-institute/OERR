@@ -753,7 +753,6 @@ def get_test_measures(test, test_details):
             if "aliases" in details and measure in details["aliases"]:
                 return measure_key
         return None
-    print("TEST OBJECT: ", test)
     
     for measure in test.get("measures", []):
         raw_value = test["measures"][measure]
@@ -761,7 +760,6 @@ def get_test_measures(test, test_details):
             raw_value = ""
         
         measure_key = _find_alias(measure) if test_details.measures.get(measure) is None else measure
-        print("MEASURE KEY: ",measure_key)
 
         if measure_key is None:
             results[measure] = {"range": "", "interpretation": "Normal", "value": raw_value}

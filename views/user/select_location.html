@@ -2,10 +2,7 @@
 {% block title %}Select Location{% endblock %}
 {% block content %}
 <div style="padding: 10px;">
-        <p>
-            <span style="font-style: italic; font-size:16pt;">Welcome {{ session["user"]["current_user"] }}!</span><br/>
-            <span style="font-weight: bold; font-size:18pt;">Please select your Department :</span>
-        </p>
+       
         <div class="tab">
             <button class="tablinks active" onclick="openTab(event, 'location')">Location</button>
             <button class="tablinks" onclick="openTab(event, 'ward')">Wards</button>
@@ -13,6 +10,10 @@
 
        <!-- Department Tab -->
     <div id="location" class="tabcontent" style="display:block;">
+         <p>
+            <span style="font-style: italic; font-size:16pt;">Welcome {{ session["user"]["current_user"] }}!</span><br/>
+            <span style="font-weight: bold; font-size:18pt;">Please select your Department :</span>
+        </p>
         <form action="/select_location" method="post" name="locationSelection">
             <div style="width: 100%; height: 80%; border: 2px solid blue;overflow:auto;margin-left: auto;margin-right: auto;">
                 <ul>
@@ -35,6 +36,10 @@
 
        <!-- Ward Tab -->
     <div id="ward" class="tabcontent" style="display:none;">
+         <p>
+            <span style="font-style: italic; font-size:16pt;">Welcome {{ session["user"]["current_user"] }}!</span><br/>
+            <span style="font-weight: bold; font-size:18pt;">Please select Ward :</span>
+        </p>
         <form action="/select_location" method="POST" name="wardSelection">
             <div style="width: 100%; height: 80%; border: 2px solid blue; overflow:auto;">
                 <ul id="wardsList">
@@ -45,7 +50,21 @@
 </div>
 
 <script>
+    window.onload = function () {
+    setNavButtons("location");
+};
+
     function openTab(evt, tabName) {
+
+        if (tabName == "ward" && !document.querySelector('input[name="department"]:checked')) {
+            alert("Please select a department first.");
+            return;
+        }
+
+        if (!document.getElementById(tabName)) {
+            tabName = "location"; // default to location tab if not found
+        }
+
         var i, tabcontent, tablinks;
         tabcontent = document.getElementsByClassName("tabcontent");
         for (i = 0; i < tabcontent.length; i++) {
@@ -57,6 +76,8 @@
         }
         document.getElementById(tabName).style.display = "block";
         evt.currentTarget.className += " active";
+
+        setNavButtons(tabName);
     }
 
     function nextTab() {
@@ -105,6 +126,9 @@
          document.getElementById('ward').style.display = "block";
         document.getElementById('location').style.display = "none";
         document.getElementsByClassName('tablinks')[1].classList.add('active');
+
+        setNavButtons("ward");
+
     }
 
     function onSubmit() {
@@ -121,8 +145,31 @@
         }
     }
 
-    navButtons = ["<button class=\"nvButton red\" onmousedown=\"window.location='/login'\" style=\"float: left;\">logout</button>",
-        "<button class=\"nvButton green\" id='btnSubmit' onmousedown='onSubmit()' style=\"float: right;\">Finish</button>"]
+    function setNavButtons(tabName) {
+        let navButtons = [];
+
+        if (tabName === "location") {
+            navButtons = [
+                "<button class=\"nvButton red\" onmousedown=\"window.location='/login'\" style=\"float:left;\">Logout</button>"    
+            ];
+        }
+
+        else if (tabName === "ward") {
+            navButtons = [
+                "<button class=\"nvButton red\" onmousedown=\"window.location='/login'\" style=\"float:left;\">Logout</button>",
+                "<button class=\"nvButton blue\" onmousedown=\"window.location='/select_location'\" style=\"float:left;\">Previous</button>",
+                "<button class=\"nvButton green\" id=\"btnSubmit\" onmousedown=\"onSubmit()\" style=\"float:right;\">Finish</button>"
+            ];
+        }
+
+        else {
+            navButtons = [
+                "<button class=\"nvButton red\" onmousedown=\"window.location='/login'\" style=\"float:left;\">Logout</button>"    
+            ];
+        }
+
+        document.getElementById("navFooter").innerHTML = navButtons.join("");
+    }
 
 </script>
 

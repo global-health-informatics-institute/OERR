@@ -2,9 +2,18 @@
 <div class="tab" id="edit-user-allocations">
     <div class="title-div">Allocation</div>
     
-    <!-- Hidden inputs for Nurse role (no allocation required) -->
-    <input type="hidden" id="edit-nurse-team-input" name="team" value="None" disabled>
-    <input type="hidden" id="edit-nurse-unit-input" name="unit" value="None" disabled>
+    <!-- Nurse allocation div (visible only when role is Nurse) -->
+    <div id="edit-nurse-allocation-div" style="display: none;">
+        <div class="notifier">
+            Nurses do not require allocation
+        </div>
+        <!-- Hidden inputs for Nurse role (no allocation required) -->
+        <input type="hidden" id="edit-nurse-team-input" name="team" value="None">
+        <input type="hidden" id="edit-nurse-unit-input" name="unit" value="None">
+    </div>
+    
+    <!-- Regular allocation div (visible when role is not Nurse) -->
+    <div id="edit-regular-allocation-div">
     
     <ul>
         <div class="subtitle-div">
@@ -66,7 +75,80 @@
             <input type="text" name="ward" value="{{None}}" hidden>
         {% endif %}
     </ul>
+    </div>
 </div>
 
 <script type="text/javascript">
+    // watch_selected_role for update scenario:
+    // will set selectedRole to "" unless selected
+    // if selectedRole === 'Nurse' then render nurseAllocationDiv
+    // nurseAllocated div contains teams and units set to None
+    // a message indicating that nurses do not require allocation is displayed
+    // other divs are not rendered
+    
+    let selectedRoleUpdate = "";
+    
+    function watch_selected_role_update(role) {
+        selectedRoleUpdate = role || "";
+        
+        const nurseDiv = document.getElementById("edit-nurse-allocation-div");
+        const regularDiv = document.getElementById("edit-regular-allocation-div");
+        
+        if (selectedRoleUpdate === "Nurse") {
+            // Show nurse message div and hide regular allocation options
+            nurseDiv.style.display = "block";
+            regularDiv.style.display = "none";
+            
+            // Set hidden inputs for nurse role
+            document.getElementById("edit-nurse-team-input").value = "None";
+            document.getElementById("edit-nurse-unit-input").value = "None";
+        } else {
+            // Hide nurse message div and show regular allocation options
+            nurseDiv.style.display = "none";
+            regularDiv.style.display = "block";
+        }
+    }
+    
+    // Initialize allocation visibility on page load for update scenario
+    document.addEventListener('DOMContentLoaded', function() {
+        // Check if there's already a selected role
+        const selectedRoleRadio = document.querySelector("input[name='role']:checked");
+        if (selectedRoleRadio) {
+            watch_selected_role_update(selectedRoleRadio.value);
+        }
+    });
+    
+    // DATA VALIDATION for update scenario
+    const editAllocationInputsContainer = document.getElementById("edit-user-allocations");
+    
+    function _validateEditAllocationSelection() {
+        // Check if current role is Nurse (no allocation required)
+        const selectedRoleElement = document.querySelector("input[name='role']:checked");
+        const isNurse = selectedRoleElement && selectedRoleElement.value === "Nurse";
+        
+        // For nurses, allocation is not required, so validation passes
+        // For other roles, check if team or unit is selected
+        const isAllocationSelected = isNurse || 
+                                   document.querySelector("input[name='unit']:checked") !== null || 
+                                   document.querySelector("input[name='team']:checked") !== null;
+        
+        // Assuming there's a similar setTabValidity function for edit scenario
+        // You may need to adjust this based on the actual edit form validation structure
+        if (typeof setTabValidity === 'function') {
+            setTabValidity(3, isAllocationSelected);
+        }
+
+        // Trigger button state update if needed
+        if (typeof _handleButtonsState === 'function' && typeof _getCurrentActiveTab === 'function') {
+            const activeTab = _getCurrentActiveTab();
+            if (activeTab) {
+                _handleButtonsState(activeTab.index);
+            }
+        }
+    }
+    
+    if (editAllocationInputsContainer) {
+        editAllocationInputsContainer.addEventListener('change', _validateEditAllocationSelection);
+        _validateEditAllocationSelection();
+    }
 </script>

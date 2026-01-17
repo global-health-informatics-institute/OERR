@@ -2,9 +2,18 @@
 <div class="tab" id="user-allocations">
     <div class="title-div">Allocation</div>
     
-    <!-- Hidden inputs for Nurse role (no allocation required) -->
-    <input type="hidden" id="nurse-team-input" name="team" value="None" disabled>
-    <input type="hidden" id="nurse-unit-input" name="unit" value="None" disabled>
+    <!-- Nurse allocation div (visible only when role is Nurse) -->
+    <div id="nurse-allocation-div" style="display: none;">
+        <div class="notifier">
+            Nurses do not require allocation
+        </div>
+        <!-- Hidden inputs for Nurse role (no allocation required) -->
+        <input type="hidden" id="edit-nurse-team-input" name="team" value="None">
+        <input type="hidden" id="edit-nurse-unit-input" name="unit" value="None">
+    </div>
+    
+    <!-- Regular allocation div (visible when role is not Nurse) -->
+    <div id="regular-allocation-div">
     
     <ul>
         <div class="subtitle-div">
@@ -59,25 +68,66 @@
             <input type="text" name="ward" value="{{None}}" hidden>
         {% endif %}
     </ul>
+    </div>
 </div>
 
 <script type="text/javascript">
+    // watch_selected_role():
+        // will set selectedRole to "" unless selected
+        // if selectedRole === 'Nurse'then render nurseAllocationDiv
+            // nurseAllocated div contains teams and units set to None
+            // a message indicating that nurses do not require allocation is displayed
+            // other divs are not rendered
+    
+    let selectedRole = "";
+    
+    function watch_selected_role(role) {
+        selectedRole = role || "";
+        
+        const nurseDiv = document.getElementById("nurse-allocation-div");
+        const regularDiv = document.getElementById("regular-allocation-div");
+        
+        if (selectedRole === "Nurse") {
+            // Show nurse message div and hide regular allocation options
+            nurseDiv.style.display = "block";
+            regularDiv.style.display = "none";
+            
+            // Set hidden inputs for nurse role
+            document.getElementById("edit-nurse-team-input").value = "None";
+            document.getElementById("edit-nurse-unit-input").value = "None";
+        } else {
+            // Hide nurse message div and show regular allocation options
+            nurseDiv.style.display = "none";
+            regularDiv.style.display = "block";
+        }
+    }
+    
+    // Initialize allocation visibility on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        // Check if there's already a selected role
+        const selectedRoleRadio = document.querySelector("input[name='role']:checked");
+        if (selectedRoleRadio) {
+            watch_selected_role(selectedRoleRadio.value);
+        }
+    });
+    
     // DATA VALIDATION
     const allocationInputsContainer = document.getElementById("user-allocations");
     
+    //Add event listener to allocation options if its Nurse it should not display allocation tab
+    
+
     function _validateAllocationSelection() {
-        // Nurse role is selected, auto-validate (allocation not required)
-        if (typeof isNurseRole !== 'undefined' && isNurseRole) {
-            setTabValidity(3, true);
-            const activeTab = _getCurrentActiveTab();
-            if (activeTab) {
-                _handleButtonsState(activeTab.index);
-            }
-            return;
-        }
+        // Check if current role is Nurse (no allocation required)
+        const selectedRoleElement = document.querySelector("input[name='role']:checked");
+        const isNurse = selectedRoleElement && selectedRoleElement.value === "Nurse";
         
-        // For non-nurse roles, validate normally
-        const isAllocationSelected = document.querySelector("input[name='unit']:checked") !== null || document.querySelector("input[name='team']:checked") !== null;
+        // For nurses, allocation is not required, so validation passes
+        // For other roles, check if team or unit is selected
+        const isAllocationSelected = isNurse || 
+                                   document.querySelector("input[name='unit']:checked") !== null || 
+                                   document.querySelector("input[name='team']:checked") !== null;
+        
         setTabValidity(3, isAllocationSelected);
 
         const activeTab = _getCurrentActiveTab();

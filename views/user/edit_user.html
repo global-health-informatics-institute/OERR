@@ -103,7 +103,6 @@
    
 <script type="text/javascript">
     let currentTab = 0;
-    let isEditNurseRole = false;
     showTab(currentTab);
 
     function showEditUserDialog() {
@@ -136,18 +135,6 @@
         tabs[currentTab].style.display = 'none';
         currentTab = currentTab + n;
         
-        // Skip allocation tab (index 3) if Nurse role is selected
-        if (isEditNurseRole && currentTab === 3) {
-            // If moving forward from designations (tab 2), skip to submit
-            if (n > 0) {
-                document.getElementById('editUserForm').submit();
-                return false;
-            }
-            // If moving backward, skip back to designations
-            if (n < 0) {
-                currentTab = 2;
-            }
-        }
 
         if (currentTab >= tabs.length) {
             document.getElementById('editUserForm').submit();

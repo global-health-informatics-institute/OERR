@@ -76,25 +76,40 @@
     let selectedRole = "";
     
     function watch_selected_role(role) {
-        selectedRole = role || "";
-        
-        const nurseDiv = document.getElementById("nurse-allocation-div");
-        const regularDiv = document.getElementById("regular-allocation-div");
-        
-        if (selectedRole === "Nurse") {
-            // Show nurse message div and hide regular allocation options
-            nurseDiv.style.display = "block";
-            regularDiv.style.display = "none";
-            
-            // Set hidden inputs for nurse role
-            document.getElementById("edit-nurse-team-input").value = "None";
-            document.getElementById("edit-nurse-unit-input").value = "None";
-        } else {
-            // Hide nurse message div and show regular allocation options
-            nurseDiv.style.display = "none";
-            regularDiv.style.display = "block";
-        }
+    selectedRole = role || "";
+
+    const nurseDiv = document.getElementById("nurse-allocation-div");
+    const regularDiv = document.getElementById("regular-allocation-div");
+
+    const nurseTeam = document.getElementById("edit-nurse-team-input");
+    const nurseUnit = document.getElementById("edit-nurse-unit-input");
+
+    if (selectedRole === "Nurse") {
+        nurseDiv.style.display = "block";
+        regularDiv.style.display = "none";
+
+        nurseTeam.disabled = false;
+        nurseUnit.disabled = false;
+
+        nurseTeam.value = "None";
+        nurseUnit.value = "None";
+
+        // Clear any selected radios
+        document.querySelectorAll("input[name='team'], input[name='unit']")
+            .forEach(i => i.checked = false);
+
+    } else {
+        nurseDiv.style.display = "none";
+        regularDiv.style.display = "block";
+
+        // 🚨 THIS IS THE KEY
+        nurseTeam.disabled = true;
+        nurseUnit.disabled = true;
     }
+
+    _validateAllocationSelection();
+}
+
     
     // Initialize allocation visibility on page load
     document.addEventListener('DOMContentLoaded', function() {

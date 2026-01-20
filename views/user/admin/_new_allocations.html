@@ -1,7 +1,7 @@
 <!-- TODO: move user allocations to configurable -->
 <div class="tab" id="user-allocations">
     <div class="title-div">Allocation</div>
-    
+
     <!-- Nurse allocation div (visible only when role is Nurse) -->
     <div id="nurse-allocation-div" style="display: none;">
         <div class="notifier">
@@ -11,132 +11,131 @@
         <input type="hidden" id="edit-nurse-team-input" name="team" value="None">
         <input type="hidden" id="edit-nurse-unit-input" name="unit" value="None">
     </div>
-    
+
     <!-- Regular allocation div (visible when role is not Nurse) -->
     <div id="regular-allocation-div">
-    
-    <ul>
-        <div class="subtitle-div">
-            Teams
-        </div>
-        {% if teams %}
+
+        <ul>
+            <div class="subtitle-div">
+                Teams
+            </div>
+            {% if teams %}
             {% for team in teams %}
-                <li data-id="{{ team | replace(' ', '_')}}" name="allocationOptions">
-                    <input type="radio" id="{{ team | replace(' ', '_') }}" value="{{ team }}" name="team" >
-                    <label for="{{ team | replace(' ', '_') }}">{{ team }}</label>
-                    <div class="check"></div>
-                </li>
+            <li data-id="{{ team | replace(' ', '_')}}" name="allocationOptions">
+                <input type="radio" id="{{ team | replace(' ', '_') }}" value="{{ team }}" name="team">
+                <label for="{{ team | replace(' ', '_') }}">{{ team }}</label>
+                <div class="check"></div>
+            </li>
             {% endfor %}
-        {% else %}
+            {% else %}
             <div class="notifier">
                 No teams available for this department
             </div>
-            <input type="text" name="team" value="{{None}}"hidden>
-        {% endif %}
+            <input type="text" name="team" value="{{None}}" hidden>
+            {% endif %}
 
-        <hr>
+            <hr>
 
-        <div class="subtitle-div">
-            Units
-        </div>
+            <div class="subtitle-div">
+                Units
+            </div>
 
-        {% if units %}
+            {% if units %}
             {% for unit in units %}
-                <li data-id="{{ unit | replace(' ', '_')}}" name="allocationOptions">
-                    <input type="radio" id="{{ unit | replace(' ', '_') }}" value="{{ unit }}" name="unit" >
-                    <label for="{{ unit | replace(' ', '_') }}">{{ unit }}</label>
-                    <div class="check"></div>
-                </li>
+            <li data-id="{{ unit | replace(' ', '_')}}" name="allocationOptions">
+                <input type="radio" id="{{ unit | replace(' ', '_') }}" value="{{ unit }}" name="unit">
+                <label for="{{ unit | replace(' ', '_') }}">{{ unit }}</label>
+                <div class="check"></div>
+            </li>
             {% endfor %}
-        {% else %}
+            {% else %}
             <div class="notifier">
                 No units available for this department
             </div>
             <input type="text" name="unit" value="{{None}}" hidden>
-        {% endif %}
+            {% endif %}
 
 
-        {% if department %}
+            {% if department %}
             <input type="text" name="department" value="{{ department }}" hidden>
-        {% else %}
+            {% else %}
             <input type="text" name="department" value="{{None}}" hidden>
-        {% endif %}
+            {% endif %}
 
-        {% if ward %}
+            {% if ward %}
             <input type="text" name="ward" value="{{ ward }}" hidden>
-        {% else %}
+            {% else %}
             <input type="text" name="ward" value="{{None}}" hidden>
-        {% endif %}
-    </ul>
+            {% endif %}
+        </ul>
     </div>
 </div>
 
 <script type="text/javascript">
-    
+
     let selectedRole = "";
-    
+
     function watch_selected_role(role) {
-    selectedRole = role || "";
+        selectedRole = role || "";
 
-    const nurseDiv = document.getElementById("nurse-allocation-div");
-    const regularDiv = document.getElementById("regular-allocation-div");
+        const nurseDiv = document.getElementById("nurse-allocation-div");
+        const regularDiv = document.getElementById("regular-allocation-div");
 
-    const nurseTeam = document.getElementById("edit-nurse-team-input");
-    const nurseUnit = document.getElementById("edit-nurse-unit-input");
+        const nurseTeam = document.getElementById("edit-nurse-team-input");
+        const nurseUnit = document.getElementById("edit-nurse-unit-input");
 
-    if (selectedRole === "Nurse") {
-        nurseDiv.style.display = "block";
-        regularDiv.style.display = "none";
+        if (selectedRole === "Nurse") {
+            nurseDiv.style.display = "block";
+            regularDiv.style.display = "none";
 
-        nurseTeam.disabled = false;
-        nurseUnit.disabled = false;
+            nurseTeam.disabled = false;
+            nurseUnit.disabled = false;
 
-        nurseTeam.value = "None";
-        nurseUnit.value = "None";
+            nurseTeam.value = "None";
+            nurseUnit.value = "None";
 
-        // Clear any selected radios
-        document.querySelectorAll("input[name='team'], input[name='unit']")
-            .forEach(i => i.checked = false);
+            // Clear any selected radios
+            document.querySelectorAll("input[name='team'], input[name='unit']")
+                .forEach(i => i.checked = false);
 
-    } else {
-        nurseDiv.style.display = "none";
-        regularDiv.style.display = "block";
+        } else {
+            nurseDiv.style.display = "none";
+            regularDiv.style.display = "block";
 
-        // 🚨 THIS IS THE KEY
-        nurseTeam.disabled = true;
-        nurseUnit.disabled = true;
+            nurseTeam.disabled = true;
+            nurseUnit.disabled = true;
+        }
+
+        _validateAllocationSelection();
     }
 
-    _validateAllocationSelection();
-}
 
-    
     // Initialize allocation visibility on page load
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         // Check if there's already a selected role
         const selectedRoleRadio = document.querySelector("input[name='role']:checked");
         if (selectedRoleRadio) {
             watch_selected_role(selectedRoleRadio.value);
         }
     });
-    
+
     // DATA VALIDATION
     const allocationInputsContainer = document.getElementById("user-allocations");
-    
+
     //Add event listener to allocation options if its Nurse it should not display allocation tab
-    
+
 
     function _validateAllocationSelection() {
         // Check if current role is Nurse (no allocation required)
         const selectedRoleElement = document.querySelector("input[name='role']:checked");
         const isNurse = selectedRoleElement && selectedRoleElement.value === "Nurse";
-        
+
         // For nurses, allocation is not required, so validation passes
         // For other roles, check if team or unit is selected
-        const isAllocationSelected = isNurse || 
-                                   document.querySelector("input[name='unit']:checked") !== null || 
-                                   document.querySelector("input[name='team']:checked") !== null;
-        
+        const isAllocationSelected = isNurse ||
+            document.querySelector("input[name='unit']:checked") !== null ||
+            document.querySelector("input[name='team']:checked") !== null;
+
         setTabValidity(3, isAllocationSelected);
 
         const activeTab = _getCurrentActiveTab();

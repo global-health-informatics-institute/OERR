@@ -99,6 +99,7 @@
 
 <script type="text/javascript">
 // NAVIGATION
+
     let allTabs = [
         { index: 0, id: "user-details", validity_check: false, is_active: false },
         { index: 1, id: "user-roles", validity_check: false, is_active: false },
@@ -176,6 +177,7 @@
 
 
         let targetIndex = currentTab.index + direction;
+        
         if (targetIndex < 0) targetIndex =  0;
         if (targetIndex >= allTabs.length) targetIndex = allTabs.length - 1;
         console.log("New index:", targetIndex);

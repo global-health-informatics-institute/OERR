@@ -8,8 +8,8 @@
             Nurses do not require allocation
         </div>
         <!-- Hidden inputs for Nurse role (no allocation required) -->
-        <input type="hidden" id="nurse-team-input" name="team" value="None">
-        <input type="hidden" id="nurse-unit-input" name="unit" value="None">
+        <input type="hidden" id="nurse-team-input" value="None">
+        <input type="hidden" id="nurse-unit-input" value="None">
     </div>
 
     <!-- Regular allocation div (visible when role is not Nurse) -->
@@ -81,18 +81,21 @@
         const nurseDiv = document.getElementById("nurse-allocation-div");
         const regularDiv = document.getElementById("regular-allocation-div");
 
-        const nurseTeam = document.getElementById("edit-nurse-team-input");
-        const nurseUnit = document.getElementById("edit-nurse-unit-input");
+        const nurseTeam = document.getElementById("nurse-team-input");
+        const nurseUnit = document.getElementById("nurse-unit-input");
 
         if (selectedRole === "Nurse") {
             nurseDiv.style.display = "block";
             regularDiv.style.display = "none";
 
-            nurseTeam.disabled = false;
-            nurseUnit.disabled = false;
-
-            nurseTeam.value = "None";
-            nurseUnit.value = "None";
+            if (nurseTeam) {
+                nurseTeam.value = "None";
+                nurseTeam.setAttribute('name', 'team');
+            }
+            if (nurseUnit) {
+                nurseUnit.value = "None";
+                nurseUnit.setAttribute('name', 'unit');
+            }
 
             // Clear any selected radios
             document.querySelectorAll("input[name='team'], input[name='unit']")
@@ -102,8 +105,8 @@
             nurseDiv.style.display = "none";
             regularDiv.style.display = "block";
 
-            nurseTeam.disabled = true;
-            nurseUnit.disabled = true;
+            if (nurseTeam) nurseTeam.removeAttribute('name');
+            if (nurseUnit) nurseUnit.removeAttribute('name');
         }
 
         _validateAllocationSelection();
@@ -115,7 +118,17 @@
         // Check if there's already a selected role
         const selectedRoleRadio = document.querySelector("input[name='role']:checked");
         if (selectedRoleRadio) {
-            watch_selected_role(selectedRoleRadio.value);
+            // Initialize properly based on current role
+            const currentRole = selectedRoleRadio.value;
+            
+            // First, remove name attributes from nurse inputs (safe default)
+            const nurseTeam = document.getElementById("nurse-team-input");
+            const nurseUnit = document.getElementById("nurse-unit-input");
+            if (nurseTeam) nurseTeam.removeAttribute('name');
+            if (nurseUnit) nurseUnit.removeAttribute('name');
+            
+            // Then apply the proper visibility logic
+            watch_selected_role(currentRole);
         }
     });
 

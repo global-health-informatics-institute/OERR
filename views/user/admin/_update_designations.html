@@ -25,4 +25,99 @@
 
 
 <script type="text/javascript">
+    // Map designations to selected role - SAME APPROACH AS NEW DESIGNATIONS
+    function _mapEditDesignationsToRole(role) {
+        // Convert role name to match data-id format (replace spaces with underscores)
+        const formattedRole = role.replace(/ /g, '_');
+        
+        // Select all li elements with data-id attribute matching the role
+        const designationOptions = document.querySelectorAll("li[data-id='edit_" + formattedRole + "']");
+        const allDesignationOptions = document.getElementsByName("designationOptions");
+        
+        // Hide all designation options first
+        allDesignationOptions.forEach(option => {
+            option.style.display = "none";
+        });
+        
+        // Show designation options for the selected role
+        designationOptions.forEach(option => {
+            option.style.display = "block";
+        });
+        
+        console.log("Mapping edit designations for role:", role, "formatted as:", formattedRole);
+        console.log("Found", designationOptions.length, "edit designation options");
+    }
+
+    // Uncheck all designations when role changes
+    function _uncheckAllDesignations() {
+        const allDesignationOptions = document.getElementsByName("designation");
+        allDesignationOptions.forEach(option => {
+            option.checked = false;
+        });
+    }
+
+    // Check first designation for the selected role
+    function _checkFirstDesignationForRole(role) {
+        // Convert role name to match data-id format (replace spaces with underscores)
+        const formattedRole = role.replace(/ /g, '_');
+        const designationOptions = document.querySelectorAll("li[data-id='edit_" + formattedRole + "'] input[name='designation']");
+        if (designationOptions.length > 0) {
+            designationOptions[0].checked = true;
+        }
+    }
+
+    // Main function called when role changes - SAME AS NEW DESIGNATIONS
+    function editSetParentRole() {
+        const selectedRole = document.querySelector("input[name='role']:checked").value;
+        console.log("Selected role in designations: " + selectedRole);
+        _uncheckAllDesignations();
+        _mapEditDesignationsToRole(selectedRole);
+        _checkFirstDesignationForRole(selectedRole);
+        
+        // Also update allocation visibility - SAME AS NEW
+        if (typeof watch_selected_role_update === 'function') {
+            watch_selected_role_update(selectedRole);
+        }
+        
+        // Trigger validation
+        if (typeof _validateDesignationSelection === 'function') {
+            _validateDesignationSelection();
+        }
+        if (typeof _validateEditAllocationSelection === 'function') {
+            _validateEditAllocationSelection();
+        }
+    }
+
+    // Initialize designation visibility on page load - SAME AS NEW
+    document.addEventListener('DOMContentLoaded', function() {
+        // Check if there's already a selected role
+        const selectedRoleRadio = document.querySelector("input[name='role']:checked");
+        if (selectedRoleRadio) {
+            _mapEditDesignationsToRole(selectedRoleRadio.value);
+        }
+    });
+
+    // DATA VALIDATION - SAME AS NEW DESIGNATIONS
+    const designationInputsContainer = document.getElementById("edit-user-designations");
+
+    function _validateDesignationSelection() {
+        const isDesignationSelected = document.querySelector("input[name='designation']:checked") !== null;
+        // Set tab validity for tab 2 (designations) - SAME AS NEW
+        if (typeof setTabValidity === 'function') {
+            setTabValidity(2, isDesignationSelected);
+        }
+
+        // Trigger button state update - SAME AS NEW
+        if (typeof _handleButtonsState === 'function' && typeof _getCurrentActiveTab === 'function') {
+            const activeTab = _getCurrentActiveTab();
+            if (activeTab && activeTab.index === 2) {
+                _handleButtonsState(activeTab.index);
+            }
+        }
+    }
+    
+    if (designationInputsContainer) {
+        designationInputsContainer.addEventListener('change', _validateDesignationSelection);
+        _validateDesignationSelection();
+    }
 </script>

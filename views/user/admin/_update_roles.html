@@ -22,16 +22,24 @@
 
 <script type="text/javascript">
     function _mapEditDesignationsToRole(role) {
-        const designationOptions = document.querySelectorAll("li[data-id='" + role + "']");
+        // Convert role name to match data-id format (replace spaces with underscores)
+        const formattedRole = role.replace(/ /g, '_');
+        
+        const designationOptions = document.querySelectorAll("li[data-id='" + formattedRole + "']");
         const allDesignationOptions = document.getElementsByName("designationOptions");
 
+        // Hide all designation options first
         Array.from(allDesignationOptions).forEach(option => {
             option.style.display = "none";
         });
 
+        // Show designation options for the selected role
         designationOptions.forEach(option => {
             option.style.display = "block";
         });
+        
+        console.log("Mapping edit designations for role:", role, "formatted as:", formattedRole);
+        console.log("Found", designationOptions.length, "edit designation options");
     }
 
     function _uncheckAllDesignations() {
@@ -42,22 +50,34 @@
     }
 
     function _checkFirstDesignationForRole(role){
-        const designationOptions = document.querySelectorAll("li[data-id='" + role + "'] input[name='designation']");
+        // Convert role name to match data-id format (replace spaces with underscores)
+        const formattedRole = role.replace(/ /g, '_');
+        const designationOptions = document.querySelectorAll("li[data-id='" + formattedRole + "'] input[name='designation']");
         if (designationOptions.length > 0) {
             designationOptions[0].checked = true;
         }
     }
 
     function editSetParentRole() {
-        const selectedRole = document.querySelector("input[name='role']:checked").id;
+        const selectedRole = document.querySelector("input[name='role']:checked").value;
         console.log("Selected role: " + selectedRole);
         _uncheckAllDesignations();
         _mapEditDesignationsToRole(selectedRole);
         _checkFirstDesignationForRole(selectedRole);
+        
+        // Call watch_selected_role_update function to handle allocation visibility
+        if (typeof watch_selected_role_update === 'function') {
+            watch_selected_role_update(selectedRole);
+        }
+        
+        // Trigger allocation validation since role has changed
+        if (typeof _validateEditAllocationSelection === 'function') {
+            _validateEditAllocationSelection();
+        }
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-        const selectedRole = document.querySelector("input[name='role']:checked").id;
+        const selectedRole = document.querySelector("input[name='role']:checked").value;
         _mapEditDesignationsToRole(selectedRole);
     });
 </script>

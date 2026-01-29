@@ -359,6 +359,10 @@ def create_user():
 
     user = User.get(request.form['username'])
     if user is None:
+        team_value = request.form.get('team')
+        team = None if team_value in (None, "", "None") else team_value
+        unit_value = request.form.get('unit')
+        unit = None if unit_value in (None, "", "None") else unit_value
         provider = User(
             username = request.form['username'],
             name = request.form['name'],
@@ -367,8 +371,8 @@ def create_user():
             password = request.form['password'],
             status = "Active",
             department = request.form['department'],
-            team = request.form['team'],
-            unit = request.form['unit'],
+            team = team,
+            unit = unit,
             ward = request.form['ward']
         )
         provider.save()

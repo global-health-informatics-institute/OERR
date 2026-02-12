@@ -1,0 +1,15 @@
+ {
+    /**
+     * This file maps actual ward names to ward IDs.
+     * Please refer to the repository owners or the facility database for authoritative information.
+     * Replace the keys with ward short names and the values with the actual ward IDs.
+     * rename to ward.config during setup or production
+     */
+    "WARD_1": "WARD_ID_1",
+    "WARD_2": "WARD_ID_2",
+    "WARD_3": "WARD_ID_3",
+
+    "WARD_4": "WARD_ID_4",
+    "WARD_5": "WARD_ID_5",
+    "WARD_6": "WARD_ID_6",
+}

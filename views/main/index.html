@@ -61,6 +61,39 @@
                 window.location = "/patient/" + patient
             }
         }
+        
+        // Function to log test view events
+        function logTestView(docId, testStatus, tabName) {
+            fetch('/api/log-details-tab', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    doc_id: docId,
+                    viewer: "{{ session.get('user').get('current_user') }}",
+                    session_id: "{{ session.get('user').get('username') }}",
+                    test_status: testStatus || 'unknown',
+                    tab_status: tabName || 'unknown'
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('View event logged:', data);
+            })
+            .catch(error => {
+                console.error('Error logging view event:', error);
+            });
+        }
+        
+        // Auto-detect tab clicks using event delegation
+        document.addEventListener('click', function(e) {
+            var target = e.target.closest('[data-doc-id]');
+            if (target) {
+                var docId = target.getAttribute('data-doc-id');
+                var testStatus = target.getAttribute('data-test-status') || 'unknown';
+                var tabName = target.getAttribute('data-tab-name') || 'unknown';
+                logTestView(docId, testStatus, tabName);
+            }
+        });
     </script>
 {% endif %}
 

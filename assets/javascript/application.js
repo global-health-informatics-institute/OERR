@@ -165,17 +165,19 @@ function filterDoctors() {
 document.addEventListener('DOMContentLoaded', function () {
     var input = document.getElementById('doctor-search');
     var keyboard = document.getElementById('keyboard');
+    
+    if (input && keyboard) {
+        input.addEventListener('focus', function () {
+            keyboard.style.display = 'block';
+        });
 
-    input.addEventListener('focus', function () {
-        keyboard.style.display = 'block';
-    });
-
-    document.addEventListener('click', function (event) {
-        // Check if the click is outside of the input and keyboard
-        if (!input.contains(event.target) && !keyboard.contains(event.target)) {
-            keyboard.style.display = 'none';
-        }
-    });
+        document.addEventListener('click', function (event) {
+            // Check if the click is outside of the input and keyboard
+            if (!input.contains(event.target) && !keyboard.contains(event.target)) {
+                keyboard.style.display = 'none';
+            }
+        });
+    }
 });
 
 function typeKey(key) {
@@ -222,17 +224,20 @@ function hideKeyboard() {
 document.addEventListener('click', function(event) {
     var keyboard = document.getElementById('keyboard');
     var searchInput = document.getElementById('doctor-search');
-
+    
     // If click is outside the search bar and keyboard, hide the keyboard
-    if (!keyboard.contains(event.target) && !searchInput.contains(event.target)) {
+    if (keyboard && searchInput && !keyboard.contains(event.target) && !searchInput.contains(event.target)) {
         hideKeyboard();
     }
 });
 
 // Keep the keyboard open when clicking inside the search bar
-document.getElementById('doctor-search').addEventListener('focus', function() {
-    showKeyboard();
-});
+var doctorSearch = document.getElementById('doctor-search');
+if (doctorSearch) {
+    doctorSearch.addEventListener('focus', function() {
+        showKeyboard();
+    });
+}
 // It ends here
 
 function fixStepIndicator(n) {

@@ -738,6 +738,96 @@ def review_test(test_id):
         return redirect(url_for('patient', patient_id=test['patient_id']))
 
 
+# ==============================================================================
+# VIEW EVENTS LOGGING - Log test details tab views with status, session, timestamp
+# ==============================================================================
+
+@app.route("/api/log-details-tab", methods=['POST'])
+def log_details_tab():
+    """
+    Log when a user views the details tab of a test.
+    This captures: viewer name, session_id, current test_status, tab_status, timestamp.
+    
+    Expected JSON body:
+    {
+        "doc_id": "test_document_id",
+        "viewer": "Aless John",
+        "session_id": "sess_abc123"
+    }
+    
+    Or optionally, can send multiple doc_ids:
+    {
+        "doc_ids": ["test_id1", "test_id2", ...],
+        "viewer": "Aless John",
+        "session_id": "sess_abc123"
+    }
+    """
+    from urllib.error import HTTPError, URLError
+    import urllib.request
+    
+    data = request.get_json()
+    if not data:
+        return json.dumps({"error": "No data provided"}), 400
+    
+    viewer = data.get('viewer', session.get('user', {}).get('current_user', 'anonymous'))
+    session_id = data.get('session_id', 'unknown')
+    
+    # Use existing db connection from the app
+    updated_count = 0
+    errors = []
+    
+    # Handle single doc_id
+    if 'doc_id' in data:
+        doc_ids = [data['doc_id']]
+    # Handle multiple doc_ids
+    elif 'doc_ids' in data:
+        doc_ids = data['doc_ids']
+    else:
+        return json.dumps({"error": "No doc_id or doc_ids provided"}), 400
+    
+    # Update each test document using existing db connection
+    for doc_id in doc_ids:
+        try:
+            # Get the document from existing db connection
+            test_doc = db.get(doc_id)
+            
+            # Create event with test_status from frontend (or fallback to doc status)
+            test_status = data.get('test_status') or test_doc.get('status') or test_doc.get('test_status') or 'unknown'
+            
+            event = {
+                'viewer': viewer,
+                'session_id': session_id,
+                'test_status': test_status,
+                'tab_status': data.get('tab_status', 'details'),
+                'timestamp': datetime.now().strftime('%Y-%m-%dT%H:%M:%S.000Z')
+            }
+            
+            # Add to view_events array
+            if 'view_events' not in test_doc:
+                test_doc['view_events'] = []
+            test_doc['view_events'].append(event)
+            
+            # Save the document
+            db.save(test_doc)
+            updated_count += 1
+            
+        except Exception as e:
+            errors.append(f"Error for {doc_id}: {str(e)}")
+    
+    result = {
+        "ok": True,
+        "updated": updated_count,
+        "total": len(doc_ids),
+        "viewer": viewer,
+        "session_id": session_id
+    }
+    
+    if errors:
+        result["errors"] = errors
+    
+    return json.dumps(result), 200
+
+
 @app.route("/get_charge_state")
 def get_charge_state():
     return Response(json.dumps(inject_power()), mimetype='application/json')
@@ -899,7 +989,7 @@ def check_authentication():
     if not re.search("asset", request.path):
         initialize_connection()
 
-        if request.path not in ["/login", "/logout", "/get_charge_state", "/low_voltage"]:
+        if request.path not in ["/login", "/logout", "/get_charge_state", "/low_voltage", "/api/log-details-tab"]:
             if session.get("user") is None:
                 return redirect(url_for('login'))
             else:

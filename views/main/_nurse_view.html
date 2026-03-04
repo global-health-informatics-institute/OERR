@@ -5,7 +5,7 @@
 
 <div id="pendingOrders" class="maintabcontent">
         {%  for i in orders %}
-          <div class = "mainButtons" onmousedown="Spinner.show();window.location='/patient/{{i.get('patient_id')}}'">
+          <div class = "mainButtons" data-doc-id="{{i.get('id')}}" data-test-status="{{i.get('status')}}" data-tab-name="dashboard" onmousedown="Spinner.show();window.location='/patient/{{i.get('patient_id')}}'">
               <span style="font-weight:bold; font-size: 1.25em ;">{{i.get('name')}}</span>
               <div style="display: table-row; ">
                   <div style="display: table-cell; ">Test Ordered</div>

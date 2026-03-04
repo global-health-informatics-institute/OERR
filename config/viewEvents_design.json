@@ -1,0 +1,8 @@
+{
+  "_id": "_design/viewEvents",
+  "_rev": "2-484a17e6b0b1f07c3fee36acaefc54a5",
+  "language": "javascript",
+  "updates": {
+    "log_tab_tap": "function(doc, req) {\n      if (!doc || doc._id === '_design/viewEvents') {\n        return [null, 'no doc'];\n      }\n      \n      var body = {};\n      if (req.body) {\n        try { body = JSON.parse(req.body); } catch(e) {}\n      }\n      \n      var event = {\n        viewer: body.viewer || req.userCtx.name || 'anonymous',\n        session_id: body.session_id || req.query.session_id || 'unknown',\n        test_status: doc.test_status || 'unknown',\n        tab_status: 'details',\n        timestamp: new Date().toISOString()\n      };\n      \n      if (!doc.view_events) doc.view_events = [];\n      doc.view_events.push(event);\n      \n      return [doc, JSON.stringify({ok: true, event: event})];\n    }"
+  }
+}

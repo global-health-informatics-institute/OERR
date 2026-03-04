@@ -3,11 +3,11 @@ import requests
 import logging
 from tqdm import tqdm
 # choose json file and database
-json_file_path = "dumps/lab_test_panels.json"
+json_file_path = "dumps/users.json"
 db_url = "http://localhost:5984"
-db_name = "local_db_lab_test_panels"
+db_name = "mss_results_new_users"
 username = "admin"
-password = "root"
+password = "sinthaMW"
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 

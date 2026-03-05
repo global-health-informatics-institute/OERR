@@ -430,7 +430,6 @@
     <script>
         selected =null
         isNurse = "{{ session.get('user').get('role') in ['Nurse', 'Student'] }}"
-        
         // Function to log test details view event
         function logTestView(docId, testStatus, tabName) {
             fetch('/api/log-details-tab', {
@@ -453,16 +452,16 @@
             });
         }
         
-        // Auto-detect tab clicks using event delegation
+       
         document.addEventListener('click', function(e) {
-            // Find the closest element with data attributes for doc_id and test_status
+           
             var target = e.target.closest('[data-doc-id]');
             if (target) {
                 var docId = target.getAttribute('data-doc-id');
                 var testStatus = target.getAttribute('data-test-status') || 'unknown';
                 var tabName = target.getAttribute('data-tab-name') || 'unknown';
                 
-                // Log the view event
+               
                 logTestView(docId, testStatus, tabName);
             }
         });
@@ -484,10 +483,10 @@
             }
         }
 
-        var currentTab = 0; // Current tab is set to be the first tab (0)
+        var currentTab = 0; 
         function showOrderDialog(){
             window.location='{{request.url.split("?")[0]}}#orderModal'
-            showTab(0); // Display the current tab
+            showTab(0); 
         }
 
         function showDrawDialog(){
@@ -501,9 +500,9 @@
             var specimen_type = null
             for (var i = 0, length = radios.length; i < length; i++) {
                 if (radios[i].checked) {
-                    // do whatever you want with the checked radio
+                   
                     specimen_type = radios[i].value
-                    // only one radio can be logically checked, don't check the rest
+                    
                     break;
                 }
             }

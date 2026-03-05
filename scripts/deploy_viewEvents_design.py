@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-Script to deploy the viewEvents design document to CouchDB.
+Script to deploy the viewEvents design document to ****CouchDB****
 This creates the log_tab_tap update handler that logs test view events.
 
 Usage: python scripts/deploy_viewEvents_design.py
@@ -12,10 +12,9 @@ from couchdb import Server
 from utils import misc
 
 def deploy_design_document():
-    # Load settings
+    
     settings = misc.initialize_settings()
     
-    # Connect to CouchDB
     couch_connection = Server("http://%s:%s@%s:%s/" %
                               (settings["couch"]["user"], settings["couch"]["passwd"],
                                settings["couch"]["host"], settings["couch"]["port"]))
@@ -28,13 +27,13 @@ def deploy_design_document():
         print(f"Error: Could not connect to database '{db_name}': {e}")
         sys.exit(1)
     
-    # Load the design document
+    
     with open('config/viewEvents_design.json') as f:
         design_doc = json.load(f)
     
     doc_id = design_doc["_id"]
     
-    # Check if design document already exists
+
     try:
         existing_doc = db[doc_id]
         design_doc["_rev"] = existing_doc["_rev"]
@@ -42,7 +41,7 @@ def deploy_design_document():
     except:
         print(f"Creating new design document: {doc_id}")
     
-    # Save the design document
+
     try:
         db.save(design_doc)
         print(f"Successfully deployed design document: {doc_id}")

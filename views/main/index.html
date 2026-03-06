@@ -62,17 +62,20 @@
             }
         }
         
+        const LOG_DEBOUNCE_DELAY_MS = 250;
+        const LOG_COOLDOWN_MS = 1500;
+        const logTimers = {};
+        const lastLogAt = {};
+
         // Function to log test view events
-        function logTestView(docId, testStatus, tabName) {
+        function logTestView(docId, testStatus) {
             fetch('/api/log-details-tab', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
                     doc_id: docId,
-                    viewer: "{{ session.get('user').get('current_user') }}",
                     session_id: "{{ session.get('user').get('username') }}",
-                    test_status: testStatus || 'unknown',
-                    tab_status: tabName || 'unknown'
+                    test_status: testStatus || 'unknown'
                 })
             })
             .then(response => response.json())
@@ -83,15 +86,42 @@
                 console.error('Error logging view event:', error);
             });
         }
-        
-        // Auto-detect tab clicks using event delegation
+
+        function queueLogTestView(docId, testStatus) {
+            if (!docId) {
+                return;
+            }
+
+            var safeStatus = testStatus || 'unknown';
+            var key = docId + ":" + safeStatus;
+            var now = Date.now();
+
+            if (lastLogAt[key] && (now - lastLogAt[key]) < LOG_COOLDOWN_MS) {
+                return;
+            }
+
+            if (logTimers[key]) {
+                clearTimeout(logTimers[key]);
+            }
+
+            logTimers[key] = setTimeout(function() {
+                var fireAt = Date.now();
+                if (lastLogAt[key] && (fireAt - lastLogAt[key]) < LOG_COOLDOWN_MS) {
+                    return;
+                }
+
+                lastLogAt[key] = fireAt;
+                logTestView(docId, safeStatus);
+                delete logTimers[key];
+            }, LOG_DEBOUNCE_DELAY_MS);
+        }
+
         document.addEventListener('click', function(e) {
             var target = e.target.closest('[data-doc-id]');
             if (target) {
                 var docId = target.getAttribute('data-doc-id');
                 var testStatus = target.getAttribute('data-test-status') || 'unknown';
-                var tabName = target.getAttribute('data-tab-name') || 'unknown';
-                logTestView(docId, testStatus, tabName);
+                queueLogTestView(docId, testStatus);
             }
         });
     </script>

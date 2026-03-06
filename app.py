@@ -12,6 +12,7 @@ from flask import Flask, render_template, redirect, session, flash, request, url
 from werkzeug.security import check_password_hash
 from models.laboratory_test_panel import LaboratoryTestPanel
 from models.laboratory_test_type import LaboratoryTestType
+from models.database import DataAccess
 from models.patient import Patient
 from models.user import User
 from utils import misc
@@ -168,6 +169,59 @@ def barcode():
     else:
             flash("Wrong format for patient identifier. Please use the National patient Identifier", "error")
             return redirect(url_for("index"))
+
+# Check selected tests from show form and decide if blood volume is required.
+def requires_blood_volume(selected_tests):
+    if not isinstance(selected_tests, list):
+        selected_tests = [selected_tests]
+
+    test_type_db = DataAccess("lab_test_type").db
+
+    def test_requires_transfusion_volume(test_doc):
+        if not isinstance(test_doc, dict):
+            return False
+        transfusion = test_doc.get("transfusion")
+        if not isinstance(transfusion, dict):
+            return False
+        volume = transfusion.get("volume")
+        try:
+            return float(volume) > 0
+        except (TypeError, ValueError):
+            return False
+
+    def find_test_by_test_type_id(test_type_id):
+        result = test_type_db.find({"selector": {"test_type_id": str(test_type_id)}, "limit": 1})
+        result = list(result)
+        return result[0] if result else None
+
+    for selected in selected_tests:
+        selected_value = str(selected).strip()
+        if selected_value == "":
+            continue
+
+        # Panel values come as |Panel Name|
+        if selected_value.startswith("|") and selected_value.endswith("|"):
+            panel_name = selected_value.strip("|")
+            panel = LaboratoryTestPanel.get(panel_name)
+            if panel is None:
+                continue
+            for panel_test_name in panel.tests:
+                test_doc = test_type_db.get(panel_test_name)
+                if test_doc is None:
+                    test_doc = find_test_by_test_type_id(panel_test_name)
+                if test_requires_transfusion_volume(test_doc):
+                    return True
+            continue
+
+        # Single test values from show are typically test_type_id strings.
+        test_doc = find_test_by_test_type_id(selected_value)
+        if test_doc is None:
+            test_doc = test_type_db.get(selected_value)
+        if test_requires_transfusion_volume(test_doc):
+            return True
+
+    return False
+
 
 
 ###### PATIENT ROUTES ##########
@@ -517,6 +571,15 @@ def select_location():
 # create a new lab test order
 @app.route("/test/create", methods=['POST'])
 def create_lab_order():
+<<<<<<< HEAD
+=======
+    clinical_history_encoded = request.form.get('clinical_history_encoded', '').strip().lower()
+    if not clinical_history_encoded:
+        clinical_history_encoded = (request.form.get('clinical_history', '')).strip().lower()
+    blood_volume = request.form.get('blood_volume', '').strip()
+    blood_volume_unit = request.form.get('blood_volume_unit', '').strip()
+
+>>>>>>> 91dd14c (feat: add blood volume input for ABO/Crossmatch tests with validation and dynamic UI updates)
     for test in request.form.getlist('test_type[]'):
         new_test = {
             'ordered_by': request.form['ordered_by'],
@@ -529,6 +592,11 @@ def create_lab_order():
             'patient_id':
                 request.form['patient_id']
         }
+        if blood_volume != "":
+            new_test['transfusion'] = {
+                "volume": blood_volume,
+                "unit": (blood_volume_unit if blood_volume_unit != "" else "ml")
+            }
         if len(test.split("|")) > 1:
             new_test['tests'] = {}
             new_test['type'] = "test panel"

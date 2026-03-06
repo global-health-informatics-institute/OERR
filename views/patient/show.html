@@ -351,12 +351,24 @@
 {% else %}
 <input type="hidden" name='ordered_by' value={{session["user"]['username']}} >
 {% endif %}
-
                 <div class="tab">
+<<<<<<< HEAD
                     <h2>Enter Clinical Information/History</h2>
                     <div>
+=======
+                    <h2>Select Clinical Information/History</h2>
+                    <div style="margin-bottom: 10px;">
+                        <ul class="two-column-list" id="additionalClinicalHistoriesContainer"></ul>
+                    </div>
+                </div>
+                <div class="tab">
+                    <h2>Additional Clinical Information/History(Optional)</h2>
+                    <div>
+
+>>>>>>> 76f67bd (feat: enhance clinical history management with department-specific histories and improved UI.)
                     <input type="text" placeholder="Clinical history" name="clinical_history" id="input20" class="input" value="{{
                       request.form.clinical_history }}" maxlength="{{ch_length}}" required style="width: 100%; font-size : 18pt;border-radius:5px;height: 7vh;">
+                    <input type="hidden" name="clinical_history_encoded" id="clinicalHistoryEncoded" value="">
                         <span style="font-weight:500;font-size:14pt;">Max Char : {{ch_length}}</span>
                     </div>
                     <div id="antibiotics" style="margin-top: 10px;">
@@ -367,6 +379,7 @@
 
                     <div class="simple-keyboard" style="width: 99%; border: 1px solid silver;margin-top: 2vh;"></div>
                 </div>
+                
                 <div class="tab">
                     <h2>Select priotity for test(s)</h2>
                     <ul>
@@ -398,7 +411,7 @@
                     </ul>
                 </div>
                 <input type="hidden" name="patient_name" value={{pt_details.get('name')}} >
-                <input type="hidden" name="patient_id" value={{pt_details.get('id')}} >
+                <input type="hidden" name="patient_id" value={{pt_details.get('id')}} >        
             </form>
         </div>
             <div style="height: 12%; margin-top: 1vh;border: 1px solid silver; padding:10px; border-radius: 0px 0px 5px 5px">
@@ -416,6 +429,7 @@
                             <span class="step"></span>
                             <span class="step"></span>
                             <span class="step"></span>
+                            <span class="step"></span>
                         </td>
                         <td style="text-align: right">
                             <button type="button" id="prevBtn" class="modalNVButton" onclick="nextPrev(-1)">Previous</button>
@@ -427,6 +441,7 @@
         </div>
     </div>
 
+<<<<<<< HEAD
     <script>
         selected =null
         isNurse = "{{ session.get('user').get('role') in ['Nurse', 'Student'] }}"
@@ -463,6 +478,109 @@
                     // only one radio can be logically checked, don't check the rest
                     break;
                 }
+=======
+   <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const maxChars = {{ ch_length }};
+        const commonHistories = {{ common_histories | tojson }};
+        const commonHistoriesByDepartment = {{ common_histories_by_department | tojson }};
+        const selectedDepartment = {{ selected_department | tojson }};
+        const departmentHistories = commonHistoriesByDepartment[selectedDepartment] || commonHistories;
+
+        // Initialize container state
+        const container = document.getElementById('additionalClinicalHistoriesContainer');
+        const clinicalHistoryEncodedInput = document.getElementById('clinicalHistoryEncoded');
+        const clinicalHistoryInput = document.getElementById('input20');
+        let selectedHistoryIds = [];
+        let selectedHistoryNames = [];
+        let manualEntries = [];
+        let lastValidDisplayValue = clinicalHistoryInput ? clinicalHistoryInput.value : '';
+        if (clinicalHistoryInput) {
+            // Visible field shows names, so native maxlength can block valid input too early.
+            // We enforce length using encoded value (selected IDs + manual text) in JS instead.
+            clinicalHistoryInput.removeAttribute('maxlength');
+        }
+
+        function splitClinicalHistory(value) {
+            return String(value || '')
+                .split(/[;,]/)
+                .map(item => item.trim())
+                .filter(Boolean);
+        }
+
+        function uniqueByLower(values) {
+            const seen = new Set();
+            return values.filter(value => {
+                const key = value.toLowerCase();
+                if (seen.has(key)) return false;
+                seen.add(key);
+                return true;
+            });
+        }
+
+        function extractManualEntries(displayValue, namesToExclude) {
+            const excluded = new Set((namesToExclude || []).map(item => String(item).toLowerCase()));
+            return splitClinicalHistory(displayValue).filter(item => !excluded.has(item.toLowerCase()));
+        }
+
+        function composeClinicalHistoryValues(selectedIds, selectedNames, manualItems) {
+            const safeManualItems = manualItems || [];
+            const displayItems = uniqueByLower([...selectedNames, ...safeManualItems]);
+            const encodedItems = uniqueByLower([...selectedIds, ...safeManualItems]);
+            return {
+                displayValue: displayItems.join(', '),
+                encodedValue: encodedItems.join(',')
+            };
+        }
+
+        function getSelectedHistoriesFromDom() {
+            const checkboxes = document.querySelectorAll('.additional-clinical-history-checkbox');
+            const ids = [];
+            const names = [];
+            checkboxes.forEach(cb => {
+                if (cb.checked) {
+                    if (cb.dataset.historyId) ids.push(cb.dataset.historyId);
+                    names.push(cb.value);
+                }
+            });
+            return { ids, names };
+        }
+        
+        // Create common history checkboxes using the same markup pattern as test options.
+        departmentHistories.forEach((history, index) => {
+            const historyName = typeof history === 'string' ? history : (history && history.name) ? history.name : '';
+            const historyId = (history && typeof history === 'object' && history.id !== undefined && history.id !== null)
+                ? String(history.id)
+                : String(index);
+            if (!historyName) return;
+
+            const wrapper = document.createElement('li');
+
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.id = `history-${historyId}`;
+            checkbox.value = historyName;
+            checkbox.className = 'additional-clinical-history-checkbox';
+            checkbox.dataset.historyId = historyId;
+
+            const label = document.createElement('label');
+            label.htmlFor = checkbox.id;
+            label.textContent = historyName;
+            const indicator = document.createElement('div');
+            indicator.className = 'select';
+
+            wrapper.appendChild(checkbox);
+            wrapper.appendChild(label);
+            wrapper.appendChild(indicator);
+
+            // Also update on checkbox change
+            checkbox.addEventListener('change', function () {
+                updateSelectedClinicalHistories(this);
+            });
+
+            if (container) {
+                container.appendChild(wrapper);
+>>>>>>> 76f67bd (feat: enhance clinical history management with department-specific histories and improved UI.)
             }
             var options = document.getElementsByName('testOptions');
             for (var i = 0, length = options.length; i < length; i++) {
@@ -475,6 +593,7 @@
             }
         }
 
+<<<<<<< HEAD
         function testReviewed(id){
             var xhr = new XMLHttpRequest();
             var url = "/test/"+id+"/review_ajax";
@@ -518,6 +637,77 @@ function handleCheckboxChange() {
             displayAntibiotics = true;
         }
             console.log(selectedTest);
+=======
+        // Track selected checkbox histories separately from typed clinical history.
+        function updateSelectedClinicalHistories(changedCheckbox) {
+            if (!clinicalHistoryEncodedInput) return;
+
+            const previousSelectedNames = [...selectedHistoryNames];
+            const selected = getSelectedHistoriesFromDom();
+            const excludedNames = uniqueByLower([...previousSelectedNames, ...selected.names]);
+            const sourceValue = clinicalHistoryInput ? clinicalHistoryInput.value : '';
+            const nextManualEntries = extractManualEntries(sourceValue, excludedNames);
+            const composedValues = composeClinicalHistoryValues(selected.ids, selected.names, nextManualEntries);
+
+            if (composedValues.encodedValue.length > maxChars && changedCheckbox && changedCheckbox.checked) {
+                changedCheckbox.checked = false;
+                return updateSelectedClinicalHistories();
+            }
+
+            selectedHistoryIds = [...selected.ids];
+            selectedHistoryNames = [...selected.names];
+            manualEntries = [...nextManualEntries];
+            clinicalHistoryEncodedInput.value = composedValues.encodedValue.toLowerCase();
+            if (clinicalHistoryInput) {
+                clinicalHistoryInput.value = composedValues.displayValue;
+                lastValidDisplayValue = composedValues.displayValue;
+            }
+        }
+
+        if (clinicalHistoryInput) {
+            manualEntries = extractManualEntries(clinicalHistoryInput.value, selectedHistoryNames);
+
+            clinicalHistoryInput.addEventListener('beforeinput', function (event) {
+                const inputType = event.inputType || '';
+                const isDeletion = inputType.startsWith('delete');
+                if (isDeletion) return;
+
+                const currentManualEntries = extractManualEntries(clinicalHistoryInput.value, selectedHistoryNames);
+                const currentComposed = composeClinicalHistoryValues(selectedHistoryIds, selectedHistoryNames, currentManualEntries);
+                if (currentComposed.encodedValue.length >= maxChars) {
+                    event.preventDefault();
+                    return;
+                }
+
+                const start = clinicalHistoryInput.selectionStart ?? clinicalHistoryInput.value.length;
+                const end = clinicalHistoryInput.selectionEnd ?? clinicalHistoryInput.value.length;
+                const inserted = event.data || (event.dataTransfer ? event.dataTransfer.getData('text') : '');
+                const projectedDisplayValue = clinicalHistoryInput.value.slice(0, start) + inserted + clinicalHistoryInput.value.slice(end);
+                const projectedManualEntries = extractManualEntries(projectedDisplayValue, selectedHistoryNames);
+                const projected = composeClinicalHistoryValues(selectedHistoryIds, selectedHistoryNames, projectedManualEntries);
+
+                if (projected.encodedValue.length > maxChars) {
+                    event.preventDefault();
+                }
+            });
+
+            clinicalHistoryInput.addEventListener('input', function () {
+                const nextManualEntries = extractManualEntries(clinicalHistoryInput.value, selectedHistoryNames);
+                const composedValues = composeClinicalHistoryValues(selectedHistoryIds, selectedHistoryNames, nextManualEntries);
+                if (composedValues.encodedValue.length > maxChars) {
+                    clinicalHistoryInput.value = lastValidDisplayValue;
+                    return;
+                }
+
+                manualEntries = [...nextManualEntries];
+                if (clinicalHistoryEncodedInput) {
+                    clinicalHistoryEncodedInput.value = composedValues.encodedValue.toLowerCase();
+                }
+                lastValidDisplayValue = clinicalHistoryInput.value;
+            });
+        }
+        updateSelectedClinicalHistories();
+>>>>>>> 76f67bd (feat: enhance clinical history management with department-specific histories and improved UI.)
     });
 
     if (displayAntibiotics) {
@@ -528,5 +718,90 @@ function handleCheckboxChange() {
 
 }
 
+<<<<<<< HEAD
     </script>
 {% endblock %}
+=======
+    function showOrderDialog() {
+        const urlParts = window.location.href.split('?');
+        const baseUrl = urlParts[0];
+        window.location = `${baseUrl}#orderModal`;
+        showTab(0);
+    }
+
+    function showDrawDialog() {
+        const modalContent = document.getElementById("modalContent");
+        const sampleDrawContent = document.getElementById("sampleDrawContent");
+        
+        if (modalContent && sampleDrawContent) {
+            modalContent.innerHTML = sampleDrawContent.innerHTML;
+            window.location = '{{ request.url }}#openModal';
+        }
+    }
+
+    function filterTests(id) {
+        const radios = document.getElementsByName('specimen_type');
+        let specimen_type = null;
+        
+        for (let i = 0; i < radios.length; i++) {
+            if (radios[i].checked) {
+                specimen_type = radios[i].value;
+                break;
+            }
+        }
+        
+        if (!specimen_type) return;
+        
+        const options = document.getElementsByName('testOptions');
+        for (let i = 0; i < options.length; i++) {
+            const option = options[i];
+            const allowedTypes = option.dataset.id ? option.dataset.id.split(',') : [];
+            
+            if (!allowedTypes.includes(specimen_type)) {
+                option.style.display = "none";
+            } else {
+                option.style.display = "block";
+            }
+        }
+    }
+
+    function testReviewed(id) {
+        const xhr = new XMLHttpRequest();
+        const url = `/test/${id}/review_ajax`;
+        
+        xhr.open("GET", url, true);
+        xhr.setRequestHeader("Content-Type", "application/text");
+        
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                console.log("Test reviewed:", xhr.responseText);
+            }
+        };
+        
+        xhr.send();
+    }
+
+    function waitForKeyboard() {
+        if (typeof keyboard !== 'undefined') {
+            if (keyboard.options && keyboard.options.maxLength) {
+                keyboard.options.maxLength["default"] = {{ ch_length }};
+            }
+            return;
+        }
+        
+        setTimeout(waitForKeyboard, 2000);
+    }
+
+    // Initialize keyboard after DOM loads
+    document.addEventListener('DOMContentLoaded', waitForKeyboard);
+
+    function disable_button(x) {
+        if (!x) return;
+        
+        x.disabled = true;
+        x.innerHTML = "Printing...";
+    }
+
+</script>
+{% endblock %}
+>>>>>>> 76f67bd (feat: enhance clinical history management with department-specific histories and improved UI.)

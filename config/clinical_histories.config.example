@@ -1,0 +1,57 @@
+{
+  "All": [
+    
+  ],
+  "Medical": [
+    "Hypertension",
+    "Diabetes Mellitus",
+    "Asthma",
+    "Heart Failure",
+    "Chronic Kidney Disease",
+    "Tuberculosis",
+    "HIV/AIDS",
+    "Malaria",
+    "Stroke"
+  ],
+  "Surgery": [
+    "Acute Appendicitis",
+    "Intestinal Obstruction",
+    "Peritonitis",
+    "Cholecystitis",
+    "Trauma",
+    "Open Fracture",
+    "Burns",
+    "Post-Operative Review",
+    "Hernia"
+  ],
+  "Pediatrics": [
+    "Pneumonia",
+    "Severe Malaria",
+    "Diarrheal Disease",
+    "Malnutrition",
+    "Meningitis",
+    "Neonatal Sepsis",
+    "Epilepsy",
+    "Anemia"
+  ],
+  "Ethel Mutharika": [
+    "Normal Labour",
+    "Prolonged Labour",
+    "Antepartum Hemorrhage",
+    "Postpartum Hemorrhage",
+    "Eclampsia",
+    "Pre-eclampsia",
+    "Premature Rupture of Membranes",
+    "Obstructed Labour"
+  ],
+  "Oncology": [
+    "Cervical Cancer",
+    "Breast Cancer",
+    "Prostate Cancer",
+    "Kaposi’s Sarcoma",
+    "Esophageal Cancer",
+    "Liver Cancer",
+    "Lymphoma"
+  ]
+  
+}

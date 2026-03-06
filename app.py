@@ -7,6 +7,7 @@ import os
 import random
 import re
 from datetime import datetime
+import time
 from couchdb import Server
 from flask import Flask, render_template, redirect, session, flash, request, url_for, Response, send_file
 from werkzeug.security import check_password_hash
@@ -40,6 +41,7 @@ if settings["using_rpi"] == "True":
 # Root page of application
 @app.route("/")
 def index():
+    print(session)
     # Turn on LEDs for QR-Scanning
     if settings["using_rpi"] == "True" and request.path != "/get_charge_state":
         if request.path == "/":
@@ -742,14 +744,10 @@ def review_test(test_id):
 
 @app.route("/api/log-details-tab", methods=['POST'])
 def log_details_tab():
-    from urllib.error import HTTPError, URLError
-    import urllib.request
-    
-    data = request.get_json()
+    data = request.get_json(silent=True)
     if not data:
         return json.dumps({"error": "No data provided"}), 400
     
-    viewer = data.get('viewer', session.get('user', {}).get('current_user', 'anonymous'))
     session_id = data.get('session_id', 'unknown')
     
     # Use existing db connection from the app
@@ -758,25 +756,34 @@ def log_details_tab():
     
     if 'doc_id' in data:
         doc_ids = [data['doc_id']]
-  
     elif 'doc_ids' in data:
         doc_ids = data['doc_ids']
     else:
         return json.dumps({"error": "No doc_id or doc_ids provided"}), 400
+
+    if isinstance(doc_ids, str):
+        doc_ids = [doc_ids]
+    elif not isinstance(doc_ids, list):
+        return json.dumps({"error": "doc_ids must be a list or doc_id must be a string"}), 400
     
     # Update each test document using existing db connection
     for doc_id in doc_ids:
         try:
+            if not doc_id:
+                errors.append("Error for empty doc_id: invalid doc_id")
+                continue
+
             test_doc = db.get(doc_id)
+            if not test_doc:
+                errors.append(f"Error for {doc_id}: document not found")
+                continue
             
             test_status = data.get('test_status') or test_doc.get('status') or test_doc.get('test_status') or 'unknown'
             
             event = {
-                'viewer': viewer,
                 'session_id': session_id,
                 'test_status': test_status,
-                'tab_status': data.get('tab_status', 'details'),
-                'timestamp': datetime.now().strftime('%Y-%m-%dT%H:%M:%S.000Z')
+                'timestamp': time.time()
             }
             
         
@@ -795,7 +802,6 @@ def log_details_tab():
         "ok": True,
         "updated": updated_count,
         "total": len(doc_ids),
-        "viewer": viewer,
         "session_id": session_id
     }
     
@@ -1044,4 +1050,4 @@ def internal_error(error):
     return render_template('main/502.html'), 502
 
 if __name__ == '__main__':
-    app.run(port="8000", debug=False, host='0.0.0.0')
+    app.run(port="8000", debug=True, host='0.0.0.0')

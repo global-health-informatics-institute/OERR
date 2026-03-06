@@ -430,7 +430,7 @@
     <script>
         selected =null
         isNurse = "{{ session.get('user').get('role') in ['Nurse', 'Student'] }}"
-        const LOG_DEBOUNCE_DELAY_MS = 250;
+        const LOG_DEBOUNCE_DELAY_MS = 120000;
         const LOG_COOLDOWN_MS = 1500;
         const logTimers = {};
         const lastLogAt = {};

@@ -30,6 +30,7 @@ settings = misc.initialize_settings()
 app.config['user_roles'] = misc.initialize_user_roles()
 app.config['departments'] = misc.initialize_departments()
 app.config['common_histories'] = misc.load_common_histories()
+app.config['common_histories_by_department'] = misc.load_common_histories(by_department=True)
 
 # optional configuration when running on rpi
 if settings["using_rpi"] == "True":
@@ -243,7 +244,9 @@ def patient(patient_id):
                            collect_samples=draw_sample, doctors=prescribers(), ch_length=permitted_length,
                            requires_keyboard=True,
                            test_options=inject_tests(), specimen_types=inject_specimen_types(),
-                           panel_options=inject_panels(), common_histories=app.config['common_histories'])
+                           panel_options=inject_panels(), common_histories=app.config['common_histories'],
+                           common_histories_by_department=app.config['common_histories_by_department'],
+                           selected_department=session.get("dpt", ""))
 
 
 
@@ -523,13 +526,17 @@ def select_location():
 # create a new lab test order
 @app.route("/test/create", methods=['POST'])
 def create_lab_order():
+    clinical_history_encoded = request.form.get('clinical_history_encoded', '').strip().lower()
+    if not clinical_history_encoded:
+        clinical_history_encoded = (request.form.get('clinical_history', '')).strip().lower()
+
     for test in request.form.getlist('test_type[]'):
         new_test = {
             'ordered_by': request.form['ordered_by'],
             'date_ordered': int(datetime.now().strftime('%s')),
             'status': 'Ordered',
             'sample_type': request.form['specimen_type'],
-            'clinical_history': (request.form['clinical_history']).lower(),
+            'clinical_history': clinical_history_encoded,
             'Priority': request.form['priority'],
             'ward': session["location"],
             'patient_id':

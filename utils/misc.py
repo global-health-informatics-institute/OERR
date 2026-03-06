@@ -73,14 +73,91 @@ def initialize_departments():
 
 
 # Load common histories from config file
-def load_common_histories():
+def load_common_histories(by_department=False):
     common_histories = []
+    grouped_histories = {}
+
+    def normalize_history_entry(entry):
+        if isinstance(entry, str):
+            value = entry.strip()
+            if value:
+                return {"id": None, "name": value}
+            return None
+
+        if isinstance(entry, dict):
+            name = entry.get("name")
+            if not isinstance(name, str):
+                return None
+            name = name.strip()
+            if not name:
+                return None
+
+            entry_id = entry.get("id")
+            if not isinstance(entry_id, (str, int)):
+                entry_id = None
+            return {"id": entry_id, "name": name}
+
+        return None
+
+    def dedupe_histories(histories):
+        deduped = []
+        seen_ids = set()
+        seen_names = set()
+
+        for history in histories:
+            if not isinstance(history, dict):
+                continue
+
+            history_name = history.get("name")
+            history_id = history.get("id")
+            if not history_name:
+                continue
+
+            if history_id is not None:
+                key = str(history_id)
+                if key in seen_ids:
+                    continue
+                seen_ids.add(key)
+            else:
+                key = history_name.lower()
+                if key in seen_names:
+                    continue
+                seen_names.add(key)
+            deduped.append(history)
+        return deduped
+
     try:
-        with open("config/histories.config") as json_file:
-            common_histories = json.load(json_file)
+        with open("config/clinical_histories.config") as json_file:
+            configured_histories = json.load(json_file)
+            if isinstance(configured_histories, list):
+                common_histories = [
+                    normalized for normalized in (normalize_history_entry(item) for item in configured_histories)
+                    if normalized is not None
+                ]
+                grouped_histories = {}
+            elif isinstance(configured_histories, dict):
+                for department, histories in configured_histories.items():
+                    if isinstance(histories, list):
+                        department_histories = [
+                            normalized for normalized in (normalize_history_entry(item) for item in histories)
+                            if normalized is not None
+                        ]
+                        grouped_histories[department] = department_histories
+                        common_histories.extend(department_histories)
+            else:
+                common_histories = []
+                grouped_histories = {}
+    except (FileNotFoundError, json.JSONDecodeError, TypeError):
+        common_histories = []
+        grouped_histories = {}
     finally:
         pass
-    return common_histories
+    if by_department:
+        return {
+            department: dedupe_histories(histories)
+            for department, histories in grouped_histories.items()
+        }
+    return dedupe_histories(common_histories)
 
 
 def current_facility():

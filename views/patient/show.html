@@ -352,6 +352,24 @@
 <input type="hidden" name='ordered_by' value={{session["user"]['username']}} >
 {% endif %}
 
+                <div id="bloodVolumeTab" style="display: none;">
+                    <h2>Enter Blood Volume and Units</h2>
+                    <div id="bloodVolumeContainer" style="display: none;">
+                        <div style="margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
+                            <label for="bloodVolumeInput" style="font-size: 18pt;">Blood Volume:</label>
+                            <input type="number" id="bloodVolumeInput" name="blood_volume" min="1" max="10" step="0.1"
+                                   class="input" style="width: 30%; font-size: 18pt; border-radius: 5px; height: 7vh; margin-left: 10px;">
+                            <select id="bloodVolumeUnitInput" name="blood_volume_unit" class="input"
+                                    style="width: 20%; font-size: 18pt; border-radius: 5px; height: 7vh;">
+                                <option value="ml" selected>ml</option>
+                                <option value="mints">mints</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="keyboard-anchor"></div>
+                    <p id="bloodVolumeNotRequired" style="display: none;">Blood volume is not required for selected tests.</p>
+                </div>
+
                 <div class="tab">
                     <h2>Enter Clinical Information/History</h2>
                     <div>
@@ -365,7 +383,9 @@
                      height: 7vh; display: inline-block; margin-left: 10px;"/>
                      </div>
 
-                    <div class="simple-keyboard" style="width: 99%; border: 1px solid silver;margin-top: 2vh;"></div>
+                    <div class="keyboard-anchor">
+                        <div class="simple-keyboard" style="width: 99%; border: 1px solid silver;margin-top: 2vh;"></div>
+                    </div>
                 </div>
                 <div class="tab">
                     <h2>Select priotity for test(s)</h2>
@@ -410,6 +430,7 @@
                         <td style="text-align: center;">
                             <span class="step"></span>
                             <span class="step"></span>
+                            <span id="bloodVolumeStep" style="display: none;"></span>
                            {% if session.get('user').get('role') in ['Nurse', 'Student']  %}
                                 <span class="step"></span>
                             {% endif %}
@@ -516,11 +537,9 @@ function handleCheckboxChange() {
     checkboxes.forEach(function (checkbox) {
         var selectedTest = checkbox.value;
 
-        // Customize the condition based on your requirements
         if (selectedTest == '4') {
             displayAntibiotics = true;
         }
-            console.log(selectedTest);
     });
 
     if (displayAntibiotics) {
@@ -528,7 +547,8 @@ function handleCheckboxChange() {
     } else {
         document.getElementById('antibiotics').style.display = 'none';
     }
-
+    updateBloodVolumeRequirement();
+    setTimeout(syncKeyboardToActiveTab, 0);
 }
 
     function showOrderDialog() {
@@ -616,7 +636,7 @@ function handleCheckboxChange() {
         for (const selected of selectedTests) {
             const label = document.querySelector(`label[for="${selected.id}"]`);
             const testName = (label ? label.textContent : selected.value || "").toLowerCase();
-            if (testName.includes("abo") || testName.includes("crossmatch")) {
+            if (/\babo\b/.test(testName) || /cross[-\s]*match/.test(testName) || /cros[-\s]*match/.test(testName) || /\bxmatch\b/.test(testName)) {
                 return true;
             }
         }
@@ -658,17 +678,6 @@ function handleCheckboxChange() {
             volumeInput.value = '';
             unitInput.value = 'ml';
         }
-    }
-
-    // Preserve any existing checkbox-change handler (e.g., Antibiotics toggling)
-    var legacyHandleCheckboxChange = window.handleCheckboxChange || null;
-
-    function handleCheckboxChange() {
-        if (typeof legacyHandleCheckboxChange === 'function') {
-            legacyHandleCheckboxChange();
-        }
-        updateBloodVolumeRequirement();
-        setTimeout(syncKeyboardToActiveTab, 0);
     }
 
     function enforceBloodVolumeBounds() {

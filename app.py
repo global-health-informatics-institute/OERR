@@ -586,7 +586,7 @@ def create_lab_order():
                 request.form['patient_id'],
             'clinical_history': request.form.get('clinical_history', '').strip()
         }
-        if blood_volume != "":
+        if blood_volume != "" and requires_blood_volume(test):
             new_test['transfusion'] = {
                 "volume": blood_volume,
                 "unit": (blood_volume_unit if blood_volume_unit != "" else "ml")

@@ -247,13 +247,9 @@ def patient(patient_id):
                            collect_samples=draw_sample, doctors=prescribers(), ch_length=permitted_length,
                            requires_keyboard=True,
                            test_options=inject_tests(), specimen_types=inject_specimen_types(),
-<<<<<<< HEAD
-                           panel_options=inject_panels())
-=======
                            panel_options=inject_panels(), common_histories=app.config['common_histories'],
                            common_histories_by_department=app.config['common_histories_by_department'],
                            selected_department=session.get("dpt", ""))
->>>>>>> 76f67bd (feat: enhance clinical history management with department-specific histories and improved UI.)
 
 
 

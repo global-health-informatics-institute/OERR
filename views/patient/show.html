@@ -352,10 +352,6 @@
 <input type="hidden" name='ordered_by' value={{session["user"]['username']}} >
 {% endif %}
                 <div class="tab">
-<<<<<<< HEAD
-                    <h2>Enter Clinical Information/History</h2>
-                    <div>
-=======
                     <h2>Select Clinical Information/History</h2>
                     <div style="margin-bottom: 10px;">
                         <ul class="two-column-list" id="additionalClinicalHistoriesContainer"></ul>
@@ -365,7 +361,6 @@
                     <h2>Additional Clinical Information/History(Optional)</h2>
                     <div>
 
->>>>>>> 76f67bd (feat: enhance clinical history management with department-specific histories and improved UI.)
                     <input type="text" placeholder="Clinical history" name="clinical_history" id="input20" class="input" value="{{
                       request.form.clinical_history }}" maxlength="{{ch_length}}" required style="width: 100%; font-size : 18pt;border-radius:5px;height: 7vh;">
                     <input type="hidden" name="clinical_history_encoded" id="clinicalHistoryEncoded" value="">
@@ -441,44 +436,6 @@
         </div>
     </div>
 
-<<<<<<< HEAD
-    <script>
-        selected =null
-        isNurse = "{{ session.get('user').get('role') in ['Nurse', 'Student'] }}"
-        function toggleDisplay(id, test_status){
-            var state= {true: "View", false: "Hide"}
-            div = document.getElementById(id)
-            var status = div.hidden;
-            div.hidden = !status;
-            document.getElementById(id+"-status").innerHTML = state[!status]
-            if ((test_status == "Analysis Complete" || test_status == "Rejected") && (isNurse == "False")){
-                testReviewed(id)
-            }
-        }
-
-        var currentTab = 0; // Current tab is set to be the first tab (0)
-        function showOrderDialog(){
-            window.location='{{request.url.split("?")[0]}}#orderModal'
-            showTab(0); // Display the current tab
-        }
-
-        function showDrawDialog(){
-            document.getElementById("modalContent").innerHTML = document.getElementById("sampleDrawContent").innerHTML
-            window.location='{{request.url}}#openModal'
-        }
-
-        function filterTests(id){
-
-            var radios = document.getElementsByName('specimen_type');
-            var specimen_type = null
-            for (var i = 0, length = radios.length; i < length; i++) {
-                if (radios[i].checked) {
-                    // do whatever you want with the checked radio
-                    specimen_type = radios[i].value
-                    // only one radio can be logically checked, don't check the rest
-                    break;
-                }
-=======
    <script>
     document.addEventListener('DOMContentLoaded', function () {
         const maxChars = {{ ch_length }};
@@ -580,7 +537,6 @@
 
             if (container) {
                 container.appendChild(wrapper);
->>>>>>> 76f67bd (feat: enhance clinical history management with department-specific histories and improved UI.)
             }
             var options = document.getElementsByName('testOptions');
             for (var i = 0, length = options.length; i < length; i++) {
@@ -591,53 +547,8 @@
                     options[i].style.display= "block";
                 }
             }
-        }
+        });
 
-<<<<<<< HEAD
-        function testReviewed(id){
-            var xhr = new XMLHttpRequest();
-            var url = "/test/"+id+"/review_ajax";
-            xhr.open("GET", url, true);
-            xhr.setRequestHeader("Content-Type", "application/text");
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState === 4 && xhr.status === 200) {
-                    console.log(xhr.responseText);
-                }
-            };
-            xhr.send();
-        }
-
-        function waitForKeyboard() {
-            if(typeof keyboard !== 'undefined' ) {
-                keyboard.options.maxLength["default"] = {{ch_length}}
-                return;
-            }
-            else {
-                setTimeout(function() {
-                    waitForKeyboard();
-                }, 2000);
-            }
-        }
-        waitForKeyboard()
-        function disable_button(x){
-            x.disabled =  true;
-            x.innerHTML= "Printing..";
-        }
-
-
-function handleCheckboxChange() {
-    var checkboxes = document.querySelectorAll('input[name="test_type[]"]:checked');
-    var displayAntibiotics = false;
-
-    checkboxes.forEach(function (checkbox) {
-        var selectedTest = checkbox.value;
-
-        // Customize the condition based on your requirements
-        if (selectedTest == '4') {
-            displayAntibiotics = true;
-        }
-            console.log(selectedTest);
-=======
         // Track selected checkbox histories separately from typed clinical history.
         function updateSelectedClinicalHistories(changedCheckbox) {
             if (!clinicalHistoryEncodedInput) return;
@@ -706,22 +617,15 @@ function handleCheckboxChange() {
                 lastValidDisplayValue = clinicalHistoryInput.value;
             });
         }
-        updateSelectedClinicalHistories();
->>>>>>> 76f67bd (feat: enhance clinical history management with department-specific histories and improved UI.)
-    });
+    updateSelectedClinicalHistories();
+});
 
-    if (displayAntibiotics) {
-        document.getElementById('antibiotics').style.display = 'block';
-    } else {
-        document.getElementById('antibiotics').style.display = 'none';
-    }
-
+if (displayAntibiotics) {
+    document.getElementById('antibiotics').style.display = 'block';
+} else {
+    document.getElementById('antibiotics').style.display = 'none';
 }
 
-<<<<<<< HEAD
-    </script>
-{% endblock %}
-=======
     function showOrderDialog() {
         const urlParts = window.location.href.split('?');
         const baseUrl = urlParts[0];
@@ -804,4 +708,3 @@ function handleCheckboxChange() {
 
 </script>
 {% endblock %}
->>>>>>> 76f67bd (feat: enhance clinical history management with department-specific histories and improved UI.)

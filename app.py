@@ -18,7 +18,8 @@ from models.user import User
 from utils import misc
 from fuzzywuzzy import fuzz
 
-
+GENDER_COV_MALE = "1"
+GENDER_COV_FEMALE = "0"
 
 app = Flask(__name__, template_folder="views", static_folder="assets")
 app.secret_key = os.urandom(25)
@@ -629,9 +630,9 @@ def collect_specimens(test_id):
 
     #Converting gender
     if var_patient["gender"][0] == "m":
-        conv_gender = "0"
+        conv_gender = GENDER_COV_MALE
     else:
-        conv_gender = "1"
+        conv_gender = GENDER_COV_FEMALE
 
     for test in tests:
         test["status"] = "Specimen Collected"
@@ -707,9 +708,9 @@ def reprint_barcode(test_id):
     wards = wards_mapping
 
     if var_patient["gender"][0] == "m":
-        conv_gender = "0"
+        conv_gender = GENDER_COV_MALE
     else:
-        conv_gender = "1"
+        conv_gender = GENDER_COV_FEMALE
 
     for test in tests:
         if test["type"] == "test":
@@ -1039,4 +1040,4 @@ def internal_error(error):
     return render_template('main/502.html'), 502
 
 if __name__ == '__main__':
-    app.run(port="8000", debug=False, host='0.0.0.0')
+    app.run(port="7500", debug=False, host='0.0.0.0')

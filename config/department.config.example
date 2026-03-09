@@ -1,40 +1,101 @@
 { 
   "departments": [
-    /**
-     * Maps department names to their respective wards and teams.
-     * For authoritative details, consult repository owners or the facility database.
-     * Replace department names (Title Case), ward names, and team names with actual values as needed.
-     * Rename this file to department.config for setup or production use.
-     */
     {
-      "name": "Department A",
-      "wards":
-      [
-        "WARD_1",
-        "WARD_2",
-        "WARD_3",
+      "name": "Medical",
+      "wards": [
+        "OPD2",
+        "MSS",
+        "4A",
+        "4B",
+        "MHDU",
+        "DIALYSIS UNIT"
       ],
-      "team":
-      [
+      "teams": [
         "Team A",
         "Team B",
         "Team C",
+        "Team D"
+      ],
+      "units": []
+    },
+    {
+      "name": "Pediatrics",
+      "wards":
+      [
+        "UNDER 5",
+        "CWA",
+        "CWB",
+        "CWC",
+        "CW HDU" 
+      ],
+      "teams":[
+        "Pediatrics"
+      ],
+      "units":[]
+    },
+    {
+      "name": "Surgery",
+      "wards":
+      [
+        "CASUALTY",
+        "1A",
+        "1B",
+        "2B",
+        "3A",
+        "3B",
+        "SHDU",
+        "THEATRE"
+      ],
+      "teams": [
+        "PEADS SURGERY",
+        "PLASTIC SURGERY",
+        "NEUROLOGY",
+        "UROLOGY",
+        "ENT",
+        "DENTAL"
+      ],
+      "units": [
+        "Unit 1",
+        "Unit 2"
       ]
     },
     {
-      "name": "Department B",
+      "name": "Ethel Mutharika",
       "wards":
       [
-        "WARD_1",
-        "WARD_2",
-        "WARD_3",
+        "LABOUR",
+        "POSTNATAL WARD",
+        "ANTENATAL WARD",
+        "EM OPD",
+        "EMHDU",
+        "EM NURSERY",
+        "GYNAE"
       ],
-      "team":
-      [
-        "Team A",
-        "Team B",
-        "Team C",
+      "teams": [],
+      "units": [
+        "Unit 1",
+        "Unit 2",
+        "Unit 3",
+        "Unit 4"
       ]
+      
     },
+    {
+      "name": "Oncology",
+      "wards":
+      [
+        "ICU",
+        "OPD1",
+        "EYE",
+        "DENTAL"
+      ],
+      "teams": [], 
+      "units": [
+        "ICU",
+        "OPD1",
+        "EYE",
+        "DENTAL"
+      ]
+    }
   ]
 }

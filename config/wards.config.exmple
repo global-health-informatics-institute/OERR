@@ -1,15 +1,38 @@
  {
-    /**
-     * This file maps actual ward names to ward IDs.
-     * Please refer to the repository owners or the facility database for authoritative information.
-     * Replace the keys with ward short names and the values with the actual ward IDs.
-     * rename to ward.config during setup or production
-     */
-    "WARD_1": "WARD_ID_1",
-    "WARD_2": "WARD_ID_2",
-    "WARD_3": "WARD_ID_3",
+    "UNDER 5": "27",
+    "CWA": "7",
+    "CWB": "3",
+    "CWC": "1",
+    "CW HDU": "2",
 
-    "WARD_4": "WARD_ID_4",
-    "WARD_5": "WARD_ID_5",
-    "WARD_6": "WARD_ID_6",
+    "OPD2": "4",
+    "MSS": "44",
+    "4A": "19",
+    "4B": "20",
+    "MHDU": "56",
+    "DIALYSIS UNIT": "10",
+
+
+    "CASUALTY": "34",
+    "1A": "12",
+    "1B": "13",
+    "3A": "17",
+    "3B": "18",
+    "SHDU": "57",
+    "THEATRE": "9",
+
+
+    "LABOUR": "36",
+    "POSTNATAL WARD":"42",
+    "ANTENATAL WARD": "64",
+    "EM OPD": "35",
+    "EMHDU" : "37",
+    "EM NURSERY": "39",
+    "GYNAE": "40",
+
+    "ICU": "11",
+    "OPD1": "60",
+    "EYE WARD": "59",
+    "DENTAL" : "25",
+    "ENT": "61" 
 }

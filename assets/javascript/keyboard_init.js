@@ -57,11 +57,19 @@ function onChange(input) {
   console.log("onChange");
   const activeInput = document.querySelector(selectedInput || ".input");
   if (!activeInput) return;
-  activeInput.value = input;
+
+  // Enforce the input's maxLength when typing via the virtual keyboard
+  let newValue = input;
+  const maxLength = activeInput.maxLength;
+  if (typeof maxLength === "number" && maxLength > 0 && newValue.length > maxLength) {
+    newValue = newValue.substring(0, maxLength);
+  }
+
+  activeInput.value = newValue;
   activeInput.dispatchEvent(new Event("input", { bubbles: true }));
 
   // Update keyboard's internal state with the (possibly truncated) input
-  keyboard.setInput(input);
+  keyboard.setInput(newValue);
 }
 
 

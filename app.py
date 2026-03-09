@@ -571,22 +571,15 @@ def select_location():
 # create a new lab test order
 @app.route("/test/create", methods=['POST'])
 def create_lab_order():
-<<<<<<< HEAD
-=======
-    clinical_history_encoded = request.form.get('clinical_history_encoded', '').strip().lower()
-    if not clinical_history_encoded:
-        clinical_history_encoded = (request.form.get('clinical_history', '')).strip().lower()
     blood_volume = request.form.get('blood_volume', '').strip()
     blood_volume_unit = request.form.get('blood_volume_unit', '').strip()
 
->>>>>>> 91dd14c (feat: add blood volume input for ABO/Crossmatch tests with validation and dynamic UI updates)
     for test in request.form.getlist('test_type[]'):
         new_test = {
             'ordered_by': request.form['ordered_by'],
             'date_ordered': int(datetime.now().strftime('%s')),
             'status': 'Ordered',
             'sample_type': request.form['specimen_type'],
-            'clinical_history': (request.form['clinical_history']).lower(),
             'Priority': request.form['priority'],
             'ward': session["location"],
             'patient_id':

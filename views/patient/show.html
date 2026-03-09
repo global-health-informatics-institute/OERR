@@ -661,7 +661,13 @@ function handleCheckboxChange() {
         }
     }
 
+    // Preserve any existing checkbox-change handler (e.g., Antibiotics toggling)
+    var legacyHandleCheckboxChange = window.handleCheckboxChange || null;
+
     function handleCheckboxChange() {
+        if (typeof legacyHandleCheckboxChange === 'function') {
+            legacyHandleCheckboxChange();
+        }
         updateBloodVolumeRequirement();
         setTimeout(syncKeyboardToActiveTab, 0);
     }

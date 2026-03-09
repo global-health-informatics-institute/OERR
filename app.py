@@ -583,7 +583,8 @@ def create_lab_order():
             'Priority': request.form['priority'],
             'ward': session["location"],
             'patient_id':
-                request.form['patient_id']
+                request.form['patient_id'],
+            'clinical_history': request.form.get('clinical_history', '').strip()
         }
         if blood_volume != "":
             new_test['transfusion'] = {

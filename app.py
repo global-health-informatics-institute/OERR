@@ -29,11 +29,8 @@ global db
 settings = misc.initialize_settings()
 app.config['user_roles'] = misc.initialize_user_roles()
 app.config['departments'] = misc.initialize_departments()
-<<<<<<< HEAD
-=======
 app.config['common_histories'] = misc.load_common_histories()
 app.config['common_histories_by_department'] = misc.load_common_histories(by_department=True)
->>>>>>> 76f67bd (feat: enhance clinical history management with department-specific histories and improved UI.)
 
 # optional configuration when running on rpi
 if settings["using_rpi"] == "True":
@@ -241,15 +238,23 @@ def patient(patient_id):
     # Calculate permitted length
     permitted_length = 85 - 50 - len(var_patient['name']) - len(var_patient['id'])
 
+    selected_department = session.get("dpt", "")
+    if not selected_department:
+        selected_ward = session.get("location")
+        for department in app.config.get('departments', {}).get("departments", []):
+            if selected_ward in department.get("wards", []):
+                selected_department = department.get("name", "")
+                break
+
     # Render the template with both local and remote test data
     return render_template('patient/show.html', pt_details=var_patient, tests=records, pending_orders=pending_sample,
                            containers=misc.container_options(),
                            collect_samples=draw_sample, doctors=prescribers(), ch_length=permitted_length,
                            requires_keyboard=True,
                            test_options=inject_tests(), specimen_types=inject_specimen_types(),
-                           panel_options=inject_panels(), common_histories=app.config['common_histories'],
-                           common_histories_by_department=app.config['common_histories_by_department'],
-                           selected_department=session.get("dpt", ""))
+                           panel_options=inject_panels(), common_histories=misc.load_common_histories(),
+                           common_histories_by_department=misc.load_common_histories(by_department=True),
+                           selected_department=selected_department)
 
 
 
@@ -514,6 +519,7 @@ def select_location():
             flash("Please select both department and ward.", 'error')
             error = "Please select both department and ward."
         else:
+            session["dpt"] = selected_department
             session["location"] = selected_ward
             return redirect(url_for('index'))
 
@@ -988,8 +994,4 @@ def internal_error(error):
     return render_template('main/502.html'), 502
 
 if __name__ == '__main__':
-<<<<<<< HEAD
     app.run(port="7500", debug=False, host='0.0.0.0')
-=======
-    app.run(port="8000", debug=False, host='0.0.0.0')
->>>>>>> 76f67bd (feat: enhance clinical history management with department-specific histories and improved UI.)

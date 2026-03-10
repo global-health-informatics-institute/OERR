@@ -1,8 +1,6 @@
 let Keyboard = window.SimpleKeyboard.default;
 
 let selectedInput;
-let inputElement = document.querySelector("#input20");
-let charLength = inputElement ? inputElement.maxLength : null;
 
 let keyboard = new Keyboard({
   onChange: input => onChange(input),
@@ -48,25 +46,23 @@ function onInputChange(event) {
 
 function onChange(input) {
   console.log("onChange");
+  const activeInput = document.querySelector(selectedInput || ".input");
+  if (!activeInput) return;
 
-  if (inputElement && charLength && charLength > 0) {
-    
-    // Limit the input to charLength
-    if (input.length > charLength && !isBackSpace(lastPressedButton)) {
-      input = input.substring(0, charLength);
-    }
-
-    // Allow input if it's within the maxLength or backspace is pressed
-    if (inputElement.value.length < charLength || isBackSpace(lastPressedButton)) {
-      document.querySelector(selectedInput || ".input").value = input;
-    }
-  } else {
-    // If no maxlength or char length is fine, update the input
-    document.querySelector(selectedInput || ".input").value = input;
+  if (activeInput.readOnly || activeInput.disabled) {
+    keyboard.setInput(activeInput.value || "", activeInput.id);
+    return;
   }
 
-  // Update keyboard's internal state with the (possibly truncated) input
-  keyboard.setInput(input);
+  let newValue = input;
+  const maxLength = activeInput.maxLength;
+  if (typeof maxLength === "number" && maxLength > 0 && newValue.length > maxLength) {
+    newValue = newValue.substring(0, maxLength);
+  }
+
+  activeInput.value = newValue;
+  activeInput.dispatchEvent(new Event("input", { bubbles: true }));
+  keyboard.setInput(newValue, activeInput.id);
 }
 
 

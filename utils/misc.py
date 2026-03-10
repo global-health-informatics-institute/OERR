@@ -1,6 +1,7 @@
 # this is a a location for all the miscellaneous functions
 from datetime import date
 import json
+import os
 
 
 # calculate age for display
@@ -126,32 +127,39 @@ def load_common_histories(by_department=False):
             deduped.append(history)
         return deduped
 
-    try:
-        with open("config/clinical_histories.config") as json_file:
-            configured_histories = json.load(json_file)
-            if isinstance(configured_histories, list):
-                common_histories = [
-                    normalized for normalized in (normalize_history_entry(item) for item in configured_histories)
+    config_candidates = [
+        "config/clinical_histories.config",
+    ]
+    configured_histories = None
+
+    for config_path in config_candidates:
+        if not os.path.exists(config_path):
+            continue
+        try:
+            with open(config_path) as json_file:
+                configured_histories = json.load(json_file)
+            break
+        except (json.JSONDecodeError, TypeError):
+            continue
+
+    if isinstance(configured_histories, list):
+        common_histories = [
+            normalized for normalized in (normalize_history_entry(item) for item in configured_histories)
+            if normalized is not None
+        ]
+        grouped_histories = {}
+    elif isinstance(configured_histories, dict):
+        for department, histories in configured_histories.items():
+            if isinstance(histories, list):
+                department_histories = [
+                    normalized for normalized in (normalize_history_entry(item) for item in histories)
                     if normalized is not None
                 ]
-                grouped_histories = {}
-            elif isinstance(configured_histories, dict):
-                for department, histories in configured_histories.items():
-                    if isinstance(histories, list):
-                        department_histories = [
-                            normalized for normalized in (normalize_history_entry(item) for item in histories)
-                            if normalized is not None
-                        ]
-                        grouped_histories[department] = department_histories
-                        common_histories.extend(department_histories)
-            else:
-                common_histories = []
-                grouped_histories = {}
-    except (FileNotFoundError, json.JSONDecodeError, TypeError):
+                grouped_histories[department] = department_histories
+                common_histories.extend(department_histories)
+    else:
         common_histories = []
         grouped_histories = {}
-    finally:
-        pass
     if by_department:
         return {
             department: dedupe_histories(histories)

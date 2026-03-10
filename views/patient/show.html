@@ -359,6 +359,10 @@
                 </div>
                 <div class="tab">
                     <h2>Additional Clinical Information/History(Optional)</h2>
+                    <div style="margin-bottom: 10px;">
+                        <span style="font-weight:600;">Preselected History:</span>
+                        <span id="preselectedClinicalHistoriesDisplay">None</span>
+                    </div>
                     <div>
 
                     <input type="text" placeholder="Clinical history" name="clinical_history" id="input20" class="input" value="{{
@@ -437,32 +441,40 @@
     </div>
 
    <script>
+    var currentTab = 0;
+
     document.addEventListener('DOMContentLoaded', function () {
         const maxChars = {{ ch_length }};
-        const commonHistories = {{ common_histories | tojson }};
         const commonHistoriesByDepartment = {{ common_histories_by_department | tojson }};
         const selectedDepartment = {{ selected_department | tojson }};
-        const departmentHistories = commonHistoriesByDepartment[selectedDepartment] || commonHistories;
+        const allDepartmentHistories = commonHistoriesByDepartment["All"] || [];
+        const selectedDepartmentHistories = selectedDepartment
+            ? (commonHistoriesByDepartment[selectedDepartment] || [])
+            : [];
+
+        const seenHistoryKeys = new Set();
+        const departmentHistories = [...allDepartmentHistories, ...selectedDepartmentHistories].filter((history, index) => {
+            const name = typeof history === 'string' ? history : (history && history.name) ? history.name : '';
+            const id = (history && typeof history === 'object' && history.id !== undefined && history.id !== null)
+                ? String(history.id)
+                : '';
+            const key = id !== '' ? `id:${id}` : `name:${String(name).toLowerCase()}`;
+            if (seenHistoryKeys.has(key)) return false;
+            seenHistoryKeys.add(key);
+            return true;
+        });
 
         // Initialize container state
         const container = document.getElementById('additionalClinicalHistoriesContainer');
         const clinicalHistoryEncodedInput = document.getElementById('clinicalHistoryEncoded');
         const clinicalHistoryInput = document.getElementById('input20');
+        const preselectedHistoriesDisplay = document.getElementById('preselectedClinicalHistoriesDisplay');
         let selectedHistoryIds = [];
         let selectedHistoryNames = [];
-        let manualEntries = [];
-        let lastValidDisplayValue = clinicalHistoryInput ? clinicalHistoryInput.value : '';
+        let lastValidManualValue = clinicalHistoryInput ? clinicalHistoryInput.value : '';
         if (clinicalHistoryInput) {
-            // Visible field shows names, so native maxlength can block valid input too early.
-            // We enforce length using encoded value (selected IDs + manual text) in JS instead.
+            // Enforce max length on encoded value (selected IDs + manual entries).
             clinicalHistoryInput.removeAttribute('maxlength');
-        }
-
-        function splitClinicalHistory(value) {
-            return String(value || '')
-                .split(/[;,]/)
-                .map(item => item.trim())
-                .filter(Boolean);
         }
 
         function uniqueByLower(values) {
@@ -475,19 +487,45 @@
             });
         }
 
-        function extractManualEntries(displayValue, namesToExclude) {
-            const excluded = new Set((namesToExclude || []).map(item => String(item).toLowerCase()));
-            return splitClinicalHistory(displayValue).filter(item => !excluded.has(item.toLowerCase()));
+        function buildEncodedClinicalHistory(selectedIds, manualInputValue) {
+            const encodedParts = (selectedIds || [])
+                .map(id => String(id).trim())
+                .filter(Boolean);
+            const manualValue = String(manualInputValue || '').trim();
+            if (manualValue !== '') {
+                encodedParts.push(manualValue);
+            }
+            return encodedParts.join(',');
         }
 
-        function composeClinicalHistoryValues(selectedIds, selectedNames, manualItems) {
-            const safeManualItems = manualItems || [];
-            const displayItems = uniqueByLower([...selectedNames, ...safeManualItems]);
-            const encodedItems = uniqueByLower([...selectedIds, ...safeManualItems]);
+        function composeClinicalHistoryValues(selectedIds, selectedNames, manualInputValue) {
+            const manualValue = String(manualInputValue || '');
             return {
-                displayValue: displayItems.join(', '),
-                encodedValue: encodedItems.join(',')
+                preselectedValue: uniqueByLower(selectedNames || []).join(', '),
+                manualValue: manualValue,
+                encodedValue: buildEncodedClinicalHistory(selectedIds, manualValue)
             };
+        }
+
+        function updateAdditionalHistoryMaxLength() {
+            if (!clinicalHistoryInput) return;
+            const selectedIdsPrefix = (selectedHistoryIds || [])
+                .map(id => String(id).trim())
+                .filter(Boolean)
+                .join(',');
+            const separatorLength = selectedIdsPrefix.length > 0 ? 1 : 0;
+            const remainingChars = Math.max(0, maxChars - selectedIdsPrefix.length - separatorLength);
+            clinicalHistoryInput.maxLength = remainingChars;
+            clinicalHistoryInput.readOnly = remainingChars <= 0;
+            if (remainingChars <= 0) {
+                clinicalHistoryInput.value = '';
+                lastValidManualValue = '';
+            }
+        }
+
+        function getEncodedLengthForInputValue(inputValue) {
+            const composed = composeClinicalHistoryValues(selectedHistoryIds, selectedHistoryNames, inputValue);
+            return composed.encodedValue.length;
         }
 
         function getSelectedHistoriesFromDom() {
@@ -538,27 +576,15 @@
             if (container) {
                 container.appendChild(wrapper);
             }
-            var options = document.getElementsByName('testOptions');
-            for (var i = 0, length = options.length; i < length; i++) {
-                if (!options[i].dataset.id.split(',').includes(specimen_type)){
-                    options[i].style.display= "none";
-                }
-                else {
-                    options[i].style.display= "block";
-                }
-            }
         });
 
         // Track selected checkbox histories separately from typed clinical history.
         function updateSelectedClinicalHistories(changedCheckbox) {
             if (!clinicalHistoryEncodedInput) return;
 
-            const previousSelectedNames = [...selectedHistoryNames];
             const selected = getSelectedHistoriesFromDom();
-            const excludedNames = uniqueByLower([...previousSelectedNames, ...selected.names]);
             const sourceValue = clinicalHistoryInput ? clinicalHistoryInput.value : '';
-            const nextManualEntries = extractManualEntries(sourceValue, excludedNames);
-            const composedValues = composeClinicalHistoryValues(selected.ids, selected.names, nextManualEntries);
+            const composedValues = composeClinicalHistoryValues(selected.ids, selected.names, sourceValue);
 
             if (composedValues.encodedValue.length > maxChars && changedCheckbox && changedCheckbox.checked) {
                 changedCheckbox.checked = false;
@@ -567,24 +593,43 @@
 
             selectedHistoryIds = [...selected.ids];
             selectedHistoryNames = [...selected.names];
-            manualEntries = [...nextManualEntries];
             clinicalHistoryEncodedInput.value = composedValues.encodedValue.toLowerCase();
             if (clinicalHistoryInput) {
-                clinicalHistoryInput.value = composedValues.displayValue;
-                lastValidDisplayValue = composedValues.displayValue;
+                clinicalHistoryInput.value = composedValues.manualValue;
+                lastValidManualValue = composedValues.manualValue;
+            }
+            updateAdditionalHistoryMaxLength();
+            if (preselectedHistoriesDisplay) {
+                preselectedHistoriesDisplay.textContent = composedValues.preselectedValue || 'None';
             }
         }
 
         if (clinicalHistoryInput) {
-            manualEntries = extractManualEntries(clinicalHistoryInput.value, selectedHistoryNames);
+            updateAdditionalHistoryMaxLength();
+            clinicalHistoryInput.addEventListener('keydown', function (event) {
+                const blockedKeys = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Tab', 'Home', 'End', 'Escape', 'Enter'];
+                if (event.ctrlKey || event.metaKey || event.altKey || blockedKeys.includes(event.key)) return;
+                if (getEncodedLengthForInputValue(clinicalHistoryInput.value) >= maxChars) {
+                    event.preventDefault();
+                }
+            });
+
+            clinicalHistoryInput.addEventListener('paste', function (event) {
+                const pasteText = (event.clipboardData || window.clipboardData).getData('text') || '';
+                const start = clinicalHistoryInput.selectionStart ?? clinicalHistoryInput.value.length;
+                const end = clinicalHistoryInput.selectionEnd ?? clinicalHistoryInput.value.length;
+                const projectedValue = clinicalHistoryInput.value.slice(0, start) + pasteText + clinicalHistoryInput.value.slice(end);
+                if (getEncodedLengthForInputValue(projectedValue) > maxChars) {
+                    event.preventDefault();
+                }
+            });
 
             clinicalHistoryInput.addEventListener('beforeinput', function (event) {
                 const inputType = event.inputType || '';
                 const isDeletion = inputType.startsWith('delete');
                 if (isDeletion) return;
 
-                const currentManualEntries = extractManualEntries(clinicalHistoryInput.value, selectedHistoryNames);
-                const currentComposed = composeClinicalHistoryValues(selectedHistoryIds, selectedHistoryNames, currentManualEntries);
+                const currentComposed = composeClinicalHistoryValues(selectedHistoryIds, selectedHistoryNames, clinicalHistoryInput.value);
                 if (currentComposed.encodedValue.length >= maxChars) {
                     event.preventDefault();
                     return;
@@ -594,8 +639,7 @@
                 const end = clinicalHistoryInput.selectionEnd ?? clinicalHistoryInput.value.length;
                 const inserted = event.data || (event.dataTransfer ? event.dataTransfer.getData('text') : '');
                 const projectedDisplayValue = clinicalHistoryInput.value.slice(0, start) + inserted + clinicalHistoryInput.value.slice(end);
-                const projectedManualEntries = extractManualEntries(projectedDisplayValue, selectedHistoryNames);
-                const projected = composeClinicalHistoryValues(selectedHistoryIds, selectedHistoryNames, projectedManualEntries);
+                const projected = composeClinicalHistoryValues(selectedHistoryIds, selectedHistoryNames, projectedDisplayValue);
 
                 if (projected.encodedValue.length > maxChars) {
                     event.preventDefault();
@@ -603,33 +647,41 @@
             });
 
             clinicalHistoryInput.addEventListener('input', function () {
-                const nextManualEntries = extractManualEntries(clinicalHistoryInput.value, selectedHistoryNames);
-                const composedValues = composeClinicalHistoryValues(selectedHistoryIds, selectedHistoryNames, nextManualEntries);
+                const composedValues = composeClinicalHistoryValues(selectedHistoryIds, selectedHistoryNames, clinicalHistoryInput.value);
                 if (composedValues.encodedValue.length > maxChars) {
-                    clinicalHistoryInput.value = lastValidDisplayValue;
+                    clinicalHistoryInput.value = lastValidManualValue;
                     return;
                 }
 
-                manualEntries = [...nextManualEntries];
                 if (clinicalHistoryEncodedInput) {
                     clinicalHistoryEncodedInput.value = composedValues.encodedValue.toLowerCase();
                 }
-                lastValidDisplayValue = clinicalHistoryInput.value;
+                lastValidManualValue = clinicalHistoryInput.value;
             });
         }
-    updateSelectedClinicalHistories();
+        updateSelectedClinicalHistories();
+        handleCheckboxChange();
 });
 
-if (displayAntibiotics) {
-    document.getElementById('antibiotics').style.display = 'block';
-} else {
-    document.getElementById('antibiotics').style.display = 'none';
-}
+    function handleCheckboxChange() {
+        const checkboxes = document.querySelectorAll('input[name="test_type[]"]:checked');
+        let displayAntibiotics = false;
+
+        checkboxes.forEach(function (checkbox) {
+            if (checkbox.value === '4') {
+                displayAntibiotics = true;
+            }
+        });
+
+        const antibiotics = document.getElementById('antibiotics');
+        if (!antibiotics) return;
+        antibiotics.style.display = displayAntibiotics ? 'block' : 'none';
+    }
 
     function showOrderDialog() {
-        const urlParts = window.location.href.split('?');
-        const baseUrl = urlParts[0];
-        window.location = `${baseUrl}#orderModal`;
+        const baseUrl = window.location.origin + window.location.pathname;
+        window.location.href = `${baseUrl}#orderModal`;
+        currentTab = 0;
         showTab(0);
     }
 

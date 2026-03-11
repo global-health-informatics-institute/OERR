@@ -61,5 +61,9 @@ body,html{
 .simple-keyboard.hg-theme-default .hg-button.hg-activeButton{background:#efefef}.simple-keyboard button.hg-button{border-width:0;outline:0;font-size:inherit}.simple-keyboard.hg-theme-default.hg-layout-numeric .hg-button{width:33.3%;height:60px;align-items:center;display:flex;justify-content:center}.simple-keyboard.hg-theme-default .hg-button.hg-button-numpadadd,.simple-keyboard.hg-theme-default .hg-button.hg-button-numpadenter{height:85px}.simple-keyboard.hg-theme-default .hg-button.hg-button-numpad0{width:105px}.simple-keyboard.hg-theme-default .hg-button.hg-button-com{max-width:85px}.simple-keyboard.hg-theme-default .hg-button.hg-standardBtn.hg-button-at{max-width:45px}.simple-keyboard.hg-theme-default .hg-button.hg-selectedButton{background:rgba(5,25,70,.53);color:#fff}.simple-keyboard.hg-theme-default .hg-button.hg-standardBtn[data-skbtn=".com"]{max-width:82px}
 
 .simple-keyboard.hg-theme-default .hg-button.hg-standardBtn[data-skbtn="@"]{max-width:60px}
+.simple-keyboard.hg-theme-default .hg-button[data-skbtn="{bksp}"]{
+    background:#d32f2f;
+    color:#fff;
+}
 
 /*# sourceMappingURL=index.css.map */

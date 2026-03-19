@@ -1,4 +1,5 @@
 from models.database import DataAccess
+from utils.couchdb_indexes import find_with_index
 
 
 class LaboratoryTestType:
@@ -28,7 +29,11 @@ class LaboratoryTestType:
 
     @staticmethod
     def find_by_test_type(test_type_id):
-        test_type = DataAccess("lab_test_type").db.find({"selector": {"test_type_id": test_type_id}, "limit": 1})
+        test_type = find_with_index(
+            DataAccess("lab_test_type").db,
+            {"selector": {"test_type_id": test_type_id}, "limit": 1},
+            "idx_lab_test_type_by_test_type_id",
+        )
         if test_type is not None:
             test_type = list(test_type)[0]
             availability = test_type.get("availability") if test_type.get("availability") is not None else True
@@ -63,7 +68,11 @@ class LaboratoryTestType:
 
     @staticmethod
     def get_available():
-        tests = DataAccess("lab_test_type").db.find({"selector": {"availability": True}, "limit": 5000})
+        tests = find_with_index(
+            DataAccess("lab_test_type").db,
+            {"selector": {"availability": True}, "limit": 5000},
+            "idx_lab_test_type_by_availability",
+        )
         return tests
 
     def show(self):

@@ -1,4 +1,5 @@
 from models.database import DataAccess
+from utils.couchdb_indexes import find_with_index
 from werkzeug.security import check_password_hash, generate_password_hash
 
 
@@ -54,7 +55,11 @@ class User:
     @staticmethod
     def get_team_members(team):
         users = []
-        user_results = DataAccess("users").db.find({"selector": {"team": team}, "fields": ["_id"], "limit": 5000})
+        user_results = find_with_index(
+            DataAccess("users").db,
+            {"selector": {"team": team}, "fields": ["_id"], "limit": 5000},
+            "idx_users_by_team",
+        )
         for provider in user_results:
             users.append(provider["_id"])
         return users
@@ -72,7 +77,11 @@ class User:
     
     @staticmethod
     def get_active_prescribers():
-        return DataAccess("users").db.find({"selector": {"role": "Doctor", "status": "Active"}, "limit": 5000})
+        return find_with_index(
+            DataAccess("users").db,
+            {"selector": {"role": "Doctor", "status": "Active"}, "limit": 5000},
+            "idx_users_by_role_status",
+        )
 
     def save(self):
         user = self.to_dict()

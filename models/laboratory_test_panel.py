@@ -1,4 +1,5 @@
 from models.database import DataAccess
+from utils.couchdb_indexes import find_with_index
 
 
 class LaboratoryTestPanel:
@@ -24,7 +25,11 @@ class LaboratoryTestPanel:
 
     @staticmethod
     def get_available():
-        tests = DataAccess("lab_test_panels").db.find({"selector": {"availability": True}, "limit": 5000})
+        tests = find_with_index(
+            DataAccess("lab_test_panels").db,
+            {"selector": {"availability": True}, "limit": 5000},
+            "idx_lab_test_panels_by_availability",
+        )
         return tests
 
     def show(self):

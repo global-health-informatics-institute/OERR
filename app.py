@@ -15,6 +15,7 @@ from models.laboratory_test_type import LaboratoryTestType
 from models.patient import Patient
 from models.user import User
 from utils import misc
+from utils.couchdb_indexes import ensure_indexes, find_with_index
 from fuzzywuzzy import fuzz
 
 GENDER_COV_MALE = "1"
@@ -30,6 +31,7 @@ global db
 settings = misc.initialize_settings()
 app.config['user_roles'] = misc.initialize_user_roles()
 app.config['departments'] = misc.initialize_departments()
+_indexes_initialized = False
 
 # optional configuration when running on rpi
 if settings["using_rpi"] == "True":
@@ -59,6 +61,7 @@ def index():
                 "status": {"$in": ["Ordered", "Specimen Collected", "Analysis Complete", "Rejected"]}
             }, "limit": 100
         }
+        main_index_index = "idx_orders_by_ward_status_date"
     else:
         main_index_query = {
             "selector": {
@@ -66,9 +69,10 @@ def index():
                 "status": {"$in": ["Ordered", "Specimen Collected", "Analysis Complete", "Rejected"]}
             }, "limit": 100
         }
+        main_index_index = "idx_orders_by_ordered_by_status_date"
  
     # query for records to display on the main page
-    main_results = db.find(main_index_query)
+    main_results = find_with_index(db, main_index_query, main_index_index)
     for item in main_results:
         try:
             test_detail = {'status': item.get('status'), "date": float(item.get('date_ordered')),
@@ -189,7 +193,11 @@ def patient(patient_id):
     var_patient = Patient.get(patient_id)
 
     # get tests for patient (local)
-    test_query_result = db.find({"selector": {"patient_id": patient_id}, "limit": 100})
+    test_query_result = find_with_index(
+        db,
+        {"selector": {"patient_id": patient_id}, "limit": 100},
+        "idx_orders_by_patient_date",
+    )
     for test in test_query_result:
         record = {"date_ordered": datetime.fromtimestamp(float(test["date_ordered"])).strftime('%d %b %Y %H:%M'),
                   "id": test.get("_id"), "type": test.get("type"), "status": test.get("status"),
@@ -636,7 +644,11 @@ def download_file():
 def reprint_barcode(test_id):
     tests = list(db.find({"selector": {"type": {"$in": ["test", "test panel"]}, "_id": {"$in": test_id.split("^")}}}))
     if tests is None or tests == []:
-        tests = list(db.find({"selector": {"collection_id": test_id}}))
+        tests = list(find_with_index(
+            db,
+            {"selector": {"collection_id": test_id}},
+            "idx_orders_by_collection_id",
+        ))
     test_ids = []
     test_names = []
     if tests is None or tests == []:
@@ -887,11 +899,15 @@ def initialize_connection():
                              (settings["couch"]["user"], settings["couch"]["passwd"],
                               settings["couch"]["host"], settings["couch"]["port"]))
     global db
+    global _indexes_initialized
     # Connect to a database or Create a Database
     try:
         db = couchConnection[settings["couch"]["database"]]
     except:
         db = couchConnection.create(settings["couch"]["database"])
+    if not _indexes_initialized:
+        ensure_indexes(settings)
+        _indexes_initialized = True
 
 
 

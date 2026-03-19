@@ -24,17 +24,5 @@
     "specific_department":
     {
         "department":"Medical"
-    },
-    "threshhold":
-    {
-        "start_hour": 1,
-        "start_minute": 0,
-        "start_second": 0,
-        "start_microsecond": 0,
-        
-        "end_hour": 3,
-        "end_minute": 0,
-        "end_second": 0,
-        "end_microsecond": 0
     }
 }

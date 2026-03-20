@@ -3,7 +3,6 @@ import requests
 from requests.auth import HTTPBasicAuth
 from datetime import datetime, timedelta
 import logging
-from tqdm import tqdm
 
 # CONFIG
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -127,7 +126,7 @@ def filter_entries(all_entries):
     archive_entries = []
     patient_ids = []
 
-    for entry in tqdm(all_entries, desc="filtering + sorting"):
+    for entry in all_entries:
         date_ordered = entry.get('date_ordered')
         if date_ordered:
             if date_ordered > CUT_OFF_DATE:
@@ -175,7 +174,7 @@ def _patch_request(patient_id):
 def mark_patients_as_archived(patient_ids):
     succes_count = 0
     fail_patches = []
-    for patient_id in tqdm(patient_ids, desc="marking patients"):
+    for patient_id in patient_ids:
         if patient_id:
             # ADD 201 HERE - CouchDB returns 201 for successful PUT updates
             if _patch_request(patient_id) in [200, 201, 204]:

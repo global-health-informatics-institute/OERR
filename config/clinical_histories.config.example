@@ -1,0 +1,64 @@
+{
+  "All": [
+    { "id": 1, "name": "Hypertension" },
+    { "id": 2, "name": "Diabetes Mellitus" },
+    { "id": 3, "name": "HIV/AIDS" },
+    { "id": 4, "name": "Malaria" },
+    { "id": 5, "name": "Tuberculosis" },
+    { "id": 6, "name": "Asthma" },
+    { "id": 7, "name": "Epilepsy" },
+    { "id": 8, "name": "Anemia" },
+    { "id": 9, "name": "Stroke" },
+    { "id": 10, "name": "Heart Failure" }
+  ],
+  "Medical": [
+    { "id": 11, "name": "Chronic Kidney Disease" },
+    { "id": 12, "name": "Chronic Liver Disease" },
+    { "id": 13, "name": "Peptic Ulcer Disease" },
+    { "id": 14, "name": "Gastritis" },
+    { "id": 15, "name": "Pneumonia" },
+    { "id": 16, "name": "Sepsis" },
+    { "id": 17, "name": "COVID-19" }
+  ],
+  "Surgery": [
+    { "id": 18, "name": "Acute Appendicitis" },
+    { "id": 19, "name": "Intestinal Obstruction" },
+    { "id": 20, "name": "Peritonitis" },
+    { "id": 21, "name": "Cholecystitis" },
+    { "id": 22, "name": "Trauma" },
+    { "id": 23, "name": "Open Fracture" },
+    { "id": 24, "name": "Burns" },
+    { "id": 25, "name": "Post-Operative Review" },
+    { "id": 26, "name": "Hernia" }
+  ],
+  "Pediatrics": [
+    { "id": 27, "name": "Severe Malaria" },
+    { "id": 28, "name": "Diarrheal Disease" },
+    { "id": 29, "name": "Malnutrition" },
+    { "id": 30, "name": "Meningitis" },
+    { "id": 31, "name": "Neonatal Sepsis" },
+    { "id": 32, "name": "Congenital Heart Disease" },
+    { "id": 33, "name": "Measles" }
+  ],
+  "Ethel Mutharika": [
+    { "id": 34, "name": "Normal Labour" },
+    { "id": 35, "name": "Prolonged Labour" },
+    { "id": 36, "name": "Antepartum Hemorrhage" },
+    { "id": 37, "name": "Postpartum Hemorrhage" },
+    { "id": 38, "name": "Eclampsia" },
+    { "id": 39, "name": "Pre-eclampsia" },
+    { "id": 40, "name": "Premature Rupture of Membranes" },
+    { "id": 41, "name": "Obstructed Labour" },
+    { "id": 42, "name": "Ectopic Pregnancy" }
+  ],
+  "Oncology": [
+    { "id": 43, "name": "Cervical Cancer" },
+    { "id": 44, "name": "Breast Cancer" },
+    { "id": 45, "name": "Prostate Cancer" },
+    { "id": 46, "name": "Kaposi’s Sarcoma" },
+    { "id": 47, "name": "Esophageal Cancer" },
+    { "id": 48, "name": "Liver Cancer" },
+    { "id": 49, "name": "Lymphoma" },
+    { "id": 50, "name": "Leukemia" }
+  ]
+}

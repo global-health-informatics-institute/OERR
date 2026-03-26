@@ -57,6 +57,7 @@ def index():
     if session["user"]["role"] in ['Nurse','Doctor','Student']:
         main_index_query = {
             "selector": {
+                "type": {"$in": ["test", "test panel"]},
                 "ward": session.get('location'),
                 "status": {"$in": ["Ordered", "Specimen Collected", "Analysis Complete", "Rejected"]}
             }, "limit": 100
@@ -65,6 +66,7 @@ def index():
     else:
         main_index_query = {
             "selector": {
+                "type": {"$in": ["test", "test panel"]},
                 "ordered_by": session["user"]['username'],
                 "status": {"$in": ["Ordered", "Specimen Collected", "Analysis Complete", "Rejected"]}
             }, "limit": 100

@@ -31,7 +31,6 @@ global db
 settings = misc.initialize_settings()
 app.config['user_roles'] = misc.initialize_user_roles()
 app.config['departments'] = misc.initialize_departments()
-_indexes_initialized = False
 
 # optional configuration when running on rpi
 if settings["using_rpi"] == "True":
@@ -58,21 +57,25 @@ def index():
         main_index_query = {
             "selector": {
                 "ward": session.get('location'),
-                "status": {"$in": ["Ordered", "Specimen Collected", "Analysis Complete", "Rejected"]}
-            }, "limit": 100
+                "status": {"$in": ["Ordered", "Specimen Collected", "Analysis Complete", "Rejected"]},
+                "type": {"$in": ["test", "test panel"]},
+            },
+            "limit": 100,
+            "use_index": "idx_orders_by_ward_status_date",
         }
-        main_index_index = "idx_orders_by_ward_status_date"
     else:
         main_index_query = {
             "selector": {
                 "ordered_by": session["user"]['username'],
-                "status": {"$in": ["Ordered", "Specimen Collected", "Analysis Complete", "Rejected"]}
-            }, "limit": 100
+                "status": {"$in": ["Ordered", "Specimen Collected", "Analysis Complete", "Rejected"]},
+                "type": {"$in": ["test", "test panel"]},
+            },
+            "limit": 100,
+            "use_index": "idx_orders_by_ordered_by_status_date",
         }
-        main_index_index = "idx_orders_by_ordered_by_status_date"
  
     # query for records to display on the main page
-    main_results = find_with_index(db, main_index_query, main_index_index)
+    main_results = db.find(main_index_query)
     for item in main_results:
         try:
             test_detail = {'status': item.get('status'), "date": float(item.get('date_ordered')),
@@ -266,6 +269,7 @@ def patient(patient_id):
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
+    ensure_session_indexes()
     error = None
     if request.method == 'GET':
         status = None
@@ -905,15 +909,18 @@ def initialize_connection():
                              (settings["couch"]["user"], settings["couch"]["passwd"],
                               settings["couch"]["host"], settings["couch"]["port"]))
     global db
-    global _indexes_initialized
     # Connect to a database or Create a Database
     try:
         db = couchConnection[settings["couch"]["database"]]
     except:
         db = couchConnection.create(settings["couch"]["database"])
-    if not _indexes_initialized:
-        ensure_indexes(settings)
-        _indexes_initialized = True
+
+
+def ensure_session_indexes():
+    if session.get("indexes_initialized"):
+        return
+    ensure_indexes(settings)
+    session["indexes_initialized"] = True
 
 
 

@@ -1,5 +1,26 @@
+import logging
+
+import couchdb
 import requests
 from requests.auth import HTTPBasicAuth
+
+logger = logging.getLogger(__name__)
+
+
+def _is_bad_request_error(exc):
+    """Return True if *exc* is a CouchDB HTTP 400 bad_request error.
+
+    The couchdb library raises ``ServerError((status, (error, reason)))`` for
+    HTTP errors that are not otherwise mapped to a specific exception class.
+    A 400 response from the Mango ``_find`` endpoint indicates that the
+    ``use_index`` hint refers to an index that does not exist or cannot be
+    applied to the given query.
+    """
+    if not exc.args or not isinstance(exc.args[0], tuple) or len(exc.args[0]) < 2:
+        return False
+    status, error_detail = exc.args[0]
+    error_type = error_detail[0] if isinstance(error_detail, tuple) else None
+    return status == 400 and error_type == "bad_request"
 
 
 def find_with_index(db, query, index_name=None):
@@ -9,7 +30,17 @@ def find_with_index(db, query, index_name=None):
     indexed_query["use_index"] = index_name
     try:
         return db.find(indexed_query)
-    except Exception:
+    except couchdb.ServerError as exc:
+        # CouchDB returns HTTP 400 (bad_request) when the requested index does
+        # not exist or cannot be used for the given query.  Re-raise for any
+        # other server error so real problems are not silently swallowed.
+        if not _is_bad_request_error(exc):
+            raise
+        logger.warning(
+            "Index '%s' could not be used (bad_request); falling back to unindexed query. Error: %s",
+            index_name,
+            exc,
+        )
         return db.find(query)
 
 

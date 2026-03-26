@@ -195,7 +195,13 @@ def patient(patient_id):
     # get tests for patient (local)
     test_query_result = find_with_index(
         db,
-        {"selector": {"patient_id": patient_id}, "limit": 100},
+        {
+            "selector": {
+                "patient_id": patient_id,
+                "type": {"$in": ["test", "test panel"]},
+            },
+            "limit": 100,
+        },
         "idx_orders_by_patient_date",
     )
     for test in test_query_result:

@@ -652,7 +652,7 @@ def reprint_barcode(test_id):
     if tests is None or tests == []:
         tests = list(find_with_index(
             db,
-            {"selector": {"collection_id": test_id}},
+            {"selector": {"collection_id": test_id, "type": {"$in": ["test", "test panel"]}}},
             "idx_orders_by_collection_id",
         ))
     test_ids = []

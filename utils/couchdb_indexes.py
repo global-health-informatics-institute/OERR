@@ -19,7 +19,9 @@ def _is_bad_request_error(exc):
     if not exc.args or not isinstance(exc.args[0], tuple) or len(exc.args[0]) < 2:
         return False
     status, error_detail = exc.args[0]
-    error_type = error_detail[0] if isinstance(error_detail, tuple) else None
+    if not isinstance(error_detail, tuple) or not error_detail:
+        return False
+    error_type = error_detail[0]
     return status == 400 and error_type == "bad_request"
 
 

@@ -4,7 +4,6 @@ from couchdb import Server
 from datetime import datetime, timedelta
 from models.laboratory_test_type import LaboratoryTestType
 from models.laboratory_test_panel import LaboratoryTestPanel
-from utils.couchdb_indexes import find_with_index
 
 test_statuses = {1: "Specimen Received", 2: "Specimen Received", 3: "Being Analyzed", 4: "Pending Verification",
                  5: "Analysis Complete", 6: "Not Done", 7: "Not Done", 8: "Rejected"}
@@ -49,28 +48,22 @@ def sync_test_statuses():
 
 
 def get_pending_tests():
-    tests = find_with_index(db, {
+    tests = db.find({
             "selector": {
                 "type": "test",
                 "status": {"$in": ["Ordered", "Specimen Collected", "Specimen Received", "Being Analyzed",
                                    "Pending Verification"]}}, "limit": 1000
-    }, "idx_orders_by_type_status")
+    })
     return tests
 
 
 def get_pending_panels():
-    return find_with_index(
-        db,
-        {
+    return db.find({
             "selector": {
                 "type": "test panel",
                 "status": {"$in": ["Ordered", "Specimen Collected", "Specimen Received", "Being Analyzed",
                                    "Pending Verification"]}
-            },
-            "limit": 1000
-        },
-        "idx_orders_by_type_status",
-    )
+            }, "limit": 1000})
 
 
 def get_patient_id(npid):

@@ -17,7 +17,7 @@ OERR/agent/
 Adding a New OP (Operation)
 To add a new task to the swarm, follow these two steps:
 1. Create the Script
-Place your bash script in the `/home/agent/op-agent/tasks/` directory.
+Place your bash script in the `/home/agent/tasks/` directory.
 use snake case naming convention for scripts (e.g., check_disk.sh, rotate_logs.sh).
 
 

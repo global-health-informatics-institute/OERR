@@ -95,9 +95,8 @@ pi ALL=(root) NOPASSWD: /home/pi/Desktop/GHII/op-agent/tasks/op_example.sh  # Cu
 
 ## **Notes**
 
-- Replace `/home/pi/Desktop/GHII/op-agent/tasks/op_example.sh` with the actual path to any OP script that needs `sudo`.
 - Ensure all scripts in `tasks/` are executable:
   ```bash
-  chmod +x /home/pi/Desktop/GHII/op-agent/tasks/*
+  chmod +x /path/to/op-agent/tasks/*
   ```
 ```

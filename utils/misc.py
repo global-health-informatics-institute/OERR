@@ -72,6 +72,15 @@ def initialize_departments():
     return departments
 
 
+def initialize_replication_settings():
+    replication_settings = {}
+    try:
+        with open("config/replications.config") as json_file:
+            replication_settings = json.load(json_file)
+    finally:
+        pass
+    return replication_settings
+
 def current_facility():
     try:
         with open("config/application.config") as json_file:

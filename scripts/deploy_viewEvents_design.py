@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
 Script to deploy the viewEvents design document to ****CouchDB****
-This creates the log_tab_tap update handler that logs test view events.
+This deploys the viewEvents design document for querying view_event docs.
 
 Usage: python scripts/deploy_viewEvents_design.py
 """

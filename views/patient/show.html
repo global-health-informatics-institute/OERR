@@ -45,7 +45,7 @@
     <div style="border: 1px solid silver; padding: 10px;height:65vh; overflow:auto;" class="header">
         {% for row in tests%}
             <div style="border:2px solid #07575B;border-radius:6px;width: 100%;margin:1% auto;font-size:12pt;">
-            <div style="color:#fff;margin:0;background-color:#003B46;font-size:14pt; padding: 15px;font-weight: bold;" onmousedown="toggleDisplay('{{row['id']}}', '{{row['status']}}')">
+            <div style="color:#fff;margin:0;background-color:#003B46;font-size:14pt; padding: 15px;font-weight: bold;" onmousedown="toggleDisplay('{{row['id']}}', '{{row['status']}}')" ontouchstart="toggleDisplay('{{row['id']}}', '{{row['status']}}')" data-doc-id="{{row['id']}}" data-test-status="{{row['status']}}" data-tab-name="details">
                 <div style="display: table-row;">
                     <div style="display: table-cell;width: 100%;">{{row['test_name']}}</div>
                     <div style="display: table-cell;">&nbsp;</div>
@@ -430,7 +430,7 @@
     <script>
         selected =null
         isNurse = "{{ session.get('user').get('role') in ['Nurse', 'Student'] }}"
-        const LOG_DEBOUNCE_DELAY_MS = 120000;
+        const LOG_DEBOUNCE_DELAY_MS = 500;
         const LOG_COOLDOWN_MS = 1500;
         const logTimers = {};
         const lastLogAt = {};
@@ -439,6 +439,7 @@
         function logTestView(docId, testStatus) {
             fetch('/api/log-details-tab', {
                 method: 'POST',
+                keepalive: true,
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
                     doc_id: docId,

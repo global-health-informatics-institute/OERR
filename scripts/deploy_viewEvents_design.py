@@ -45,8 +45,8 @@ def deploy_design_document():
     try:
         db.save(design_doc)
         print(f"Successfully deployed design document: {doc_id}")
-        print("\nThe log_tab_tap update handler is now available.")
-        print("Usage: PUT /{db}/_design/viewEvents/_update/log_tab_tap/{doc_id}")
+        print("\nThe viewEvents view  is now available.")
+        print("Usage: GET/{db}/_design/viewEvents/_view/by_test_id_and time")
         return True
     except Exception as e:
         print(f"Error saving design document: {e}")

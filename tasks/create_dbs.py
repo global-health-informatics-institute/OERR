@@ -16,7 +16,7 @@ username = f"{basis_settings['couch']['user']}"
 password = f"{basis_settings['couch']['passwd']}"
 database = f"{basis_settings['couch']['database']}"
 
-sub_dir = ["","_patients", "_lab_test_panels", "_lab_test_type", "_users"]
+sub_dir = ["","_patients", "_lab_test_panels", "_lab_test_type", "_users", "_view_events"]
 
 def ensure_database_exists(sub):
     database_name = f"{database}{sub}"
@@ -46,4 +46,3 @@ def ensure_database_exists(sub):
 if(__name__ == "__main__"):
     for dir in sub_dir:
         ensure_database_exists(dir)
-

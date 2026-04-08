@@ -1,20 +1,15 @@
-import json
 import requests
 from requests.auth import HTTPBasicAuth
 import logging
+from utils import misc
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-basis_file = "config/basis.config"
-
-
-with open(basis_file) as json_file:
-    basis_settings = json.load(json_file)
-url = f"http://{basis_settings['couch']['host']}:{basis_settings['couch']['port']}"
-DB = f"{url}/{basis_settings['couch']['database']}"
-username = f"{basis_settings['couch']['user']}"
-password = f"{basis_settings['couch']['passwd']}"
-database = f"{basis_settings['couch']['database']}"
+settings = misc.initialize_settings()
+url = f"http://{settings['couch']['host']}:{settings['couch']['port']}"
+username = settings['couch']['user']
+password = settings['couch']['passwd']
+database = settings['couch']['database']
 
 sub_dir = ["","_patients", "_lab_test_panels", "_lab_test_type", "_users", "_view_events"]
 

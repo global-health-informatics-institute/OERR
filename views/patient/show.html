@@ -430,6 +430,59 @@
     <script>
         selected =null
         isNurse = "{{ session.get('user').get('role') in ['Nurse', 'Student'] }}"
+        const LOG_DEBOUNCE_DELAY_MS = 120000;
+        const LOG_COOLDOWN_MS = 1500;
+        const logTimers = {};
+        const lastLogAt = {};
+
+        // Function to log test details view event
+        function logTestView(docId, testStatus) {
+            fetch('/api/log-details-tab', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    doc_id: docId,
+                    test_status: testStatus || 'unknown'
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('View event logged:', data);
+            })
+            .catch(error => {
+                console.error('Error logging view event:', error);
+            });
+        }
+
+        function queueLogTestView(docId, testStatus) {
+            if (!docId) {
+                return;
+            }
+
+            var safeStatus = testStatus || 'unknown';
+            var key = docId + ":" + safeStatus;
+            var now = Date.now();
+
+            if (lastLogAt[key] && (now - lastLogAt[key]) < LOG_COOLDOWN_MS) {
+                return;
+            }
+
+            if (logTimers[key]) {
+                clearTimeout(logTimers[key]);
+            }
+
+            logTimers[key] = setTimeout(function() {
+                var fireAt = Date.now();
+                if (lastLogAt[key] && (fireAt - lastLogAt[key]) < LOG_COOLDOWN_MS) {
+                    return;
+                }
+
+                lastLogAt[key] = fireAt;
+                logTestView(docId, safeStatus);
+                delete logTimers[key];
+            }, LOG_DEBOUNCE_DELAY_MS);
+        }
+
         function toggleDisplay(id, test_status){
             var state= {true: "View", false: "Hide"}
             div = document.getElementById(id)

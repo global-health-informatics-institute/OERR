@@ -72,6 +72,17 @@ def initialize_departments():
     return departments
 
 
+
+def initialize_archive_settings():
+    archive_settings = {}
+    try:
+        with open("config/archive.config") as json_file:
+            archive_settings = json.load(json_file)
+    finally:
+        pass
+    return archive_settings
+
+
 def current_facility():
     try:
         with open("config/application.config") as json_file:

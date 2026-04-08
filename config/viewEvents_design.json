@@ -1,0 +1,9 @@
+{
+  "_id": "_design/viewEvents",
+  "language": "javascript",
+  "views": {
+    "by_test_id_and_time": {
+      "map": "function(doc){ if(doc.type === 'view_event' && doc.test_id && doc.viewed_at){ emit([doc.test_id, doc.viewed_at], null); } }"
+    }
+  }
+}

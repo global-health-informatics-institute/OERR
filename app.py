@@ -16,6 +16,8 @@ from models.patient import Patient
 from models.user import User
 from utils import misc
 from fuzzywuzzy import fuzz
+from models.view_event import ViewEvent
+
 
 
 
@@ -738,6 +740,55 @@ def review_test(test_id):
         return redirect(url_for('patient', patient_id=test['patient_id']))
 
 
+# VIEW EVENTS LOGGING - Log test details tab views with status, session, timestamp
+
+@app.route("/api/log-details-tab", methods=['POST'])
+def log_details_tab():
+    data = request.get_json()
+    if not data:
+        return json.dumps({"error": "No data provided"}), 400
+    
+    viewed_by = data.get("viewed_by", session.get('user', {}).get('username', 'anonymous'))
+    # Use existing db connection from the app
+    
+    if 'doc_id' in data:
+        doc_ids = [data['doc_id']]
+  
+    elif 'doc_ids' in data:
+        doc_ids = data['doc_ids']
+    else:
+        return json.dumps({"error": "No doc_id or doc_ids provided"}), 400
+
+    created_count=0
+    errors=[]
+
+    # Create a new view event document for each test id
+    for doc_id in doc_ids:
+        try:
+            test_doc = db.get(doc_id)
+            test_status = data.get('test_status') or (test_doc or {}).get('status') or (test_doc or {}).get('test_status') or 'unknown'
+
+            event = ViewEvent(
+                test_id=doc_id,
+                test_status=test_status,
+                viewed_by=viewed_by,
+                viewed_at=int(time.time())
+            )
+            
+            event.save()
+            created_count +=1
+        except Exception as e:
+            errors.append(f"Error creating view event for {doc_id}: {str(e)}")
+
+    result ={
+        "ok":True,
+        "created": created_count,
+        "total": len(doc_ids)
+    }
+
+    if errors:
+        result["errors"] = errors
+    return json.dumps(result), 200
 @app.route("/get_charge_state")
 def get_charge_state():
     return Response(json.dumps(inject_power()), mimetype='application/json')

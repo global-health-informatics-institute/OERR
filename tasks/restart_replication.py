@@ -110,6 +110,8 @@ def _clear_log_file():
     except FileNotFoundError:
         with open(log_file, "w") as f:
             f.write(f"{NOW} - Log file created\n")
+
+
 def _delete_replicator_db():
     delete_replicator_db_cmd = ['curl', '-X', 'DELETE', replicator_db_url]
     try:
@@ -120,6 +122,7 @@ def _delete_replicator_db():
     except subprocess.CalledProcessError as e:
         with open(log_file, 'a') as log:
             log.write(f"{NOW} - Error deleting _replicator database: {e.stderr}\n")
+
 
 def _create_replicator_db():
     create_replicator_db_cmd = ['curl', '-X', 'PUT', replicator_db_url]

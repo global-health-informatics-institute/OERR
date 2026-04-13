@@ -136,6 +136,32 @@ def _create_replicator_db():
             log.write(f"{NOW} - Error creating _replicator database: {e.stderr}\n")
             logging.error(f"Error creating _replicator database: {e.stderr}")
 
+
+def _get_design_doc_rev():
+    get_desig_doc_cmd = [
+        'curl',
+        '-X', 'GET',
+        '--max-time', '10',
+        f"{target_url}/_design/ward_filter_{design_id}"
+    ]
+    try:
+        result = subprocess.run(get_desig_doc_cmd, check=True, capture_output=True, text=True)
+        doc = json.loads(result.stdout)
+
+        with open(log_file, 'a') as log:
+            if '_rev' in doc:
+                log.write(f"{NOW} - design document exists - _rev {doc['_rev']}\n")
+                return doc['_rev']
+            else:
+                log.write(f"{NOW} - design document does not exist\n")
+                return None
+
+    except subprocess.CalledProcessError as e:
+        with open(log_file, 'a') as log:
+            log.write(f"{NOW} - Error getting the design document: {e.stderr}\n")
+        return None
+
+
 def _create_target_design_doc():
     design_doc = {
         "filters": {
@@ -143,21 +169,34 @@ def _create_target_design_doc():
             function(doc, req) {{
                 var wards = {json.dumps(wards)};
                 var maxValue = {BUFF_DURATION_UNIX};
-                return wards.includes(doc.ward);
+                return wards.includes(doc.ward) && doc.date_ordered > maxValue;
             }}
         """
         }
     }
 
+    _rev = _get_design_doc_rev()
+    _push_msg = "created"
+
     create_design_doc_cmd = [
-        'curl', '-d', json.dumps(design_doc), '-H', 'Content-Type: application/json',
-        '-X', 'PUT', f"{target_url}/_design/ward_filter_{design_id}"
+        'curl',
+        '-d', json.dumps(design_doc),
+        '-H', 'Content-Type: application/json',
+        '-X', 'PUT',
+        '--max-time', '10',
+        f"{target_url}/_design/ward_filter_{design_id}"
     ]
+
+    if _rev:
+        create_design_doc_cmd[-1] += f"?rev={_rev}"
+        _push_msg = "updated"
+
+
     try:
         subprocess.run(create_design_doc_cmd, check=True, capture_output=True, text=True)
         with open(log_file, 'a') as log:
-            log.write(f"{NOW} - Design document created successfully on the target database\n")
-            logging.info(f"Design document created successfully on the target database")
+            log.write(f"{NOW} - Design document {_push_msg} successfully on the target database\n")
+            logging.info(f"Design document {_push_msg} successfully on the target database")
 
     except subprocess.CalledProcessError as e:
         with open(log_file, 'a') as log:

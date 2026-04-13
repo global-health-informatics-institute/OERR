@@ -104,6 +104,7 @@ def _clear_log_file():
 
         if len(lines) > 51:
             with open(log_file, "w") as f:
+                logging.info(f"{NOW} - Log file rotated (50+)")
                 f.write(f"{NOW} - Log file rotated (50+)\n")
 
     except FileNotFoundError:

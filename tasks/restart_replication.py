@@ -48,7 +48,7 @@ replicator_db_url = f"http://{source_user}:{source_pass}@{source_host}:{source_p
 design_id = (source_host).replace('.','')
 sub_directories = ["_lab_test_panels", "_lab_test_type", "_patients", "_users"]
 
-cut_off_days = archive_settings["cut_off_days"] | 7
+cut_off_days = archive_settings["cut_off_days"]
 BUFF_DURATION_UNIX = int(    (   datetime.now() - timedelta(days=cut_off_days)    )   .timestamp()    )
 
 NOW = datetime.now()
@@ -78,15 +78,15 @@ target_to_source_cmd =[
 # REPLICATION WINDOW
 def _check_replication_window():
 
-    START_HOUR = archive_settings["archive_window"]["start_hour"] | 1
-    START_MINUTE = archive_settings["archive_window"]["start_minute"] | 0
-    START_SECOND = archive_settings["archive_window"]["start_second"] | 0
-    START_MICROSECOND = archive_settings["archive_window"]["start_microsecond"] | 0
+    START_HOUR = archive_settings["archive_window"]["start_hour"]
+    START_MINUTE = archive_settings["archive_window"]["start_minute"]
+    START_SECOND = archive_settings["archive_window"]["start_second"]
+    START_MICROSECOND = archive_settings["archive_window"]["start_microsecond"]
 
-    END_HOUR = archive_settings["archive_window"]["end_hour"] | 3
-    END_MINUTE = archive_settings["archive_window"]["end_minute"] | 0
-    END_SECOND = archive_settings["archive_window"]["end_second"]   | 0
-    END_MICROSECOND = archive_settings["archive_window"]["end_microsecond"] | 0
+    END_HOUR = archive_settings["archive_window"]["end_hour"]
+    END_MINUTE = archive_settings["archive_window"]["end_minute"]
+    END_SECOND = archive_settings["archive_window"]["end_second"]
+    END_MICROSECOND = archive_settings["archive_window"]["end_microsecond"]
 
     start_time = NOW.replace(hour=START_HOUR, minute=START_MINUTE, second=START_SECOND, microsecond=START_MICROSECOND)
     end_time = NOW.replace(hour=END_HOUR, minute=END_MINUTE, second=END_SECOND, microsecond=END_MICROSECOND)

@@ -82,6 +82,14 @@ def initialize_archive_settings():
         pass
     return archive_settings
 
+def initialize_replication_settings():
+    replication_settings = {}
+    try:
+        with open("config/replications.config") as json_file:
+            replication_settings = json.load(json_file)
+    finally:
+        pass
+    return replication_settings
 
 def current_facility():
     try:

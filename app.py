@@ -15,6 +15,7 @@ from models.laboratory_test_type import LaboratoryTestType
 from models.patient import Patient
 from models.user import User
 from utils import misc
+from utils.couchdb_indexing import Couchdb_Indexing
 from fuzzywuzzy import fuzz
 
 GENDER_COV_MALE = "1"
@@ -57,14 +58,16 @@ def index():
             "selector": {
                 "ward": session.get('location'),
                 "status": {"$in": ["Ordered", "Specimen Collected", "Analysis Complete", "Rejected"]}
-            }, "limit": 100
+            }, "limit": 100,
+            "use_index": "idx_by_ward_and_status"
         }
     else:
         main_index_query = {
             "selector": {
                 "ordered_by": session["user"]['username'],
                 "status": {"$in": ["Ordered", "Specimen Collected", "Analysis Complete", "Rejected"]}
-            }, "limit": 100
+            }, "limit": 100,
+            "use_index": "idx_by_ordered_by_and_status"
         }
  
     # query for records to display on the main page
@@ -189,7 +192,11 @@ def patient(patient_id):
     var_patient = Patient.get(patient_id)
 
     # get tests for patient (local)
-    test_query_result = db.find({"selector": {"patient_id": patient_id}, "limit": 100})
+    test_query_result = db.find({
+        "selector": {"patient_id": patient_id},
+        "limit": 100,
+        "use_index": "idx_by_patient_id"
+    })
     for test in test_query_result:
         record = {"date_ordered": datetime.fromtimestamp(float(test["date_ordered"])).strftime('%d %b %Y %H:%M'),
                   "id": test.get("_id"), "type": test.get("type"), "status": test.get("status"),
@@ -252,6 +259,16 @@ def patient(patient_id):
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
+    # initialize CouchDB indexing when the login route is accessed.
+    # this ensures that indexes are created before any database operations are performed.
+    # wraped inside a try/catch despite being a fire and forget operation to prevent any unforeseen errors from affecting the login process. 
+    try:
+        Couchdb_Indexing()
+    except Exception as e:
+        print(f"Error initializing CouchDB indexing: {e}")
+
+
+
     error = None
     if request.method == 'GET':
         status = None

@@ -116,9 +116,9 @@ def _delete_replicator_db():
     delete_replicator_db_cmd = ['curl', '-X', 'DELETE', replicator_db_url]
     try:
         subprocess.run(delete_replicator_db_cmd, check=True, capture_output=True, text=True)
-        logging.info(f"Deleting _replicator database if it exists...")
+        logging.info(f"Deleting _replicator database if it exists")
         with open(log_file, 'a') as log:
-            log.write(f"{NOW} - Deleting _replicator database if it exists...\n")
+            log.write(f"{NOW} - Deleting _replicator database\n")
     except subprocess.CalledProcessError as e:
         with open(log_file, 'a') as log:
             log.write(f"{NOW} - Error deleting _replicator database: {e.stderr}\n")

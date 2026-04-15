@@ -127,6 +127,6 @@ cython_debug/
 logs/*
 *.config
 !config/*.config
-config/application.basis
+config/application.config
 config/basis.config
 config/replications.config

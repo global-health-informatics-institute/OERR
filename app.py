@@ -50,7 +50,6 @@ def index():
             led_control().turn_led_off()
 
     records = []
-    my_team_recs = []
 
     # Based on role, pull the required information from the database
     if session["user"]["role"] in ['Nurse','Doctor','Student']:

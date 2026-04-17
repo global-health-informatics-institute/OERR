@@ -69,24 +69,49 @@ def index():
             "use_index": "idx_by_ordered_by_and_status"
         }
  
-    # query for records to display on the main page
-    main_results = db.find(main_index_query)
+    main_results = list(db.find(main_index_query))
+
+    # pre populate data and construct dicts
+    patient_ids = {item.get('patient_id') for item in main_results}
+    test_ids = {item.get('test_type') for item in main_results if item.get("type") == "test"}
+
+    patient_names = {}
+    test_names = {}
+
+    for patient_id in patient_ids:
+        patient = Patient.get(patient_id)
+
+        patient_names[patient_id] = (patient.get('name')).title() if patient else 'Cannot Load'
+    
+    for test_id in test_ids:
+        test_name = LaboratoryTestType.find_by_test_type(test_id).test_name
+
+        if test_name:
+            test_names[test_id] = test_name
+        else:
+            raise ValueError(f"Test type {test_id} not found")
+            
+
+
     for item in main_results:
         try:
             test_detail = {'status': item.get('status'), "date": float(item.get('date_ordered')),
-                           'name': Patient.get(item.get('patient_id')).get('name').title(),
+                           'name': patient_names[item.get('patient_id')],
                            'ordered_on': datetime.fromtimestamp(float(item.get('date_ordered'))).strftime(
                                '%d %b %Y %H:%M'),
                            "id": item["_id"], 'patient_id': item.get('patient_id')}
 
             if item.get("type") == "test":
-                test_detail['test'] = LaboratoryTestType.find_by_test_type(item.get('test_type')).test_name
+                test_detail['test'] = test_names[item.get('test_type')]
             else:
                 test_detail['test'] = item.get('panel_type')
             records.append(test_detail)
-        except:
+        except Exception as e:
+            print(f"Error while constructing test_detail: {e}")
             pass
 
+
+    del main_results, test_ids, test_names, patient_ids, patient_names
     # sort by date descending
     records = sorted(records, key=lambda e: e["date"], reverse=True)
     # my_team_recs = sorted(my_team_recs, key=lambda e: e["date"], reverse=True)
@@ -994,4 +1019,4 @@ def internal_error(error):
     return render_template('main/502.html'), 502
 
 if __name__ == '__main__':
-    app.run(port="7500", debug=False, host='0.0.0.0')
+    app.run(port="7500", debug=True, host='0.0.0.0')

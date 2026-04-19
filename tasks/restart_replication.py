@@ -162,6 +162,32 @@ def _get_design_doc_rev():
         return None
 
 
+DESIGN_DOC_REV = _get_design_doc_rev()
+
+
+def _purge_design_doc():
+    doc_id = f"_design/ward_filter_{design_id}"
+    purge_design_doc_cmd = [
+        'curl',
+        '-X', 'POST',
+        '-H', 'Content-Type: application/json',
+        '-d', f'{{"{doc_id}": ["{DESIGN_DOC_REV}"]}}',
+        f"{target_url}/_purge"
+    ]
+
+    if DESIGN_DOC_REV:
+        try:
+            subprocess.run(purge_design_doc_cmd, check=True, capture_output=True, text=True)
+            with open(log_file, 'a') as log:
+                log.write(f"{NOW} - Design document purged successfully\n")
+                logging.info(f"Design document purged successfully")
+        except subprocess.CalledProcessError as e:
+            with open(log_file, 'a') as log:
+                log.write(f"{NOW} - Error purging design document: {e.stderr}\n")
+                logging.error(f"Error purging design document: {e.stderr}")
+
+
+
 def _create_target_design_doc():
     design_doc = {
         "filters": {
@@ -175,7 +201,6 @@ def _create_target_design_doc():
         }
     }
 
-    _rev = _get_design_doc_rev()
     _push_msg = "created"
 
     create_design_doc_cmd = [
@@ -187,9 +212,7 @@ def _create_target_design_doc():
         f"{target_url}/_design/ward_filter_{design_id}"
     ]
 
-    if _rev:
-        create_design_doc_cmd[-1] += f"?rev={_rev}"
-        _push_msg = "updated"
+    _purge_design_doc()
 
 
     try:

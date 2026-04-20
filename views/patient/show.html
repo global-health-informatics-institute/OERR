@@ -352,6 +352,24 @@
 <input type="hidden" name='ordered_by' value={{session["user"]['username']}} >
 {% endif %}
 
+                <div id="bloodVolumeTab" style="display: none;">
+                    <h2>Enter Blood Volume and Units</h2>
+                    <div id="bloodVolumeContainer" style="display: none;">
+                        <div style="margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
+                            <label for="bloodVolumeInput" style="font-size: 18pt;">Blood Volume:</label>
+                            <input type="number" id="bloodVolumeInput" name="blood_volume" min="1" max="10" step="0.1"
+                                   class="input" style="width: 30%; font-size: 18pt; border-radius: 5px; height: 7vh; margin-left: 10px;">
+                            <select id="bloodVolumeUnitInput" name="blood_volume_unit" class="input"
+                                    style="width: 20%; font-size: 18pt; border-radius: 5px; height: 7vh;">
+                                <option value="ml" selected>ml</option>
+                                <option value="mints">mints</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="keyboard-anchor"></div>
+                    <p id="bloodVolumeNotRequired" style="display: none;">Blood volume is not required for selected tests.</p>
+                </div>
+
                 <div class="tab">
                     <h2>Enter Clinical Information/History</h2>
                     <div>
@@ -365,7 +383,9 @@
                      height: 7vh; display: inline-block; margin-left: 10px;"/>
                      </div>
 
-                    <div class="simple-keyboard" style="width: 99%; border: 1px solid silver;margin-top: 2vh;"></div>
+                    <div class="keyboard-anchor">
+                        <div class="simple-keyboard" style="width: 99%; border: 1px solid silver;margin-top: 2vh;"></div>
+                    </div>
                 </div>
                 <div class="tab">
                     <h2>Select priotity for test(s)</h2>
@@ -410,6 +430,7 @@
                         <td style="text-align: center;">
                             <span class="step"></span>
                             <span class="step"></span>
+                            <span id="bloodVolumeStep" style="display: none;"></span>
                            {% if session.get('user').get('role') in ['Nurse', 'Student']  %}
                                 <span class="step"></span>
                             {% endif %}
@@ -498,6 +519,9 @@
                     waitForKeyboard();
                 }, 2000);
             }
+            if (preselectedHistoriesDisplay) {
+                preselectedHistoriesDisplay.textContent = composedValues.preselectedValue || 'None';
+            }
         }
         waitForKeyboard()
         function disable_button(x){
@@ -513,11 +537,9 @@ function handleCheckboxChange() {
     checkboxes.forEach(function (checkbox) {
         var selectedTest = checkbox.value;
 
-        // Customize the condition based on your requirements
         if (selectedTest == '4') {
             displayAntibiotics = true;
         }
-            console.log(selectedTest);
     });
 
     if (displayAntibiotics) {
@@ -525,8 +547,208 @@ function handleCheckboxChange() {
     } else {
         document.getElementById('antibiotics').style.display = 'none';
     }
-
+    updateBloodVolumeRequirement();
+    setTimeout(syncKeyboardToActiveTab, 0);
 }
 
-    </script>
+    function showOrderDialog() {
+        const urlParts = window.location.href.split('?');
+        const baseUrl = urlParts[0];
+        window.location = `${baseUrl}#orderModal`;
+        showTab(0);
+    }
+
+    function showDrawDialog() {
+        const modalContent = document.getElementById("modalContent");
+        const sampleDrawContent = document.getElementById("sampleDrawContent");
+        
+        if (modalContent && sampleDrawContent) {
+            modalContent.innerHTML = sampleDrawContent.innerHTML;
+            window.location = '{{ request.url }}#openModal';
+        }
+    }
+
+    function filterTests(id) {
+        const radios = document.getElementsByName('specimen_type');
+        let specimen_type = null;
+        
+        for (let i = 0; i < radios.length; i++) {
+            if (radios[i].checked) {
+                specimen_type = radios[i].value;
+                break;
+            }
+        }
+        
+        if (!specimen_type) return;
+        
+        const options = document.getElementsByName('testOptions');
+        for (let i = 0; i < options.length; i++) {
+            const option = options[i];
+            const allowedTypes = option.dataset.id ? option.dataset.id.split(',') : [];
+            
+            if (!allowedTypes.includes(specimen_type)) {
+                option.style.display = "none";
+            } else {
+                option.style.display = "block";
+            }
+        }
+    }
+
+    function testReviewed(id) {
+        const xhr = new XMLHttpRequest();
+        const url = `/test/${id}/review_ajax`;
+        
+        xhr.open("GET", url, true);
+        xhr.setRequestHeader("Content-Type", "application/text");
+        
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                console.log("Test reviewed:", xhr.responseText);
+            }
+        };
+        
+        xhr.send();
+    }
+
+    function waitForKeyboard() {
+        if (typeof keyboard !== 'undefined') {
+            if (keyboard.options && keyboard.options.maxLength) {
+                keyboard.options.maxLength["default"] = {{ ch_length }};
+            }
+            return;
+        }
+        
+        setTimeout(waitForKeyboard, 2000);
+    }
+
+    // Initialize keyboard after DOM loads
+    document.addEventListener('DOMContentLoaded', waitForKeyboard);
+
+    function disable_button(x) {
+        if (!x) return;
+        
+        x.disabled = true;
+        x.innerHTML = "Printing...";
+    }
+
+    function selectedTestsRequireBloodVolume() {
+        const selectedTests = document.querySelectorAll('input[name="test_type[]"]:checked');
+        for (const selected of selectedTests) {
+            const label = document.querySelector(`label[for="${selected.id}"]`);
+            const testName = (label ? label.textContent : selected.value || "").toLowerCase();
+            if (/\babo\b/.test(testName) || /cross[-\s]*match/.test(testName) || /cros[-\s]*match/.test(testName) || /\bxmatch\b/.test(testName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function updateBloodVolumeRequirement() {
+        const bloodTab = document.getElementById('bloodVolumeTab');
+        const bloodStep = document.getElementById('bloodVolumeStep');
+        const container = document.getElementById('bloodVolumeContainer');
+        const notRequiredMessage = document.getElementById('bloodVolumeNotRequired');
+        const volumeInput = document.getElementById('bloodVolumeInput');
+        const unitInput = document.getElementById('bloodVolumeUnitInput');
+        if (!container || !volumeInput || !unitInput || !bloodTab || !bloodStep) return;
+
+        const required = selectedTestsRequireBloodVolume();
+
+        // Add/remove the tab from wizard flow.
+        if (required) {
+            bloodTab.classList.add('tab');
+            bloodTab.style.display = '';
+            bloodStep.classList.add('step');
+            bloodStep.style.display = 'inline-block';
+        } else {
+            bloodTab.classList.remove('tab');
+            bloodTab.style.display = 'none';
+            bloodStep.classList.remove('step');
+            bloodStep.style.display = 'none';
+        }
+
+        container.style.display = required ? 'block' : 'none';
+        if (notRequiredMessage) {
+            notRequiredMessage.style.display = required ? 'none' : 'block';
+        }
+        volumeInput.required = required;
+        unitInput.required = required;
+
+        if (!required) {
+            volumeInput.value = '';
+            unitInput.value = 'ml';
+        }
+    }
+
+    function enforceBloodVolumeBounds() {
+        const volumeInput = document.getElementById('bloodVolumeInput');
+        if (!volumeInput) return;
+
+        volumeInput.addEventListener('beforeinput', function (event) {
+            const inputType = event.inputType || '';
+            if (inputType.startsWith('delete')) return;
+
+            const start = volumeInput.selectionStart ?? volumeInput.value.length;
+            const end = volumeInput.selectionEnd ?? volumeInput.value.length;
+            const inserted = event.data || '';
+            const projectedValue = volumeInput.value.slice(0, start) + inserted + volumeInput.value.slice(end);
+
+            if (projectedValue === '') return;
+            if (!/^\d*\.?\d*$/.test(projectedValue)) {
+                event.preventDefault();
+                return;
+            }
+
+            const numericValue = Number(projectedValue);
+            if (!Number.isNaN(numericValue) && (numericValue < 1 || numericValue > 10)) {
+                event.preventDefault();
+            }
+        });
+
+        volumeInput.addEventListener('input', function () {
+            if (volumeInput.value === '') return;
+            const numericValue = Number(volumeInput.value);
+            if (Number.isNaN(numericValue)) {
+                volumeInput.value = '';
+                return;
+            }
+            if (numericValue > 10) volumeInput.value = '10';
+            if (numericValue < 1) volumeInput.value = '1';
+        });
+    }
+
+    function getActiveTab() {
+        const tabs = document.querySelectorAll('.tab');
+        for (const tab of tabs) {
+            if (tab.style.display === 'block') return tab;
+        }
+        return null;
+    }
+
+    function syncKeyboardToActiveTab() {
+        const activeTab = getActiveTab();
+        if (!activeTab) return;
+
+        const keyboardContainer = document.querySelector('.simple-keyboard');
+        const anchor = activeTab.querySelector('.keyboard-anchor');
+        if (keyboardContainer && anchor && keyboardContainer.parentElement !== anchor) {
+            anchor.appendChild(keyboardContainer);
+        }
+
+        const firstInput = activeTab.querySelector('.input');
+        if (firstInput) firstInput.focus();
+    }
+
+    document.addEventListener('DOMContentLoaded', updateBloodVolumeRequirement);
+    document.addEventListener('DOMContentLoaded', enforceBloodVolumeBounds);
+    document.addEventListener('DOMContentLoaded', function () {
+        setTimeout(syncKeyboardToActiveTab, 0);
+
+        const nextBtn = document.getElementById('nextBtn');
+        const prevBtn = document.getElementById('prevBtn');
+        if (nextBtn) nextBtn.addEventListener('click', () => setTimeout(syncKeyboardToActiveTab, 0));
+        if (prevBtn) prevBtn.addEventListener('click', () => setTimeout(syncKeyboardToActiveTab, 0));
+    });
+
+</script>
 {% endblock %}

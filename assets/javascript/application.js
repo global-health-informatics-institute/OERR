@@ -107,22 +107,30 @@ function validateForm() {
     x = document.getElementsByClassName("tab");
     y = x[currentTab].getElementsByTagName("input");
 
-    if (y[0].required){
-        switch(y[0].type) {
+    var requiredInput = null;
+    for (i = 0; i < y.length; i++) {
+        if (y[i].required) {
+            requiredInput = y[i];
+            break;
+        }
+    }
+
+    if (requiredInput){
+        switch(requiredInput.type) {
             case 'text':
-                if (y[0].value.trim() == "") {
-                    y[0].className += " invalid";
+                if (requiredInput.value.trim() == "") {
+                    requiredInput.className += " invalid";
                     // and set the current valid status to false
                     valid = false;
                 }
                 break;
             case 'radio':
-                if (document.querySelector('input[name ='+y[0].name +']:checked') == null){
+                if (document.querySelector('input[name="'+requiredInput.name+'"]:checked') == null){
                     valid = false;
                 }
                 break;
             case 'checkbox':
-                if (document.querySelector('input[name ="'+y[0].name +'"]:checked') == null){
+                if (document.querySelector('input[name="'+requiredInput.name+'"]:checked') == null){
                     valid = false;
                 }
 

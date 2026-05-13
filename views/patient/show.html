@@ -341,7 +341,7 @@
     <ul class="two-column-list" id="doctor-list">
         {% for i in doctors %}
             <li>
-                <input type='radio' id='type-{{i[1]}}' value="{{i[1]}}" required name='ordered_by' onchange="updateNextButtonState()">
+                <input type='radio' id='type-{{i[1]}}' value="{{i[1]}}" required name='ordered_by'>
                 <label for='type-{{i[1]}}'>{{i[0]}}</label>
                 <div class='check'></div>
             </li>
@@ -438,33 +438,16 @@
             var orderedByRadios = tabs[currentTab].querySelectorAll('input[name="ordered_by"]');
             return orderedByRadios && orderedByRadios.length > 0;
         }
-        
+
         // Helper: Check if a doctor has been selected
         function isDoctorSelected() {
             return document.querySelector('input[name="ordered_by"]:checked') !== null;
         }
-        
-        // Update Next button state based on doctor selection
-        function updateNextButtonState() {
-            if (!isOrderedByTabActive()) return;
-            
-            var nextBtn = document.getElementById("nextBtn");
-            if (!nextBtn) return;
-            
-            if (isDoctorSelected()) {
-                nextBtn.disabled = false;
-                nextBtn.style.opacity = "1";
-                nextBtn.style.cursor = "pointer";
-            } else {
-                nextBtn.disabled = true;
-                nextBtn.style.opacity = "0.5";
-                nextBtn.style.cursor = "not-allowed";
-            }
-        }
-        
+
         // Next/Previous with validation for ordered_by requirement
         function nextPrevWithCheck(n) {
             if (n == 1 && isOrderedByTabActive() && !isDoctorSelected()) {
+                alert("Please select who ordered the test(s) before continuing.");
                 return false;
             }
             return nextPrev(n);

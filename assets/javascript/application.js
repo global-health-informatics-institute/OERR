@@ -121,12 +121,13 @@ function validateForm() {
             continue;
         }
 
-        if (field.value.trim() == "") {
-            field.className += " invalid";
-            valid = false;
+        if (field.type === 'text' || field.type === '') {
+            if (field.value.trim() == "") {
+                field.className += " invalid";
+                valid = false;
+            }
         }
     }
-
 
     // If the valid status is true, mark the step as finished and valid:
     if (valid) {
@@ -172,7 +173,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     document.addEventListener('click', function (event) {
-        // Check if the click is outside of the input and keyboard
         if (!input.contains(event.target) && !keyboard.contains(event.target)) {
             keyboard.style.display = 'none';
         }
@@ -267,13 +267,6 @@ function idleTimer(){
         document.addEventListener(evt, resetIdleTimeout, false)
     );
 };
-
-var doctorSearchInput = document.getElementById('doctor-search');
-if (doctorSearchInput) {
-    doctorSearchInput.addEventListener('focus', function() {
-        showKeyboard();
-    });
-}
 
 function powerMonitor(){
     console.log("Check charge state")

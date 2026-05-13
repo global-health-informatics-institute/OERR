@@ -341,7 +341,7 @@
     <ul class="two-column-list" id="doctor-list">
         {% for i in doctors %}
             <li>
-                <input type='radio' id='type-{{i[1]}}' value="{{i[1]}}" required name='ordered_by' >
+                <input type='radio' id='type-{{i[1]}}' value="{{i[1]}}" required name='ordered_by' onchange="updateNextButtonState()">
                 <label for='type-{{i[1]}}'>{{i[0]}}</label>
                 <div class='check'></div>
             </li>
@@ -419,7 +419,7 @@
                         </td>
                         <td style="text-align: right">
                             <button type="button" id="prevBtn" class="modalNVButton" onclick="nextPrev(-1)">Previous</button>
-                            <button type="button" id="nextBtn" class="modalNVButton green" onclick="nextPrev(1)">Next</button>
+                            <button type="button" id="nextBtn" class="modalNVButton green" onclick="nextPrevWithCheck(1)">Next</button>
                         </td>
                     </tr>
                 </table>
@@ -428,8 +428,48 @@
     </div>
 
     <script>
-        selected =null
+        selected = null
         isNurse = "{{ session.get('user').get('role') in ['Nurse', 'Student'] }}"
+        
+        // Helper: Check if current tab contains the ordered_by radio group
+        function isOrderedByTabActive() {
+            var tabs = document.getElementsByClassName("tab");
+            if (!tabs[currentTab]) return false;
+            var orderedByRadios = tabs[currentTab].querySelectorAll('input[name="ordered_by"]');
+            return orderedByRadios && orderedByRadios.length > 0;
+        }
+        
+        // Helper: Check if a doctor has been selected
+        function isDoctorSelected() {
+            return document.querySelector('input[name="ordered_by"]:checked') !== null;
+        }
+        
+        // Update Next button state based on doctor selection
+        function updateNextButtonState() {
+            if (!isOrderedByTabActive()) return;
+            
+            var nextBtn = document.getElementById("nextBtn");
+            if (!nextBtn) return;
+            
+            if (isDoctorSelected()) {
+                nextBtn.disabled = false;
+                nextBtn.style.opacity = "1";
+                nextBtn.style.cursor = "pointer";
+            } else {
+                nextBtn.disabled = true;
+                nextBtn.style.opacity = "0.5";
+                nextBtn.style.cursor = "not-allowed";
+            }
+        }
+        
+        // Next/Previous with validation for ordered_by requirement
+        function nextPrevWithCheck(n) {
+            if (n == 1 && isOrderedByTabActive() && !isDoctorSelected()) {
+                return false;
+            }
+            return nextPrev(n);
+        }
+        
         function toggleDisplay(id, test_status){
             var state= {true: "View", false: "Hide"}
             div = document.getElementById(id)
@@ -442,9 +482,18 @@
         }
 
         var currentTab = 0; // Current tab is set to be the first tab (0)
+        
+        // Override nextPrev to update button state after tab change
+        var originalNextPrev = nextPrev;
+        nextPrev = function(n) {
+            originalNextPrev(n);
+            updateNextButtonState();
+        };
+        
         function showOrderDialog(){
             window.location='{{request.url.split("?")[0]}}#orderModal'
             showTab(0); // Display the current tab
+            updateNextButtonState();
         }
 
         function showDrawDialog(){

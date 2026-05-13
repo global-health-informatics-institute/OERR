@@ -107,34 +107,23 @@ function validateForm() {
     x = document.getElementsByClassName("tab");
     y = x[currentTab].getElementsByTagName("input");
 
-    var requiredInput = null;
     for (i = 0; i < y.length; i++) {
-        if (y[i].required) {
-            requiredInput = y[i];
-            break;
+        var field = y[i];
+
+        if (!field.required) {
+            continue;
         }
-    }
 
-    if (requiredInput){
-        switch(requiredInput.type) {
-            case 'text':
-                if (requiredInput.value.trim() == "") {
-                    requiredInput.className += " invalid";
-                    // and set the current valid status to false
-                    valid = false;
-                }
-                break;
-            case 'radio':
-                if (document.querySelector('input[name="'+requiredInput.name+'"]:checked') == null){
-                    valid = false;
-                }
-                break;
-            case 'checkbox':
-                if (document.querySelector('input[name="'+requiredInput.name+'"]:checked') == null){
-                    valid = false;
-                }
+        if (field.type === 'radio' || field.type === 'checkbox') {
+            if (document.querySelector('input[name="' + field.name + '"]:checked') == null) {
+                valid = false;
+            }
+            continue;
+        }
 
-                break;
+        if (field.value.trim() == "") {
+            field.className += " invalid";
+            valid = false;
         }
     }
 
@@ -173,6 +162,10 @@ function filterDoctors() {
 document.addEventListener('DOMContentLoaded', function () {
     var input = document.getElementById('doctor-search');
     var keyboard = document.getElementById('keyboard');
+
+    if (!input || !keyboard) {
+        return;
+    }
 
     input.addEventListener('focus', function () {
         keyboard.style.display = 'block';
@@ -274,6 +267,13 @@ function idleTimer(){
         document.addEventListener(evt, resetIdleTimeout, false)
     );
 };
+
+var doctorSearchInput = document.getElementById('doctor-search');
+if (doctorSearchInput) {
+    doctorSearchInput.addEventListener('focus', function() {
+        showKeyboard();
+    });
+}
 
 function powerMonitor(){
     console.log("Check charge state")

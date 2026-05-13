@@ -428,6 +428,7 @@
     </div>
 
     <script>
+        var currentTab = 0
         selected = null
         isNurse = "{{ session.get('user').get('role') in ['Nurse', 'Student'] }}"
         
@@ -441,12 +442,33 @@
                 testReviewed(id)
             }
         }
-
-        var currentTab = 0; // Current tab is set to be the first tab (0)
         
         function showOrderDialog(){
+            currentTab = 0
             window.location='{{request.url.split("?")[0]}}#orderModal'
             showTab(0); // Display the current tab
+        }
+
+        function isDoctorSelectionTabActive() {
+            var tabs = document.getElementsByClassName("tab")
+            if (!tabs[currentTab]) {
+                return false
+            }
+
+            return tabs[currentTab].querySelectorAll('input[name="ordered_by"]').length > 0
+        }
+
+        function hasSelectedDoctor() {
+            return document.querySelector('input[name="ordered_by"]:checked') !== null
+        }
+
+        function nextPrevWithCheck(n) {
+            if (n == 1 && isDoctorSelectionTabActive() && !hasSelectedDoctor()) {
+                alert("Please select the doctor who ordered the test(s) before continuing.")
+                return false
+            }
+
+            return nextPrev(n)
         }
 
         function showDrawDialog(){

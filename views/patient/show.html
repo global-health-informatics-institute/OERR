@@ -279,6 +279,9 @@
     <div id="search-container" style="position: relative;">
         <!-- Search input field -->
         <input type="text" id="doctor-search" placeholder="Search..." onfocus="showKeyboard()" onkeyup="filterDoctors()">
+        <div id="doctor-selection-error" style="display: none; color: #c62828; font-weight: 600; margin-top: 8px;">
+            Please select the doctor who ordered the test(s) before continuing.
+        </div>
         <div id="keyboard" style="display: none; position: absolute; top: 100%; left: 0; background: white; padding: 10px; border: 1px solid #ccc; z-index: 1000;">
             <!-- <div id="keyboard" style="display: none;"> -->
             <!-- Number keys -->
@@ -341,7 +344,7 @@
     <ul class="two-column-list" id="doctor-list">
         {% for i in doctors %}
             <li>
-                <input type='radio' id='type-{{i[1]}}' value="{{i[1]}}" required name='ordered_by'>
+                <input type='radio' id='type-{{i[1]}}' value="{{i[1]}}" required name='ordered_by' onchange="clearDoctorSelectionError()">
                 <label for='type-{{i[1]}}'>{{i[0]}}</label>
                 <div class='check'></div>
             </li>
@@ -462,11 +465,27 @@
             return document.querySelector('input[name="ordered_by"]:checked') !== null
         }
 
+        function showDoctorSelectionError() {
+            var error = document.getElementById("doctor-selection-error")
+            if (error) {
+                error.style.display = "block"
+            }
+        }
+
+        function clearDoctorSelectionError() {
+            var error = document.getElementById("doctor-selection-error")
+            if (error) {
+                error.style.display = "none"
+            }
+        }
+
         function nextPrevWithCheck(n) {
             if (n == 1 && isDoctorSelectionTabActive() && !hasSelectedDoctor()) {
-                alert("Please select the doctor who ordered the test(s) before continuing.")
+                showDoctorSelectionError()
                 return false
             }
+
+            clearDoctorSelectionError()
 
             return nextPrev(n)
         }

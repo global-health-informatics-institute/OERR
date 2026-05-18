@@ -121,11 +121,9 @@ function validateForm() {
             continue;
         }
 
-        if (field.type === 'text' || field.type === '') {
-            if (field.value.trim() == "") {
-                field.className += " invalid";
-                valid = false;
-            }
+        if (field.value.trim() == "") {
+            field.className += " invalid";
+            valid = false;
         }
     }
 

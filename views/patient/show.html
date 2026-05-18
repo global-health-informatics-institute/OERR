@@ -487,6 +487,8 @@
 
             clearDoctorSelectionError()
 
+            if (n == 1 && !validateForm()) return false
+
             return nextPrev(n)
         }
 

@@ -162,7 +162,7 @@
                             </td>
                             <td style="text-align: right">
                                 <button type="button" id="prevBtn" class="modalNVButton" onclick="nextPrev(-1)">Previous</button>
-                                <button type="button" id="nextBtn" class="modalNVButton green" onclick="nextPrev(1)">Next</button>
+                                <button type="button" id="nextBtn" class="modalNVButton green" onclick="nextPrevWithCheck(1)">Next</button>
                             </td>
                         </tr>
                     </table>
@@ -173,7 +173,6 @@
 
 <script>
 var currentTab = 0; // Current tab is set to be the first tab (0)
-showTab(currentTab); // Display the current tab
 
 function showTab(n) {
   // This function will display the specified tab of the form...
@@ -194,11 +193,29 @@ function showTab(n) {
   fixStepIndicator(n)
 }
 
+// Helpers for ordered_by validation
+function isOrderedByTabActive() {
+    var tabs = document.getElementsByClassName("tab");
+    if (!tabs[currentTab]) return false;
+    var orderedByRadios = tabs[currentTab].querySelectorAll('input[name="ordered_by"]');
+    return orderedByRadios && orderedByRadios.length > 0;
+}
+
+function isDoctorSelected() {
+    return document.querySelector('input[name="ordered_by"]:checked') !== null;
+}
+
+function nextPrevWithCheck(n) {
+    if (n == 1 && isOrderedByTabActive() && !isDoctorSelected()) {
+        alert("Please select who ordered the test(s) before continuing.");
+        return false;
+    }
+    return nextPrev(n);
+}
+
 function nextPrev(n) {
   // This function will figure out which tab to display
   var x = document.getElementsByClassName("tab");
-  // Exit the function if any field in the current tab is invalid:
-  if (n == 1 && !validateForm()) return false;
   // Hide the current tab:
   x[currentTab].style.display = "none";
   // Increase or decrease the current tab by 1:
@@ -220,12 +237,25 @@ function validateForm() {
   y = x[currentTab].getElementsByTagName("input");
   // A loop that checks every input field in the current tab:
   for (i = 0; i < y.length; i++) {
-    // If a field is empty...
-    if (y[i].value == "") {
-      // add an "invalid" class to the field:
-      y[i].className += " invalid";
-      // and set the current valid status to false
-      valid = false;
+        var field = y[i];
+
+        if (!field.required) {
+            continue;
+        }
+
+        if (field.type === "radio" || field.type === "checkbox") {
+            if (document.querySelector('input[name="' + field.name + '"]:checked') === null) {
+                valid = false;
+            }
+            continue;
+        }
+
+        // If a field is empty...
+        if (field.value.trim() == "") {
+            // add an "invalid" class to the field:
+            field.className += " invalid";
+            // and set the current valid status to false
+            valid = false;
     }
   }
   // If the valid status is true, mark the step as finished and valid:
@@ -234,6 +264,19 @@ function validateForm() {
   }
   return valid; // return the valid status
 }
+
+function fixStepIndicator(n) {
+  // This function removes the "active" class of all steps...
+  var i, x = document.getElementsByClassName("step");
+  for (i = 0; i < x.length; i++) {
+    x[i].className = x[i].className.replace(" active", "");
+  }
+  //... and adds the "active" class on the current step:
+  x[n].className += " active";
+}
+
+// Initialize: Display first tab
+showTab(currentTab);
 
 function fixStepIndicator(n) {
   // This function removes the "active" class of all steps...

@@ -106,8 +106,8 @@
             }, {
                 key: "getDefaultDiplay", value: function () {
                     return {
-                        "{bksp}": "backspace",
-                        "{backspace}": "backspace",
+                        "{bksp}": "DELETE",
+                        "{backspace}": "DELETE",
                         "{enter}": "< enter",
                         "{shift}": "shift",
                         "{shiftleft}": "shift",
@@ -115,10 +115,10 @@
                         "{alt}": "alt",
                         "{s}": "shift",
                         "{tab}": "tab",
-                        "{lock}": "caps",
-                        "{capslock}": "caps",
+                        "{lock}": "CAPS",
+                        "{capslock}": "CAPS",
                         "{accept}": "Submit",
-                        "{space}": " ",
+                        "{space}": "Space",
                         "{//}": " ",
                         "{esc}": "esc",
                         "{escape}": "esc",

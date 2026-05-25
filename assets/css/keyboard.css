@@ -62,4 +62,32 @@ body,html{
 
 .simple-keyboard.hg-theme-default .hg-button.hg-standardBtn[data-skbtn="@"]{max-width:60px}
 
+#keyboard .keyboard-row {
+    display: flex;
+    width: 100%;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+#keyboard .keyboard-row button {
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+}
+
+/* Make special keys wider (CAPS and DELETE) */
+#keyboard .keyboard-row button#caps,
+#keyboard .keyboard-row button[onclick*="Backspace"] {
+    flex: 2 1 0 !important;
+    min-width: 48px !important;
+    padding-left: 6px !important;
+    padding-right: 6px !important;
+}
+
+/* Reduce spacing only on rows that contain DELETE (first row) and CAPS (third row) */
+#keyboard .keyboard-row:nth-child(1),
+#keyboard .keyboard-row:nth-child(3) {
+    gap: 4px !important;
+}
+
 /*# sourceMappingURL=index.css.map */

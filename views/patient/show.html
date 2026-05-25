@@ -293,7 +293,7 @@
                 <button onclick="typeKey('8')">8</button>
                 <button onclick="typeKey('9')">9</button>
                 <button onclick="typeKey('0')">0</button>
-                <button onclick="typeKey('Backspace')">backspace</button>
+                <button onclick="typeKey('Backspace')">DEL</button>
             </div>
             <!-- Top row letters -->
             <div class="keyboard-row">
@@ -310,7 +310,7 @@
             </div>
             <!-- Second row letters -->
             <div class="keyboard-row">
-                <button id="caps" onclick="toggleCapsLock()">caps</button>
+                <button id="caps" onclick="toggleCapsLock()">CAP</button>
                 <button onclick="typeKey('a')">a</button>
                 <button onclick="typeKey('s')">s</button>
                 <button onclick="typeKey('d')">d</button>
@@ -332,6 +332,9 @@
                 <button onclick="typeKey('m')">m</button>
                 <button onclick="typeKey(',')">,</button>
                 <button onclick="typeKey('.')">.</button>
+                <button onclick="typeKey(String.fromCharCode(39))">'</button>
+            </div>
+            <div class="keyboard-row">
                 <button onclick="typeKey(' ')">Space</button>
             </div>
         </div>

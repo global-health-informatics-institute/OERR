@@ -20,7 +20,7 @@ let keyboard = new Keyboard({
     ]
   },
   display: {
-    '{bksp}': 'clear',
+    '{bksp}': 'Clear',
     '{space}': 'space',
     '{lock}': 'CAPS'
   }
@@ -61,12 +61,6 @@ function onChange(input) {
   const activeInput = getActiveInput();
   if (!activeInput) return;
 
-  if (isBackSpace(lastPressedButton)) {
-    activeInput.value = "";
-    keyboard.setInput("", activeInput.id);
-    return;
-  }
-
   let newValue = input;
   const maxLength = activeInput.maxLength;
   if (typeof maxLength === "number" && maxLength > 0 && newValue.length > maxLength) {
@@ -74,36 +68,21 @@ function onChange(input) {
   }
 
   activeInput.value = newValue;
-
-  // Update keyboard's internal state with the (possibly truncated) input
   keyboard.setInput(newValue, activeInput.id);
 }
 
-
-function isBackSpace(button) {
-  return (button === "{bksp}") ? 1 : 0;
-}
-
-let lastPressedButton = ""; // Variable to track the last pressed key
-
 function onKeyPress(button) {
   console.log("onKeyPress");
-  
-  // Store the pressed key
-  lastPressedButton = button;
 
-  if (isBackSpace(button)) {
+  if (button === "{bksp}") {
     const activeInput = getActiveInput();
     if (activeInput) {
       activeInput.value = "";
       keyboard.setInput("", activeInput.id);
-      return;
     }
+    return;
   }
 
-  /**
-   * Shift functionality
-   */
   if (button === "{lock}" || button === "{shift}") handleShiftButton();
 }
 
